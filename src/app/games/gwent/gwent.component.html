@@ -1,0 +1,97 @@
+<div class="gwent-page-container">
+  <div class="gwent-wrapper" tabindex="0">
+    
+    <header class="game-header">
+      <h1 class="game-title">Vibood's Gwent</h1>
+      <div class="tip-line" [class.error-text]="tipIsError">{{ tipLine }}</div>
+    </header>
+
+    <div class="hand-section top">
+      <div class="deck-stack" title="Cards remaining in deck">DECK: {{ engine.deckP2.length }}</div>
+      <div class="hand">
+        <div *ngFor="let card of engine.handP2; let i = index" 
+             class="card-in-hand" 
+             [class.gold]="card.rarity === 'gold'"
+             [class.silver]="card.rarity === 'silver'"
+             [class.bronze]="card.rarity === 'bronze'"
+             [class.card-hidden]="engine.activePlayer !== 2"
+             [style.background-image]="engine.activePlayer !== 2 ? 'url(' + getCardback(2) + ')' : (card.artwork !== '?' ? 'url(assets/gwent/artwork/' + card.faction + '/' + card.artwork + ')' : 'none')"
+             draggable="true" (dragstart)="onDragStart(card)">
+          <ng-container *ngIf="engine.activePlayer === 2">
+            <div *ngIf="card.artwork === '?'" class="card-artwork-placeholder">{{ card.artwork }}</div>
+            <span class="power-badge">{{ card.power }}</span>
+            <span class="provision-badge">{{ card.provisions }}</span>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <main class="main-layout">
+      <div class="board-container">
+        <div *ngFor="let rowName of ['p2Ranged', 'p2Melee', 'p1Melee', 'p1Ranged']" 
+             class="row" (dragover)="allowDrop($event)" (drop)="onDrop($event, rowName)">
+          <div class="row-label">{{ rowName.includes('Melee') ? 'MELEE' : 'RANGED' }}</div>
+          
+          <div *ngFor="let c of engine.board[rowName]" 
+               class="card-placed" 
+               [class.gold]="c.rarity === 'gold'"
+               [class.silver]="c.rarity === 'silver'"
+               [class.bronze]="c.rarity === 'bronze'"
+               [class.targetable-mode]="waitingForTarget"
+               (click)="onBoardCardClick(c)"
+               [title]="c.ability?.description || ''"
+               [style.background-image]="c.artwork !== '?' ? 'url(assets/gwent/artwork/' + c.faction + '/' + c.artwork + ')' : 'none'">
+            <div *ngIf="c.artwork === '?'" class="card-artwork-placeholder small">{{ c.artwork }}</div>
+            <span class="power-val">{{ c.power }}</span>
+          </div>
+        </div>
+      </div>
+
+      <aside class="sidebar">
+        <div class="score-card" [class.passed]="engine.p2Passed">
+          <div class="win-indicators">
+            <div class="crystal" [class.active]="engine.p2Wins > 0"></div>
+            <div class="crystal" [class.active]="engine.p2Wins > 1"></div>
+          </div>
+          <p>P2 {{ engine.p2Passed ? '(PASSED)' : '' }}</p>
+          <h1>{{ engine.p2Score }}</h1>
+        </div>
+        
+        <button class="turn-coin" (click)="handleCoinClick()" 
+                [class.active-coin]="turnPlayed" 
+                [class.round-reset]="engine.roundOver || engine.gameOver">
+          {{ (engine.roundOver || engine.gameOver) ? 'RESET' : (turnPlayed ? 'END' : 'PASS') }}
+        </button>
+
+        <div class="score-card" [class.passed]="engine.p1Passed">
+          <div class="win-indicators">
+            <div class="crystal" [class.active]="engine.p1Wins > 0"></div>
+            <div class="crystal" [class.active]="engine.p1Wins > 1"></div>
+          </div>
+          <p>P1 {{ engine.p1Passed ? '(PASSED)' : '' }}</p>
+          <h1>{{ engine.p1Score }}</h1>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="hand-section bottom">
+      <div class="deck-stack" title="Cards remaining in deck">DECK: {{ engine.deckP1.length }}</div>
+      <div class="hand">
+        <div *ngFor="let card of engine.handP1; let i = index" 
+             class="card-in-hand" 
+             [class.gold]="card.rarity === 'gold'"
+             [class.silver]="card.rarity === 'silver'"
+             [class.bronze]="card.rarity === 'bronze'"
+             [class.card-hidden]="engine.activePlayer !== 1"
+             [style.background-image]="engine.activePlayer !== 1 ? 'url(' + getCardback(1) + ')' : (card.artwork !== '?' ? 'url(assets/gwent/artwork/' + card.faction + '/' + card.artwork + ')' : 'none')"
+             draggable="true" (dragstart)="onDragStart(card)">
+          <ng-container *ngIf="engine.activePlayer === 1">
+            <div *ngIf="card.artwork === '?'" class="card-artwork-placeholder">{{ card.artwork }}</div>
+            <span class="power-badge">{{ card.power }}</span>
+            <span class="provision-badge">{{ card.provisions }}</span>
+          </ng-container>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

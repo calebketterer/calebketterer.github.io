@@ -1,0 +1,214 @@
+.snake-container {
+  background: var(--snake-bg, #f5f7fb);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 6px 32px 0 rgba(63, 63, 89, 0.12);
+  max-width: 410px;
+  margin: 0 auto;
+  margin-top: 2rem;
+  font-family: inherit;
+}
+
+.snake-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-family: inherit;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  margin-bottom: 0.7rem;
+  margin-top: 0.1rem;
+  background: linear-gradient(90deg, oklch(55.34% 0.1608 140.47) 0%, oklch(60% 0.17 140.47) 50%, oklch(43% 0.13 140.47) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: background 0.3s;
+  cursor: pointer;
+}
+
+.snake-score-top {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 1rem;
+  letter-spacing: 0.03em;
+}
+.score-label {
+  font-weight: 600;
+  color: #000;
+}
+.score-value {
+  color: #1a1a1a;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.snake-board {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 350px;
+  height: 350px;
+  border-radius: 1rem;
+  background: #f1f3f9;
+  outline: 2px solid #e5e7eb;
+  box-shadow: 0 2px 10px 0 rgba(90,45,130,0.08);
+  user-select: none;
+  transition: box-shadow 0.25s;
+  overflow: hidden;
+  position: relative;
+  margin: 0 auto 1.6rem auto;
+}
+.snake-board:focus {
+  box-shadow: 0 4px 20px 0 rgba(90,45,130,0.14);
+  outline: 2px solid oklch(55.34% 0.1608 140.47);
+}
+.snake-row {
+  display: flex;
+  gap: 2px;
+  height: 20px;
+}
+.snake-cell-base {
+  width: 20px;
+  height: 20px;
+  border-radius: 0.35rem;
+  box-sizing: border-box;
+  transition: background 0.13s;
+}
+.empty-cell { background: #e6e6f3; }
+.snake-cell {
+  background: linear-gradient(135deg, 
+    oklch(55.34% 0.1608 140.47) 0%,   
+    oklch(60% 0.17 140.47) 60%,       
+    oklch(43% 0.13 140.47) 100%       
+  );
+  box-shadow: 0 0 6px 0 oklch(55.34% 0.1608 140.47 / 0.35);
+}
+.food-cell {
+  background: linear-gradient(135deg, #f0060b 70%, #ff41f8 100%);
+  border: 2px solid #fff;
+  box-shadow: 0 0 6px #f0060b88;
+}
+
+.snake-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(90, 90, 90, 0.23);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: auto;
+  gap: 1.1rem;
+}
+.game-over-text {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #000;
+  text-shadow: 0 1px 10px #fff8;
+}
+.overlay-btn {
+  margin-top: 0.4rem;
+  background: linear-gradient(90deg, oklch(55.34% 0.1608 140.47) 0%, oklch(60% 0.17 140.47) 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 2rem;
+  border-radius: 0.9rem;
+  cursor: pointer;
+  font-size: 1.05rem;
+  box-shadow: 0 0 8px oklch(55.34% 0.1608 140.47 / 0.28);
+  outline: none;
+  transition: background 0.18s, box-shadow 0.13s;
+}
+.overlay-btn:hover,
+.overlay-btn:focus {
+  background: linear-gradient(90deg, oklch(60% 0.17 140.47) 0%, oklch(43% 0.13 140.47) 100%);
+  box-shadow: 0 0 16px oklch(55.34% 0.1608 140.47 / 0.45);
+}
+
+.snake-instructions {
+  text-align: center;
+  color: #000;
+  margin-bottom: 1.1rem;
+  font-size: 0.98rem;
+  opacity: 0.8;
+}
+.snake-desc {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.snake-bottom-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 0.2rem;
+}
+.wasd-btns {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18rem;
+  margin-bottom: 0.2rem;
+}
+.wasd-btns > div {
+  display: flex;
+  flex-direction: row;
+  gap: 0.18rem;
+}
+.ctrl-btn {
+  background: #e6fbe6;
+  border: 1px solid oklch(55.34% 0.1608 140.47);
+  color: #168741;
+  border-radius: 0.65rem;
+  margin: 0 0.12rem;
+  font-size: 1.15rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  box-shadow: 0 1px 4px #e6e6f3;
+  outline: none;
+}
+.ctrl-btn:hover,
+.ctrl-btn:focus {
+  background: oklch(55.34% 0.1608 140.47);
+  color: #fff;
+}
+.ng-diff-group {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  justify-content: center;
+}
+.snake-btn {
+  background: linear-gradient(90deg, oklch(55.34% 0.1608 140.47) 0%, oklch(60% 0.17 140.47) 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1.2rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 0 0 8px oklch(55.34% 0.1608 140.47 / 0.20);
+}
+.snake-btn:hover {
+  background: linear-gradient(90deg, oklch(60% 0.17 140.47) 0%, oklch(43% 0.13 140.47) 100%);
+}
+.snake-difficulty {
+  padding: 0.35rem 0.7rem;
+  border-radius: 0.7rem;
+  border: 1px solid oklch(55.34% 0.1608 140.47);
+  font-size: 1rem;
+  background: #e6fbe6;
+  color: #168741;
+  font-weight: 500;
+  box-shadow: 0 0 5px oklch(55.34% 0.1608 140.47 / 0.11);
+}

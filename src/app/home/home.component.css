@@ -1,0 +1,212 @@
+/* ==========================================================================
+   1. TYPOGRAPHY & TEXT COLORS
+   ========================================================================== */
+h1 {
+    font-size: 3.125rem;
+    color: var(--gray-90);
+    font-weight: 500;
+    line-height: 100%;
+    letter-spacing: -0.125rem;
+    margin: 1rem 0;
+    font-family: "Inter Tight", sans-serif;
+}
+
+p {
+    margin: 0 0 1rem 0;
+    color: var(--gray-70);
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   2. LAYOUT CONTAINERS
+   ========================================================================== */
+.content, .original-content-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 800px;
+}
+
+.left-side, .right-side {
+    display: flex;
+    flex-direction: column;
+}
+
+.angular-logo {
+    max-width: 9.2rem;
+    animation: fade-in 10s cubic-bezier(0.23,1,0.32,1) both, hueBreathing2 5s ease-in-out infinite;
+}
+
+.divider {
+    width: 1px;
+    background: var(--rygbv-vertical-gradient);
+    margin-inline: 2rem;
+    background-size: 100% 200%;
+    animation: hueBreathing2 5s ease-in-out infinite;
+    cursor: pointer;
+}
+
+.divider.reverse {
+    animation-direction: reverse;
+}
+
+/* ==========================================================================
+   3. DROPDOWN & TIPS
+   ========================================================================== */
+.view-selector-container {
+    margin: 0.5rem 0; 
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.view-selector-dropdown {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--gray-70);
+    border-radius: 0.5rem;
+    background-color: var(--gray-70);
+    width: 100%;
+    max-width: 300px;
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: rgb(32, 35, 36);
+}
+
+.tips-container {
+    margin: 1rem auto 0 auto;
+    width: 100%;
+    max-width: 400px; /* Locked target width for tip text scaling */
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#Tips {
+    margin: 0 !important;
+    cursor: pointer;
+    text-align: center;
+    color: var(--gray-70);
+    white-space: nowrap;
+    display: inline-block;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#Tips.is-fading {
+    opacity: 0;
+}
+
+/* ==========================================================================
+   4. PILL LINKS & SOCIAL LINKS
+   ========================================================================== */
+.pill-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 1.25rem;
+}
+
+.pill {
+    display: inline-flex; 
+    align-items: center;
+    padding: 0.375rem 0.85rem;
+    border-radius: 2.75rem;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--pill-accent);
+    background: color-mix(in srgb, var(--pill-accent) 8%, transparent);
+    transition: all 0.2s ease;
+    white-space: nowrap; 
+}
+
+.pill:hover { 
+    background: color-mix(in srgb, var(--pill-accent) 15%, transparent); 
+}
+
+.social-links { 
+    display: flex; 
+    gap: 1rem; 
+    margin-top: 1.5rem;
+    padding-left: 0.25rem; 
+}
+
+.social-links path { 
+    fill: var(--gray-40); 
+    transition: fill 0.3s ease; 
+}
+
+.social-links a:hover svg path { 
+    fill: var(--gray-90); 
+}
+
+/* Dynamic Pill Colors */
+.pill:nth-child(6n+1) { --pill-accent: var(--violet); }
+.pill:nth-child(6n+2) { --pill-accent: var(--blue); }
+.pill:nth-child(6n+3) { --pill-accent: var(--green); }
+.pill:nth-child(6n+4) { --pill-accent: var(--yellow); }
+.pill:nth-child(6n+5) { --pill-accent: var(--red); }
+
+/* ==========================================================================
+   5. ANIMATIONS
+   ========================================================================== */
+@keyframes hueBreathing2 { 
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.shake { 
+    animation: shake-anim 0.4s cubic-bezier(.36,.07,.19,.97) both; 
+}
+
+@keyframes shake-anim {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* ==========================================================================
+   6. RESPONSIVE OVERRIDES
+   ========================================================================== */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.2rem;
+        letter-spacing: -0.05rem;
+    }
+
+    .content, .original-content-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .divider {
+        width: 60%;
+        height: 1px;
+        margin: 1rem 0;
+    }
+
+    .right-side, .pill-group {
+        align-items: center;
+    }
+
+    .view-selector-dropdown {
+        max-width: 90%;
+    }
+
+    .tips-container {
+        max-width: 90%;
+    }
+}

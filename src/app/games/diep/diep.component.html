@@ -1,0 +1,12 @@
+<div class="diep-container bg-gray-50 min-h-screen p-4 flex flex-col items-center justify-center font-inter">
+      <div class="bg-white p-6 rounded-xl shadow-2xl transition-all duration-300 transform hover:scale-[1.01] flex flex-col items-center">
+        <!-- Canvas for Game Rendering -->
+        <canvas 
+          #gameCanvas 
+          [attr.width]="gameEngine.width" 
+          [attr.height]="gameEngine.height" 
+          tabindex="0"
+          class="block rounded-lg shadow-inner border-2 border-gray-300"
+        ></canvas>
+      </div>
+    </div>

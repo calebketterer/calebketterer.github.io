@@ -1,0 +1,41 @@
+.diep-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  border: 2px solid #333;
+  background: #f4f4f4;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.diep-ui {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #222;
+}
+
+.diep-ui p {
+  margin: 0.3rem 0;
+}
+
+/* Custom CSS to ensure canvas border is visible */
+    .diep-container {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* Ensure the canvas is the focus target for keyboard events */
+    .diep-container:focus-within canvas {
+      border-color: #3498db;
+      box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    }
+
+    /* Override canvas default styles for aesthetic consistency */
+    canvas {
+      outline: none;
+    }

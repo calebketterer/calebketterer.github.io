@@ -1,0 +1,58 @@
+<div class="tetris-outer-container">
+  <div class="tetris-container">
+    <div class="tetris-title">Tetris</div>
+    <div class="tetris-score-bar">
+      <span class="score-label">Score:</span>
+      <span class="score-value">{{ score }}</span>
+    </div>
+    <!-- Next piece preview above the board, centered -->
+    <div class="tetris-next-row">
+      <div class="next-label">Next</div>
+      <div class="next-board" *ngIf="next">
+        <div *ngFor="let row of next.shape; let dy = index" class="tetris-row">
+          <div *ngFor="let val of row; let dx = index"
+               class="tetris-cell"
+               [style.background]="val ? next.color : '#e8e8e8'">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tetris-board-center-wrap">
+      <div class="tetris-board">
+        <div *ngFor="let row of board; let y = index" class="tetris-row">
+          <div *ngFor="let cell of row; let x = index"
+               class="tetris-cell"
+               [ngStyle]="{ 'background': getCellColor(x, y) }">
+          </div>
+        </div>
+        <div class="tetris-overlay" *ngIf="gameOver">
+          <div class="game-over-text">Game Over!</div>
+        </div>
+        <div class="tetris-overlay tetris-overlay-paused" *ngIf="paused && !gameOver">
+          <div class="paused-text">Paused</div>
+        </div>
+        <div class="tetris-overlay tetris-overlay-start" *ngIf="!gameStarted && !gameOver">
+          <button class="tetris-btn tetris-btn-lg" (click)="startGame()">Start Game</button>
+        </div>
+      </div>
+    </div>
+    <div class="tetris-btn-bar">
+      <button class="tetris-btn" (click)="newGame()">New Game</button>
+      <button class="tetris-btn tetris-btn-pause" (click)="togglePause()" [disabled]="!gameStarted || gameOver">
+        {{ paused ? 'Resume' : 'Pause' }}
+      </button>
+    </div>
+    <footer class="tetris-footer">
+      <div class="tetris-controls-bar">
+        <span>
+          <b>Move:</b> <kbd>A</kbd>/<kbd>D</kbd> or <kbd>←</kbd>/<kbd>→</kbd>
+          <b>  Soft Drop:</b> <kbd>S</kbd> or <kbd>↓</kbd>
+        </span>
+        <span>
+          <b>Rotate:</b> <kbd>Q</kbd>/<kbd>E</kbd> or <kbd>Space</kbd>
+          <b>  Drop:</b> <kbd>Enter</kbd>
+        </span>
+      </div>
+    </footer>
+  </div>
+</div>
