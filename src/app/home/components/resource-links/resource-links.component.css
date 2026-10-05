@@ -1,0 +1,30 @@
+.resources-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-title-wrapper {
+  border-left: 3px solid #00e5ff;
+  padding-left: 1rem;
+}
+
+.section-title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.2rem;
+  color: #00e5ff;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  color: #8faec5;
+  margin: 0.25rem 0 0 0;
+}
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}

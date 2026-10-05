@@ -1,0 +1,22 @@
+<div class="glass-card">
+  <div class="card-header">
+    <span class="category-tag">{{ category }}</span>
+    <h3 class="card-title">{{ title }}</h3>
+  </div>
+
+  <p class="card-description">{{ description }}</p>
+
+  <div *ngIf="showIframe && safeEmbedUrl" class="iframe-container">
+    <iframe [src]="safeEmbedUrl" title="Live Preview" loading="lazy"></iframe>
+  </div>
+
+  <div class="card-actions">
+    <button *ngIf="embedUrl" class="action-btn secondary" (click)="togglePreview()">
+      {{ showIframe ? 'CLOSE PREVIEW' : 'TOGGLE LIVE PREVIEW' }}
+    </button>
+    
+    <a [href]="targetUrl" target="_blank" rel="noopener noreferrer" class="action-btn primary">
+      OPEN EXTERNAL LINK ↗
+    </a>
+  </div>
+</div>

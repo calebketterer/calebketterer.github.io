@@ -1,0 +1,34 @@
+<header class="sci-fi-navbar" [class.collapsed]="isCollapsed">
+  <div class="nav-container">
+    <div class="brand-zone">
+      <div class="status-indicator"></div>
+      <span class="brand-title">SYSTEM // NAV_CONTROL</span>
+    </div>
+
+    <nav class="nav-links">
+      <ng-container *ngFor="let item of navItems">
+        <a *ngIf="item.path" 
+           [routerLink]="item.path" 
+           routerLinkActive="active" 
+           [routerLinkActiveOptions]="{ exact: item.path === '/home' }"
+           class="nav-btn">
+          <span class="btn-text">{{ item.label }}</span>
+          <span *ngIf="item.badge" class="nav-badge">{{ item.badge }}</span>
+        </a>
+
+        <a *ngIf="item.externalUrl" 
+           [href]="item.externalUrl" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="nav-btn external">
+          <span class="btn-text">{{ item.label }}</span>
+          <span *ngIf="item.badge" class="nav-badge ext">{{ item.badge }}</span>
+        </a>
+      </ng-container>
+    </nav>
+  </div>
+
+  <button class="toggle-btn" (click)="toggleNavbar()" [attr.aria-label]="isCollapsed ? 'Expand Header' : 'Collapse Header'">
+    <span class="toggle-arrow" [class.rotated]="isCollapsed">▲</span>
+  </button>
+</header>
