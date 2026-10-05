@@ -17,7 +17,6 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   constructor(private ngZone: NgZone) {}
 
   ngOnInit(): void {
-    // Run the high-frequency canvas animation loop outside Angular's zone to ensure smooth 60fps frame painting
     this.ngZone.runOutsideAngular(() => {
       if (this.canvasRef?.nativeElement) {
         this.engine.init(this.canvasRef.nativeElement);
@@ -27,6 +26,18 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.engine.destroy();
+  }
+
+  public getActiveParticleCount(): number {
+    return this.engine.getActiveParticleCount();
+  }
+
+  public getMaxParticles(): number {
+    return this.engine.getMaxParticles();
+  }
+
+  public setMaxParticles(cap: number): void {
+    this.engine.setMaxParticles(cap);
   }
 
   @HostListener('window:resize')
@@ -44,9 +55,14 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
     this.engine.clearMousePosition();
   }
 
-  @HostListener('window:click', ['$event'])
-  onClick(event: MouseEvent): void {
-    this.engine.triggerClickInteraction(event.clientX, event.clientY);
+  @HostListener('window:mousedown', ['$event'])
+  onMouseDown(event: MouseEvent): void {
+    this.engine.startCharge(event.clientX, event.clientY);
+  }
+
+  @HostListener('window:mouseup')
+  onMouseUp(): void {
+    this.engine.releaseChargeExplosion();
   }
 
   @HostListener('window:touchstart', ['$event'])
@@ -54,7 +70,7 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
     if (event.touches.length > 0) {
       const touch = event.touches[0];
       this.engine.updateMousePosition(touch.clientX, touch.clientY, true);
-      this.engine.triggerClickInteraction(touch.clientX, touch.clientY);
+      this.engine.startCharge(touch.clientX, touch.clientY);
     }
   }
 
@@ -68,6 +84,7 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   @HostListener('window:touchend')
   onTouchEnd(): void {
+    this.engine.releaseChargeExplosion();
     this.engine.clearMousePosition();
   }
 

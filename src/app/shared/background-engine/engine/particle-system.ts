@@ -15,6 +15,12 @@ export class ParticleSystem {
   private mouseX = -9999;
   private mouseY = -9999;
   private isMouseActive = false;
+
+  private isChargeHolding = false;
+  private chargeStartTime = 0;
+  private chargeX = -9999;
+  private chargeY = -9999;
+
   private clickRippleX = -9999;
   private clickRippleY = -9999;
   private clickRippleRadius = 0;
@@ -23,8 +29,8 @@ export class ParticleSystem {
   private colorCycle = 0;
   private lastSpawnTime = 0;
 
-  private readonly config: EngineConfig = {
-    maxParticles: 200, // Hard cap enforced
+  private config: EngineConfig = {
+    maxParticles: 200,
     baseSpeed: 0.6,
     gridSize: 60,
     mouseGravityRadius: 220
@@ -46,7 +52,6 @@ export class ParticleSystem {
 
     this.resize();
 
-    // Initial seed: ensure 3-5 particles exist immediately at launch
     const initialCount = 3 + Math.floor(Math.random() * 3);
     for (let i = 0; i < initialCount; i++) {
       this.spawnParticle();
@@ -63,38 +68,84 @@ export class ParticleSystem {
     this.canvas.height = this.height;
   }
 
+  public getActiveParticleCount(): number {
+    return this.particles.filter(p => p.fadeState !== 'out').length;
+  }
+
+  public getMaxParticles(): number {
+    return this.config.maxParticles;
+  }
+
+  public setMaxParticles(cap: number): void {
+    // Clamp cap strictly between 10 and 1000
+    this.config.maxParticles = Math.max(10, Math.min(1000, cap));
+
+    // Despawn excess particles if cap was lowered below active count
+    while (this.getActiveParticleCount() > this.config.maxParticles) {
+      const oldest = this.particles.find(p => p.fadeState !== 'out');
+      if (oldest) {
+        oldest.fadeState = 'out';
+        oldest.fadeSpeed = 0.08;
+      } else {
+        break;
+      }
+    }
+  }
+
   public updateMousePosition(x: number, y: number, isActive = true): void {
     this.mouseX = x;
     this.mouseY = y;
     this.isMouseActive = isActive;
+
+    if (this.isChargeHolding) {
+      this.chargeX = x;
+      this.chargeY = y;
+    }
   }
 
   public clearMousePosition(): void {
     this.isMouseActive = false;
     this.mouseX = -9999;
     this.mouseY = -9999;
+    this.releaseChargeExplosion();
   }
 
-  public triggerClickInteraction(x: number, y: number): void {
-    this.clickRippleX = x;
-    this.clickRippleY = y;
+  public startCharge(x: number, y: number): void {
+    this.isChargeHolding = true;
+    this.chargeStartTime = Date.now();
+    this.chargeX = x;
+    this.chargeY = y;
+  }
+
+  public releaseChargeExplosion(): void {
+    if (!this.isChargeHolding) return;
+
+    const duration = Math.min(2500, Date.now() - this.chargeStartTime);
+    const intensity = 1 + (duration / 2500) * 4; // Force multiplier scaling up to 5x
+
+    this.clickRippleX = this.chargeX;
+    this.clickRippleY = this.chargeY;
     this.clickRippleRadius = 10;
     this.isRippling = true;
 
+    const blastRadius = 200 * intensity;
+
     for (const p of this.particles) {
-      const dx = p.x - x;
-      const dy = p.y - y;
+      const dx = p.x - this.chargeX;
+      const dy = p.y - this.chargeY;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
-      if (dist < 250) {
+      if (dist < blastRadius) {
         p.isBlinking = true;
-        p.blinkDuration = 30;
-        const force = (250 - dist) / 250;
+        p.blinkDuration = Math.floor(20 * intensity);
+        const force = ((blastRadius - dist) / blastRadius) * 6 * intensity;
         const angle = Math.atan2(dy, dx);
-        p.vx += Math.cos(angle) * force * 5;
-        p.vy += Math.sin(angle) * force * 5;
+        p.vx += Math.cos(angle) * force;
+        p.vy += Math.sin(angle) * force;
       }
     }
+
+    this.isChargeHolding = false;
   }
 
   public togglePlay(): boolean {
@@ -124,7 +175,6 @@ export class ParticleSystem {
     const now = Date.now();
     this.colorCycle += 0.001 * this.speedMultiplier;
 
-    // Guaranteed spawning rate: Spawns new particle every 100-300ms until population is established
     if (now - this.lastSpawnTime > 150 / this.speedMultiplier) {
       if (this.particles.length < this.config.maxParticles) {
         this.spawnParticle();
@@ -132,10 +182,9 @@ export class ParticleSystem {
       }
     }
 
-    // Ripple expansion
     if (this.isRippling) {
-      this.clickRippleRadius += 8 * this.speedMultiplier;
-      if (this.clickRippleRadius > 350) {
+      this.clickRippleRadius += 10 * this.speedMultiplier;
+      if (this.clickRippleRadius > 400) {
         this.isRippling = false;
       }
     }
@@ -147,12 +196,10 @@ export class ParticleSystem {
       const p = this.particles[i];
       const age = now - p.createdAt;
 
-      // Check Lifespan Expiration (5 to 60 seconds)
       if (age >= p.lifespan && p.fadeState !== 'out') {
         p.fadeState = 'out';
       }
 
-      // Fade management
       if (p.fadeState === 'in') {
         p.alpha += p.fadeSpeed * this.speedMultiplier;
         if (p.alpha >= p.baseAlpha) {
@@ -167,7 +214,6 @@ export class ParticleSystem {
         }
       }
 
-      // Orbital motion
       p.orbitalAngle += p.orbitalSpeed * 0.01 * this.speedMultiplier;
       const targetX = this.isMouseActive ? this.mouseX : centerX;
       const targetY = this.isMouseActive ? this.mouseY : centerY;
@@ -176,7 +222,6 @@ export class ParticleSystem {
       const dyTarget = targetY - p.y;
       const distTarget = Math.sqrt(dxTarget * dxTarget + dyTarget * dyTarget);
 
-      // Mouse gravity attraction
       if (this.isMouseActive && distTarget < this.config.mouseGravityRadius && distTarget > 10) {
         const pull = ((this.config.mouseGravityRadius - distTarget) / this.config.mouseGravityRadius) * 0.15;
         p.vx += (dxTarget / distTarget) * pull;
@@ -188,7 +233,6 @@ export class ParticleSystem {
         p.vy += perpY * 0.02 * p.orbitalSpeed;
       }
 
-      // Pack / Cluster coherence
       if (p.clusterId !== undefined) {
         for (const other of this.particles) {
           if (other.clusterId === p.clusterId && other.id !== p.id) {
@@ -203,15 +247,12 @@ export class ParticleSystem {
         }
       }
 
-      // Velocity damping
       p.vx *= 0.98;
       p.vy *= 0.98;
 
-      // Position update
       p.x += p.vx * this.speedMultiplier;
       p.y += p.vy * this.speedMultiplier;
 
-      // Blink handling
       if (p.isBlinking) {
         p.blinkDuration--;
         if (p.blinkDuration <= 0) {
@@ -219,7 +260,6 @@ export class ParticleSystem {
         }
       }
 
-      // Offscreen despawn check
       const buffer = 100;
       if (
         p.x < -buffer ||
@@ -233,12 +273,11 @@ export class ParticleSystem {
   }
 
   private spawnParticle(): void {
-    // Enforce FIFO hard cap of 200 particles: oldest particle forced to fade out
     if (this.particles.length >= this.config.maxParticles) {
       const oldest = this.particles.find(p => p.fadeState !== 'out');
       if (oldest) {
         oldest.fadeState = 'out';
-        oldest.fadeSpeed = 0.05; // Fast fade out to clear capacity
+        oldest.fadeSpeed = 0.05;
       }
     }
 
@@ -264,8 +303,6 @@ export class ParticleSystem {
 
     const angle = Math.random() * Math.PI * 2;
     const speed = (0.3 + Math.random() * 0.7) * z * this.config.baseSpeed;
-
-    // Random lifespan between 5,000ms (5s) and 60,000ms (60s)
     const lifespan = 5000 + Math.random() * 55000;
 
     this.particles.push({
@@ -299,15 +336,26 @@ export class ParticleSystem {
 
     this.drawGrid();
 
-// DEBUG OVERLAY: Visual sanity check
-  this.ctx.fillStyle = '#00e5ff';
-  this.ctx.font = '16px monospace';
-  this.ctx.fillText(`Active Particles: ${this.particles.length}`, 20, 30);
-  this.ctx.fillRect(20, 40, 20, 20); // Bright test square
+    // Nostalgic Blue Debug Square
+    this.ctx.fillStyle = '#00e5ff';
+    this.ctx.fillRect(20, 40, 16, 16);
+
+    // Charge explosion aura preview
+    if (this.isChargeHolding) {
+      const duration = Math.min(2500, Date.now() - this.chargeStartTime);
+      const radius = 15 + (duration / 2500) * 45;
+      const grad = this.ctx.createRadialGradient(this.chargeX, this.chargeY, 0, this.chargeX, this.chargeY, radius);
+      grad.addColorStop(0, 'rgba(0, 229, 255, 0.6)');
+      grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
+      this.ctx.fillStyle = grad;
+      this.ctx.beginPath();
+      this.ctx.arc(this.chargeX, this.chargeY, radius, 0, Math.PI * 2);
+      this.ctx.fill();
+    }
 
     if (this.isRippling) {
-      this.ctx.strokeStyle = `rgba(0, 229, 255, ${Math.max(0, 1 - this.clickRippleRadius / 350)})`;
-      this.ctx.lineWidth = 1.5;
+      this.ctx.strokeStyle = `rgba(0, 229, 255, ${Math.max(0, 1 - this.clickRippleRadius / 400)})`;
+      this.ctx.lineWidth = 2;
       this.ctx.beginPath();
       this.ctx.arc(this.clickRippleX, this.clickRippleY, this.clickRippleRadius, 0, Math.PI * 2);
       this.ctx.stroke();
