@@ -1,14 +1,8 @@
 :host {
   display: block;
   min-height: 100vh;
-  background-color: #070c14;
   color: #e0f0ff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(0, 229, 255, 0.05) 0%, transparent 70%),
-    linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 40px 40px, 40px 40px;
 }
 
 .app-shell {
@@ -20,4 +14,22 @@
 .main-content {
   flex: 1;
   position: relative;
+}
+
+/* Persistent scrollbar gutter to prevent layout jumping across routes */
+html {
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #070c14;
+  color: #e0f0ff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }

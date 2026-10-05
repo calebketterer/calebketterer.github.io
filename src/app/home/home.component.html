@@ -1,6 +1,21 @@
+<app-background-engine #bgEngine></app-background-engine>
+
 <div class="home-container">
   <header class="hero-banner">
-    <div class="hero-badge">STATION_INTERFACE v2.0</div>
+    <div class="banner-top-row">
+      <div class="hero-badge">STATION_INTERFACE v2.0</div>
+
+      <div class="engine-controls">
+        <span class="control-label">SIM_SPEED</span>
+        <button class="glass-ctrl-btn" [class.active]="isPlaying" (click)="toggleEngine()">
+          {{ isPlaying ? 'PAUSE ❚❚' : 'PLAY ▶' }}
+        </button>
+        <button class="glass-ctrl-btn" [class.active]="currentSpeed === 1" (click)="setSpeed(1)">1x</button>
+        <button class="glass-ctrl-btn" [class.active]="currentSpeed === 2" (click)="setSpeed(2)">2x ></button>
+        <button class="glass-ctrl-btn" [class.active]="currentSpeed === 4" (click)="setSpeed(4)">4x >></button>
+      </div>
+    </div>
+
     <h1 class="hero-title">CENTRAL COMMAND</h1>
     <p class="hero-desc">
       Sci-fi tactical interface housing interactive game engines, experimental canvas subsystems, and project documentation archives.

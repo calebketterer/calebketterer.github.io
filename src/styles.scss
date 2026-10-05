@@ -1,26 +1,17 @@
-/* Global Color Variables & Gradients */
-:root {
-    --bright-blue: #0546ff;
-    --pink: #f637e3;
-    --dark-blue: #1f17b7;
-    --red: #b90000;
-    --yellow: #b8b600;
-    --green: #32881f;
-    --blue: #104aee;
-    --violet: #8001c6;
-
-    --gray-90: oklch(90.06% 0.0001 271.152);
-    --gray-70: oklch(70% 0 0);
-    --gray-40: oklch(40% 0 0);
-
-    --rygbv-vertical-gradient: linear-gradient(180deg, var(--red) 0%, var(--yellow) 25%, var(--green) 50%, var(--blue) 75%, var(--violet) 100%);
+/* Persistent scrollbar gutter to prevent layout jumping across routes */
+html {
+  overflow-y: scroll;
+  box-sizing: border-box;
 }
 
-html, body {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    background-color: rgb(32, 35, 36);
-    font-family: "Inter", -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #070c14;
+  color: #e0f0ff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
