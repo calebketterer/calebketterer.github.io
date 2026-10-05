@@ -1,13 +1,13 @@
-# Caleb's Virtual Compendium
+# Caleb Online
 
-<a href="https://YOUR-LINK-HERE.com">
+<a href="https://calebketterer.github.io/">
   <img width="510" height="300" alt="Screenshot 2026-05-03 231029" src="https://github.com/user-attachments/assets/c784d64d-eecc-4ad1-a948-a7f3ab37d0da" />
 </a>
 
 ---
 
 <strong>Welcome!</strong> This project contains multiple interactive links, visualizations, and games- all created by me.  
-Visit the most recent deployment via Github Pages at [https://calebketterer.github.io/Calebs-Compendium/](https://calebketterer.github.io/Calebs-Compendium/).  
+Visit the most recent deployment via Github Pages at [https://calebketterer.github.io/](https://calebketterer.github.io/).  
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.4.
 
 ## Features
