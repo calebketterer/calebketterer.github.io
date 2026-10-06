@@ -2,11 +2,23 @@
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: visible;
 }
 
 .section-title-wrapper {
   border-left: 3px solid #00e5ff;
   padding-left: 1rem;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  transition: border-color 0.4s ease, opacity 0.4s ease;
+  outline: none;
+}
+
+.section-title-wrapper:hover .section-title {
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
 }
 
 .section-title {
@@ -15,16 +27,153 @@
   color: #00e5ff;
   margin: 0;
   letter-spacing: 1px;
+  transition: color 0.4s ease, text-shadow 0.3s ease;
 }
 
 .section-subtitle {
   font-size: 0.85rem;
   color: #8faec5;
   margin: 0.25rem 0 0 0;
+  transition: color 0.4s ease;
+}
+
+/* Dimmed state when collapsed */
+.section-title-wrapper.is-hidden {
+  border-left-color: rgba(0, 229, 255, 0.2);
+}
+
+.section-title-wrapper.is-hidden .section-title {
+  color: rgba(0, 229, 255, 0.35);
+}
+
+.section-title-wrapper.is-hidden .section-subtitle {
+  color: rgba(143, 174, 197, 0.35);
+}
+
+/* Base collapse container using CSS grid */
+.grid-collapse-wrapper {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: visible;
+}
+
+.grid-collapse-wrapper.collapsed {
+  grid-template-rows: 0fr;
+  transition-delay: 0.25s; /* Allow individual card glitch outs before full row collapse */
+}
+
+/* 
+ * Inner container handles overflow clipping during collapse transitions, 
+ * but provides generous headroom when expanded.
+ */
+.grid-collapse-inner {
+  overflow: visible;
+  padding: 1.5rem 0.5rem 0.75rem 0.5rem;
+  margin: -1.5rem -0.5rem -0.75rem -0.5rem;
+}
+
+.grid-collapse-wrapper.collapsed .grid-collapse-inner {
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
 }
 
 .resources-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.25rem;
+  overflow: visible;
+}
+
+/* Card Animation Wrapper & Prey Glitch Effects */
+.card-animator {
+  animation: preyGlitchIn 0.38s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation-delay: calc(var(--i) * 0.08s + 0.02s);
+  will-change: transform, opacity;
+  clip-path: none;
+  overflow: visible;
+}
+
+.grid-collapse-wrapper.collapsed .card-animator {
+  animation: preyGlitchOut 0.28s cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation-delay: calc(var(--i) * 0.05s);
+  pointer-events: none;
+}
+
+@keyframes preyGlitchIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateX(-6px);
+    filter: brightness(0) contrast(200%) blur(3px);
+    clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%);
+  }
+  20% {
+    opacity: 0.8;
+    transform: scale(1.02) translateX(4px) skewX(-3deg);
+    filter: brightness(2.5) contrast(150%) drop-shadow(0 0 12px rgba(255, 0, 80, 0.8));
+    clip-path: polygon(0 25%, 100% 25%, 100% 85%, 0 85%);
+  }
+  35% {
+    opacity: 0.2;
+    transform: scale(0.98) translateX(-2px) skewX(2deg);
+    filter: brightness(0.2) blur(1px);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(1.01) translateX(1px);
+    filter: brightness(1.6) contrast(110%);
+    clip-path: none;
+  }
+  80% {
+    opacity: 0.7;
+    transform: scale(0.995);
+    filter: brightness(0.8);
+    clip-path: none;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0) skewX(0);
+    filter: brightness(1) contrast(100%) blur(0px);
+    clip-path: none;
+  }
+}
+
+@keyframes preyGlitchOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    filter: brightness(1) contrast(100%);
+    clip-path: none;
+  }
+  30% {
+    opacity: 0.8;
+    transform: scale(1.02) translateX(-8px) skewX(6deg);
+    filter: brightness(2) contrast(200%) drop-shadow(-4px 0 8px rgba(0, 229, 255, 0.9));
+    clip-path: polygon(0 40%, 100% 40%, 100% 60%, 0 60%);
+  }
+  65% {
+    opacity: 0.3;
+    transform: scale(0.92) translateX(5px) skewX(-4deg);
+    filter: brightness(0.1) blur(2px);
+    clip-path: polygon(0 80%, 100% 80%, 100% 100%, 0 100%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) translateX(0) scaleY(0.1);
+    filter: brightness(0) blur(6px);
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  }
+}
+
+@media (max-width: 600px) {
+  .resources-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-collapse-inner {
+    padding: 1rem 0.25rem 0.5rem 0.25rem;
+    margin: -1rem -0.25rem -0.5rem -0.25rem;
+  }
 }

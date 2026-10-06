@@ -1,17 +1,32 @@
 <section class="resources-section">
-  <div class="section-title-wrapper">
+  <div 
+    class="section-title-wrapper" 
+    [class.is-hidden]="!isContentVisible" 
+    (click)="toggleVisibility()"
+    role="button"
+    tabindex="0"
+    (keydown.enter)="toggleVisibility()"
+    (keydown.space)="toggleVisibility()">
     <h2 class="section-title">// SYSTEM_RESOURCES & EXTERNAL_NODES</h2>
     <p class="section-subtitle">Select a node to inspect parameters or initiate direct portal connection.</p>
   </div>
 
-  <div class="resources-grid">
-    <app-preview-card
-      *ngFor="let item of resources"
-      [title]="item.title"
-      [category]="item.category"
-      [description]="item.description"
-      [targetUrl]="item.targetUrl"
-      [embedUrl]="item.embedUrl">
-    </app-preview-card>
+  <div class="grid-collapse-wrapper" [class.collapsed]="!isContentVisible">
+    <div class="grid-collapse-inner">
+      <div class="resources-grid">
+        <div 
+          *ngFor="let item of resources; let index = index" 
+          class="card-animator" 
+          [style.--i]="index">
+          <app-preview-card
+            [title]="item.title"
+            [category]="item.category"
+            [description]="item.description"
+            [targetUrl]="item.targetUrl"
+            [embedUrl]="item.embedUrl">
+          </app-preview-card>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

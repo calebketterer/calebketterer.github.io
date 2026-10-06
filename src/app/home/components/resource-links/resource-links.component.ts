@@ -18,6 +18,8 @@ interface ResourceItem {
   styleUrl: './resource-links.component.css'
 })
 export class ResourceLinksComponent {
+  isContentVisible = true;
+
   resources: ResourceItem[] = [
     {
       title: 'Google Site Knowledge Hub',
@@ -44,4 +46,8 @@ export class ResourceLinksComponent {
       targetUrl: 'https://github.com/calebketterer'
     }
   ];
+
+  toggleVisibility(): void {
+    this.isContentVisible = !this.isContentVisible;
+  }
 }
