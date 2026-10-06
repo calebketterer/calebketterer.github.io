@@ -15,6 +15,8 @@
   -ms-user-select: none;
   transition: border-color 0.4s ease, opacity 0.4s ease;
   outline: none;
+  width: fit-content;
+  align-self: flex-start;
 }
 
 .section-title-wrapper:hover .section-title {

@@ -22,6 +22,12 @@ export class ResourceLinksComponent {
 
   resources: ResourceItem[] = [
     {
+      title: 'GitHub Profile & Repositories',
+      category: 'SOURCE CONTROL',
+      description: 'Public codebase repositories hosting TypeScript game engines, Angular components, and experimental tools.',
+      targetUrl: 'https://github.com/calebketterer'
+    },
+    {
       title: 'Google Site Knowledge Hub',
       category: 'DOCUMENTATION',
       description: 'Personal web portal detailing music, art, and creative writing projects using interactive modules and comprehensive research summaries.',
@@ -39,12 +45,6 @@ export class ResourceLinksComponent {
       description: 'Cloud drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
       targetUrl: 'https://drive.google.com/drive/folders/1buJl4aGBJxhNY5lkLGh8VHywMnii-BaU'
     },
-    {
-      title: 'GitHub Profile & Repositories',
-      category: 'SOURCE CONTROL',
-      description: 'Public codebase repositories hosting TypeScript game engines, Angular components, and experimental tools.',
-      targetUrl: 'https://github.com/calebketterer'
-    }
   ];
 
   toggleVisibility(): void {
