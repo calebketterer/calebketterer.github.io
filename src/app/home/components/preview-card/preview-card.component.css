@@ -9,6 +9,10 @@
   flex-direction: column;
   gap: 1rem;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .glass-card:hover {
@@ -28,6 +32,10 @@
   font-size: 0.7rem;
   color: #00e5ff;
   letter-spacing: 1.5px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .card-title {
@@ -35,6 +43,10 @@
   color: #ffffff;
   margin: 0;
   font-weight: 600;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .card-description {
@@ -43,6 +55,10 @@
   line-height: 1.5;
   margin: 0;
   flex-grow: 1;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .iframe-container {
@@ -52,6 +68,8 @@
   overflow: hidden;
   border: 1px solid rgba(0, 229, 255, 0.2);
   background: #000000;
+  user-select: auto;
+  -webkit-user-select: auto;
 }
 
 .iframe-container iframe {
@@ -78,6 +96,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .action-btn.primary {

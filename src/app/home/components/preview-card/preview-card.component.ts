@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
@@ -9,7 +9,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   templateUrl: './preview-card.component.html',
   styleUrl: './preview-card.component.css'
 })
-export class PreviewCardComponent {
+export class PreviewCardComponent implements OnInit {
   @Input() title = '';
   @Input() description = '';
   @Input() category = 'RESOURCE';
