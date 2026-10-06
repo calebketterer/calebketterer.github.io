@@ -22,28 +22,20 @@ export class ResourceLinksComponent {
     {
       title: 'Google Site Knowledge Hub',
       category: 'DOCUMENTATION',
-      description: 'Personal web portal detailing projects, interactive modules, and comprehensive research summaries.',
+      description: 'Personal web portal detailing music, art, and creative writing projects using interactive modules and comprehensive research summaries.',
       targetUrl: 'https://sites.google.com/view/calebketterer?usp=sharing&pli=1&authuser=0',
-      embedUrl: 'https://sites.google.com/view/calebketterer?usp=sharing&pli=1&authuser=0'
     },
     {
       title: 'Paper Gwent Overview & Lore',
       category: 'GAME DESIGN',
       description: 'Detailed insights on the tabletop paper adaptation of Gwent, featuring rule definitions, physical card templates, and mechanic adaptations.',
       targetUrl: 'https://sites.google.com/view/calebketterer/paper-gwent',
-      embedUrl: 'https://sites.google.com/view/calebketterer/paper-gwent'
     },
     {
       title: 'Paper Gwent Drive Storage',
       category: 'ASSETS & ARCHIVE',
       description: 'Cloud drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
       targetUrl: 'https://drive.google.com/drive/folders/1buJl4aGBJxhNY5lkLGh8VHywMnii-BaU'
-    },
-    {
-      title: 'Project Architecture Document',
-      category: 'SPECIFICATIONS',
-      description: 'Google Doc covering implementation blueprints, data structures, and roadmap notes for development projects.',
-      targetUrl: 'https://docs.google.com/document/d/1iRuBT_4kFa9iq_dP6nAQ4kQsEGyxmUw-P05On__oL3A/edit?usp=sharing'
     },
     {
       title: 'GitHub Profile & Repositories',

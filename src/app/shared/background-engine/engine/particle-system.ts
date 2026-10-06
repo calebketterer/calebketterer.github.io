@@ -1,4 +1,7 @@
 import { EngineConfig, Particle } from './particle.model';
+import { ParticleSpawner } from './particle-spawner';
+import { ParticlePhysics } from './particle-physics';
+import { ParticleRenderer } from './particle-renderer';
 
 export class ParticleSystem {
   private canvas!: HTMLCanvasElement;
@@ -6,11 +9,14 @@ export class ParticleSystem {
   private animationFrameId: number | null = null;
   private particles: Particle[] = [];
 
+  private spawner = new ParticleSpawner();
+  private physics = new ParticlePhysics();
+  private renderer = new ParticleRenderer();
+
   private width = 0;
   private height = 0;
   private isPaused = false;
   private speedMultiplier = 1.0;
-  private nextParticleId = 0;
 
   private mouseX = -9999;
   private mouseY = -9999;
@@ -38,14 +44,6 @@ export class ParticleSystem {
     gridSize: 60,
     mouseGravityRadius: 220
   };
-
-  private readonly colorPalette = [
-    '0, 229, 255',   // Glowing Cyan
-    '143, 174, 197', // Slate Blue
-    '160, 180, 200', // Cool Gray
-    '40, 60, 85',    // Dark Navy
-    '20, 30, 45'     // Deep Charcoal / Black
-  ];
 
   public init(canvas: HTMLCanvasElement): void {
     this.canvas = canvas;
@@ -158,22 +156,7 @@ export class ParticleSystem {
     this.clickRippleRadius = 10;
     this.isRippling = true;
 
-    const blastRadius = 200 * intensity;
-
-    for (const p of this.particles) {
-      const dx = p.x - this.chargeX;
-      const dy = p.y - this.chargeY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-
-      if (dist < blastRadius) {
-        p.isBlinking = true;
-        p.blinkDuration = Math.floor(20 * intensity);
-        const force = ((blastRadius - dist) / blastRadius) * 6 * intensity;
-        const angle = Math.atan2(dy, dx);
-        p.vx += Math.cos(angle) * force;
-        p.vy += Math.sin(angle) * force;
-      }
-    }
+    this.physics.applyExplosion(this.particles, this.chargeX, this.chargeY, intensity);
 
     this.isChargeHolding = false;
   }
@@ -219,227 +202,39 @@ export class ParticleSystem {
       }
     }
 
-    const centerX = this.width / 2;
-    const centerY = this.height / 2;
+    this.spawner.updateLifecycle(this.particles, this.speedMultiplier, this.width, this.height, now);
 
-    for (let i = this.particles.length - 1; i >= 0; i--) {
-      const p = this.particles[i];
-      const age = now - p.createdAt;
-
-      if (age >= p.lifespan && p.fadeState !== 'out') {
-        p.fadeState = 'out';
-      }
-
-      if (p.fadeState === 'in') {
-        p.alpha += p.fadeSpeed * this.speedMultiplier;
-        if (p.alpha >= p.baseAlpha) {
-          p.alpha = p.baseAlpha;
-          p.fadeState = 'active';
-        }
-      } else if (p.fadeState === 'out') {
-        p.alpha -= p.fadeSpeed * this.speedMultiplier;
-        if (p.alpha <= 0) {
-          this.particles.splice(i, 1);
-          continue;
-        }
-      }
-
-      p.orbitalAngle += p.orbitalSpeed * 0.01 * this.speedMultiplier;
-      const targetX = this.isMouseActive ? this.mouseX : centerX;
-      const targetY = this.isMouseActive ? this.mouseY : centerY;
-
-      const dxTarget = targetX - p.x;
-      const dyTarget = targetY - p.y;
-      const distTarget = Math.sqrt(dxTarget * dxTarget + dyTarget * dyTarget);
-
-      if (this.isMouseActive && distTarget < this.config.mouseGravityRadius && distTarget > 10) {
-        const pull = ((this.config.mouseGravityRadius - distTarget) / this.config.mouseGravityRadius) * 0.15;
-        p.vx += (dxTarget / distTarget) * pull;
-        p.vy += (dyTarget / distTarget) * pull;
-      } else if (distTarget < 400) {
-        const perpX = -dyTarget / distTarget;
-        const perpY = dxTarget / distTarget;
-        p.vx += perpX * 0.02 * p.orbitalSpeed;
-        p.vy += perpY * 0.02 * p.orbitalSpeed;
-      }
-
-      if (p.clusterId !== undefined) {
-        for (const other of this.particles) {
-          if (other.clusterId === p.clusterId && other.id !== p.id) {
-            const cdx = other.x - p.x;
-            const cdy = other.y - p.y;
-            const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
-            if (cdist < 150 && cdist > 20) {
-              p.vx += (cdx / cdist) * 0.01;
-              p.vy += (cdy / cdist) * 0.01;
-            }
-          }
-        }
-      }
-
-      p.vx *= 0.98;
-      p.vy *= 0.98;
-
-      p.x += p.vx * this.speedMultiplier;
-      p.y += p.vy * this.speedMultiplier;
-
-      if (p.isBlinking) {
-        p.blinkDuration--;
-        if (p.blinkDuration <= 0) {
-          p.isBlinking = false;
-        }
-      }
-
-      const buffer = 100;
-      if (
-        p.x < -buffer ||
-        p.x > this.width + buffer ||
-        p.y < -buffer ||
-        p.y > this.height + buffer
-      ) {
-        this.particles.splice(i, 1);
-      }
-    }
+    this.physics.updateParticles(
+      this.particles,
+      this.config,
+      this.speedMultiplier,
+      this.width,
+      this.height,
+      this.isMouseActive,
+      this.mouseX,
+      this.mouseY
+    );
   }
 
   private spawnParticle(): void {
-    if (this.particles.length >= this.config.maxParticles) {
-      const oldest = this.particles.find(p => p.fadeState !== 'out');
-      if (oldest) {
-        oldest.fadeState = 'out';
-        oldest.fadeSpeed = 0.05;
-      }
-    }
-
-    const id = ++this.nextParticleId;
-    const z = Math.floor(Math.random() * 3) + 1;
-    const colorRGB = this.colorPalette[Math.floor(Math.random() * this.colorPalette.length)];
-    const baseAlpha = 0.25 + (z / 3) * 0.55;
-
-    const spawnFromCenter = Math.random() < 0.5;
-    let x = 0;
-    let y = 0;
-
-    if (spawnFromCenter) {
-      x = this.width / 2 + (Math.random() - 0.5) * 150;
-      y = this.height / 2 + (Math.random() - 0.5) * 150;
-    } else {
-      const edge = Math.floor(Math.random() * 4);
-      if (edge === 0) { x = Math.random() * this.width; y = -40; }
-      else if (edge === 1) { x = this.width + 40; y = Math.random() * this.height; }
-      else if (edge === 2) { x = Math.random() * this.width; y = this.height + 40; }
-      else { x = -40; y = Math.random() * this.height; }
-    }
-
-    const angle = Math.random() * Math.PI * 2;
-    const speed = (0.3 + Math.random() * 0.7) * z * this.config.baseSpeed;
-    const lifespanRange = Math.max(0, this.config.maxLifespanMs - this.config.minLifespanMs);
-    const lifespan = this.config.minLifespanMs + Math.random() * lifespanRange;
-
-    this.particles.push({
-      id,
-      x,
-      y,
-      z,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      radius: z * (1.3 + Math.random() * 1.7),
-      color: colorRGB,
-      baseAlpha,
-      alpha: 0,
-      fadeState: 'in',
-      fadeSpeed: 0.015 + Math.random() * 0.02,
-      clusterId: Math.random() < 0.35 ? Math.floor(Math.random() * 4) : undefined,
-      isBlinking: false,
-      blinkDuration: 0,
-      orbitalAngle: Math.random() * Math.PI * 2,
-      orbitalSpeed: (Math.random() - 0.5) * 2,
-      createdAt: Date.now(),
-      lifespan
-    });
+    const particle = this.spawner.spawn(this.particles, this.config, this.width, this.height);
+    this.particles.push(particle);
   }
 
   private draw(): void {
-    const bgBlue = Math.floor(18 + Math.sin(this.colorCycle) * 6);
-    const bgDark = Math.floor(10 + Math.cos(this.colorCycle) * 4);
-    this.ctx.fillStyle = `rgb(${bgDark}, ${bgBlue}, ${bgBlue + 12})`;
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    this.renderer.drawBackground(this.ctx, this.width, this.height, this.colorCycle);
+    this.renderer.drawGrid(this.ctx, this.width, this.height, this.config.gridSize);
+    this.renderer.drawDebugOverlay(this.ctx);
 
-    this.drawGrid();
-
-    // Themed simulation version string positioned directly above the debug square
-    this.ctx.font = '10px "Courier New", Courier, monospace';
-    this.ctx.fillStyle = '#8faec5';
-    this.ctx.fillText('Simulation version no: 2026.10.06', 20, 32);
-
-    // Nostalgic Blue Debug Square
-    this.ctx.fillStyle = '#00e5ff';
-    this.ctx.fillRect(20, 40, 16, 16);
-
-    // Charge explosion aura preview
     if (this.isChargeHolding) {
-      const duration = Math.min(2500, Date.now() - this.chargeStartTime);
-      const radius = 15 + (duration / 2500) * 45;
-      const grad = this.ctx.createRadialGradient(this.chargeX, this.chargeY, 0, this.chargeX, this.chargeY, radius);
-      grad.addColorStop(0, 'rgba(0, 229, 255, 0.6)');
-      grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
-      this.ctx.fillStyle = grad;
-      this.ctx.beginPath();
-      this.ctx.arc(this.chargeX, this.chargeY, radius, 0, Math.PI * 2);
-      this.ctx.fill();
+      this.renderer.drawChargeAura(this.ctx, this.chargeX, this.chargeY, this.chargeStartTime);
     }
 
     if (this.isRippling) {
-      this.ctx.strokeStyle = `rgba(0, 229, 255, ${Math.max(0, 1 - this.clickRippleRadius / 400)})`;
-      this.ctx.lineWidth = 2;
-      this.ctx.beginPath();
-      this.ctx.arc(this.clickRippleX, this.clickRippleY, this.clickRippleRadius, 0, Math.PI * 2);
-      this.ctx.stroke();
+      this.renderer.drawRipple(this.ctx, this.clickRippleX, this.clickRippleY, this.clickRippleRadius);
     }
 
-    for (const p of this.particles) {
-      const renderAlpha = p.isBlinking
-        ? Math.min(1, p.alpha * 2.5)
-        : Math.max(0, p.alpha);
-
-      this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-
-      if (p.z === 3) {
-        const grad = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 2);
-        grad.addColorStop(0, `rgba(${p.color}, ${renderAlpha})`);
-        grad.addColorStop(1, `rgba(${p.color}, 0)`);
-        this.ctx.fillStyle = grad;
-        this.ctx.shadowBlur = 8;
-        this.ctx.shadowColor = `rgba(${p.color}, 0.8)`;
-      } else {
-        this.ctx.fillStyle = `rgba(${p.color}, ${renderAlpha})`;
-        this.ctx.shadowBlur = 0;
-      }
-
-      this.ctx.fill();
-    }
-    this.ctx.shadowBlur = 0;
-  }
-
-  private drawGrid(): void {
-    const size = this.config.gridSize;
-    this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.05)';
-    this.ctx.lineWidth = 1;
-
-    for (let x = 0; x < this.width; x += size) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.height);
-      this.ctx.stroke();
-    }
-
-    for (let y = 0; y < this.height; y += size) {
-      this.ctx.beginPath();
-      this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.width, y);
-      this.ctx.stroke();
-    }
+    this.renderer.drawParticles(this.ctx, this.particles);
   }
 
   public destroy(): void {

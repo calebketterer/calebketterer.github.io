@@ -1,7 +1,5 @@
 # Control Center
 
----
-
 <strong>Welcome!</strong> This project contains multiple interactive links, visualizations, and games- all created by me.  
 Visit the most recent deployment via Github Pages at [https://calebketterer.github.io/](https://calebketterer.github.io/).  
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.4.
@@ -18,44 +16,6 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 Based off the online game, Diep.io, I'm playing around with the idea of a single player version. The current version contains many enemies, an upgrade system, and achievement system. Not to mention a fun title screen with randomized effects and animations that I have guiltlessly admired for longer than I care to admit. 
 
 </details>
-
-<details>
-  <summary><strong>Snake</strong></summary>
-  
-## Snake
-
-<img width="432" height="723" alt="2" src="https://github.com/user-attachments/assets/8af618a1-13cd-4370-bc8b-edbf00fd5e90" />
-
-A classic game of Snake with the following features:
-
-- Difficulty selection (Easy/Medium/Hard) that effects snake speed.
-- Buttons to change direction and WASD support.
-- A score that increases with each target consumed.
-- An interactable title in the header.
-
-Good luck with the Extreme difficulty!
-</details>
-
-<details>
-  <summary><strong>Sudoku</strong></summary>
-  
-## Classic Sudoku
-  
-<img width="450" height="713" alt="Capture" src="https://github.com/user-attachments/assets/c96a5195-950d-4688-a4c0-f0d0bc14bb0f" />
-
-A classic game of Sudoku, featuring the following:
-  
-- Interactive Sudoku board with keyboard and mouse support.
-- "Check Answers" button with error highlighting.
-- "Reveal Solution" toggle to view or hide the solution.
-- Random puzzle generation with unique solutions.
-- Difficulty selection (Easy/Medium/Hard).
-
-Challenge yourself or practice your puzzle-solving skills!
-</details>
-
-<details>
-  <summary><strong>Tetris</strong></summary>
 
 ## Development Server in Browser
 
@@ -91,7 +51,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Deploying as a Github Page
 
-If not already done, type `npm install -g angular-cli-ghpages` in terminal. Then, run `ng build --configuration production --base-href /Calebs-Compendium/` and  `npx angular-cli-ghpages --dir=dist/example-website/browser/`. After that, the site should be updated at `https://calebketterer.github.io/Calebs-Compendium/`
+If not already done, type `npm install -g angular-cli-ghpages` in terminal. Then, run `npm run deploy`, which executes `ng build --configuration production --base-href /` and  `npx angular-cli-ghpages --dir=dist/example-website/browser/`. After that, the site should be updated at `https://calebketterer.github.io/`
 
 <details>
   <summary><strong>Misc Notes</strong></summary>
