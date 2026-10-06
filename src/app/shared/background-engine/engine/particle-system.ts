@@ -367,10 +367,10 @@ export class ParticleSystem {
 
     this.drawGrid();
 
-    // Simulation Version Number Text above nostalgic cyan debug square
+    // Themed simulation version string positioned directly above the debug square
     this.ctx.font = '10px "Courier New", Courier, monospace';
     this.ctx.fillStyle = '#8faec5';
-    this.ctx.fillText('v2026.10.05', 20, 32);
+    this.ctx.fillText('Simulation version no: 2026.10.06', 20, 32);
 
     // Nostalgic Blue Debug Square
     this.ctx.fillStyle = '#00e5ff';
