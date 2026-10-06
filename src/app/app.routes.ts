@@ -5,7 +5,7 @@ import { SnakeComponent } from './games/snake/snake.component';
 import { SudokuComponent } from './games/sudoku/sudoku.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'diep', component: DiepComponent },
   { path: 'snake', component: SnakeComponent },

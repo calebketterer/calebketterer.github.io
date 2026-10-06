@@ -1,0 +1,87 @@
+<div class="controls-wrapper">
+  <div class="engine-controls">
+    <span class="control-label">SIM_SPEED</span>
+    <button class="glass-ctrl-btn" [class.active]="isPlaying" (click)="toggleEngine()">
+      {{ isPlaying ? 'PAUSE ❚❚' : 'PLAY ▶' }}
+    </button>
+    <button class="glass-ctrl-btn" [class.active]="currentSpeed === 1" (click)="setSpeed(1)">1x</button>
+    <button class="glass-ctrl-btn" [class.active]="currentSpeed === 2" (click)="setSpeed(2)">2x ></button>
+    <button class="glass-ctrl-btn" [class.active]="currentSpeed === 4" (click)="setSpeed(4)">4x >></button>
+  </div>
+
+  <div class="engine-controls particle-cap-controls">
+    <span class="control-label">PARTICLE_CAP</span>
+    <span class="particle-counter">{{ activeParticleCount }} / {{ maxParticles }}</span>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('cap', -1, 1)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('cap', -1, 1); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">-</button>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('cap', 1, 1)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('cap', 1, 1); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">+</button>
+  </div>
+
+  <div class="engine-controls particle-cap-controls">
+    <span class="control-label">SPAWN_INTERVAL</span>
+    <span class="particle-counter">{{ spawnRateMs }}ms</span>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('spawn', -1, 5)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('spawn', -1, 5); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">-</button>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('spawn', 1, 5)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('spawn', 1, 5); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">+</button>
+  </div>
+
+  <div class="engine-controls particle-cap-controls">
+    <span class="control-label">MIN_LIFESPAN</span>
+    <span class="particle-counter">{{ formatSeconds(minLifespanMs) }}</span>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('minLife', -1, 250)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('minLife', -1, 250); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">-</button>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('minLife', 1, 250)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('minLife', 1, 250); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">+</button>
+  </div>
+
+  <div class="engine-controls particle-cap-controls">
+    <span class="control-label">MAX_LIFESPAN</span>
+    <span class="particle-counter">{{ formatSeconds(maxLifespanMs) }}</span>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('maxLife', -1, 500)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('maxLife', -1, 500); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">-</button>
+    <button
+      class="glass-ctrl-btn hold-btn"
+      (mousedown)="startHoldAdjust('maxLife', 1, 500)"
+      (mouseup)="stopHoldAdjust()"
+      (mouseleave)="stopHoldAdjust()"
+      (touchstart)="startHoldAdjust('maxLife', 1, 500); $event.preventDefault()"
+      (touchend)="stopHoldAdjust()">+</button>
+  </div>
+</div>

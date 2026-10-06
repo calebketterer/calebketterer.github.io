@@ -40,6 +40,30 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
     this.engine.setMaxParticles(cap);
   }
 
+  public getSpawnRateMs(): number {
+    return this.engine.getSpawnRateMs();
+  }
+
+  public setSpawnRateMs(ms: number): void {
+    this.engine.setSpawnRateMs(ms);
+  }
+
+  public getMinLifespanMs(): number {
+    return this.engine.getMinLifespanMs();
+  }
+
+  public setMinLifespanMs(ms: number): void {
+    this.engine.setMinLifespanMs(ms);
+  }
+
+  public getMaxLifespanMs(): number {
+    return this.engine.getMaxLifespanMs();
+  }
+
+  public setMaxLifespanMs(ms: number): void {
+    this.engine.setMaxLifespanMs(ms);
+  }
+
   @HostListener('window:resize')
   onResize(): void {
     this.engine.resize();

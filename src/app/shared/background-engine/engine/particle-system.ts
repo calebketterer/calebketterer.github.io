@@ -31,6 +31,9 @@ export class ParticleSystem {
 
   private config: EngineConfig = {
     maxParticles: 200,
+    spawnRateMs: 150,
+    minLifespanMs: 5000,
+    maxLifespanMs: 60000,
     baseSpeed: 0.6,
     gridSize: 60,
     mouseGravityRadius: 220
@@ -77,10 +80,8 @@ export class ParticleSystem {
   }
 
   public setMaxParticles(cap: number): void {
-    // Clamp cap strictly between 10 and 1000
     this.config.maxParticles = Math.max(10, Math.min(1000, cap));
 
-    // Despawn excess particles if cap was lowered below active count
     while (this.getActiveParticleCount() > this.config.maxParticles) {
       const oldest = this.particles.find(p => p.fadeState !== 'out');
       if (oldest) {
@@ -90,6 +91,35 @@ export class ParticleSystem {
         break;
       }
     }
+  }
+
+  public getSpawnRateMs(): number {
+    return this.config.spawnRateMs;
+  }
+
+  public setSpawnRateMs(ms: number): void {
+    this.config.spawnRateMs = Math.max(10, Math.min(5000, ms));
+  }
+
+  public getMinLifespanMs(): number {
+    return this.config.minLifespanMs;
+  }
+
+  public setMinLifespanMs(ms: number): void {
+    const clampedMin = Math.max(0, Math.min(120000, ms));
+    this.config.minLifespanMs = clampedMin;
+    if (this.config.maxLifespanMs < clampedMin) {
+      this.config.maxLifespanMs = clampedMin;
+    }
+  }
+
+  public getMaxLifespanMs(): number {
+    return this.config.maxLifespanMs;
+  }
+
+  public setMaxLifespanMs(ms: number): void {
+    const clampedMax = Math.max(this.config.minLifespanMs, Math.min(120000, ms));
+    this.config.maxLifespanMs = clampedMax;
   }
 
   public updateMousePosition(x: number, y: number, isActive = true): void {
@@ -121,7 +151,7 @@ export class ParticleSystem {
     if (!this.isChargeHolding) return;
 
     const duration = Math.min(2500, Date.now() - this.chargeStartTime);
-    const intensity = 1 + (duration / 2500) * 4; // Force multiplier scaling up to 5x
+    const intensity = 1 + (duration / 2500) * 4;
 
     this.clickRippleX = this.chargeX;
     this.clickRippleY = this.chargeY;
@@ -175,7 +205,7 @@ export class ParticleSystem {
     const now = Date.now();
     this.colorCycle += 0.001 * this.speedMultiplier;
 
-    if (now - this.lastSpawnTime > 150 / this.speedMultiplier) {
+    if (now - this.lastSpawnTime > this.config.spawnRateMs / this.speedMultiplier) {
       if (this.particles.length < this.config.maxParticles) {
         this.spawnParticle();
         this.lastSpawnTime = now;
@@ -303,7 +333,8 @@ export class ParticleSystem {
 
     const angle = Math.random() * Math.PI * 2;
     const speed = (0.3 + Math.random() * 0.7) * z * this.config.baseSpeed;
-    const lifespan = 5000 + Math.random() * 55000;
+    const lifespanRange = Math.max(0, this.config.maxLifespanMs - this.config.minLifespanMs);
+    const lifespan = this.config.minLifespanMs + Math.random() * lifespanRange;
 
     this.particles.push({
       id,
@@ -335,6 +366,11 @@ export class ParticleSystem {
     this.ctx.fillRect(0, 0, this.width, this.height);
 
     this.drawGrid();
+
+    // Simulation Version Number Text above nostalgic cyan debug square
+    this.ctx.font = '10px "Courier New", Courier, monospace';
+    this.ctx.fillStyle = '#8faec5';
+    this.ctx.fillText('v2026.10.05', 20, 32);
 
     // Nostalgic Blue Debug Square
     this.ctx.fillStyle = '#00e5ff';

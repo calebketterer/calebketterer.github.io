@@ -22,6 +22,9 @@ export interface Particle {
 
 export interface EngineConfig {
   maxParticles: number;
+  spawnRateMs: number;
+  minLifespanMs: number;
+  maxLifespanMs: number;
   baseSpeed: number;
   gridSize: number;
   mouseGravityRadius: number;

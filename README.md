@@ -1,8 +1,4 @@
-# Caleb Online
-
-<a href="https://calebketterer.github.io/">
-  <img width="510" height="300" alt="Screenshot 2026-05-03 231029" src="https://github.com/user-attachments/assets/c784d64d-eecc-4ad1-a948-a7f3ab37d0da" />
-</a>
+# Control Center
 
 ---
 
@@ -60,20 +56,6 @@ Challenge yourself or practice your puzzle-solving skills!
 
 <details>
   <summary><strong>Tetris</strong></summary>
-  
-## Tetris
-  
-<img width="496" height="730" alt="3" src="https://github.com/user-attachments/assets/9b8503f6-87f1-4f86-be04-f1c5feda1d0a" />
-
-A classic game of Tetris, featuring the following:
-  
-- Interactive Tetris board with keyboard input.
-- Scoreboard that adds 100 points with each row cleared.
-- Next share preview.
-
-</details>
-
-
 
 ## Development Server in Browser
 
