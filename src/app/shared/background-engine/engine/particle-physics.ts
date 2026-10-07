@@ -24,6 +24,7 @@ export class ParticlePhysics {
       const dyTarget = targetY - p.y;
       const distTarget = Math.sqrt(dxTarget * dxTarget + dyTarget * dyTarget);
 
+      // Apply base accelerations without double-scaling
       if (isMouseActive && distTarget < config.mouseGravityRadius && distTarget > 10) {
         const pull = ((config.mouseGravityRadius - distTarget) / config.mouseGravityRadius) * 0.15;
         p.vx += (dxTarget / distTarget) * pull;
@@ -49,14 +50,16 @@ export class ParticlePhysics {
         }
       }
 
+      // Standard linear friction step
       p.vx *= 0.98;
       p.vy *= 0.98;
 
+      // Position update scaled linearly by simulation speed
       p.x += p.vx * speedMultiplier;
       p.y += p.vy * speedMultiplier;
 
       if (p.isBlinking) {
-        p.blinkDuration--;
+        p.blinkDuration -= speedMultiplier;
         if (p.blinkDuration <= 0) {
           p.isBlinking = false;
         }

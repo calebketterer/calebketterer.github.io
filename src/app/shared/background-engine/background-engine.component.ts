@@ -167,8 +167,6 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   }
 
   public setSpeed(multiplier: number): void {
-    this.speedMultiplier = multiplier;
+    this.engine.setSpeed(multiplier);
   }
-
-  private speedMultiplier = 1.0;
 }

@@ -51,7 +51,7 @@ export class ParticleSystem {
     if (!context) return;
     this.ctx = context;
 
-    this.resize();
+    this.resize(true);
 
     const initialCount = 3 + Math.floor(Math.random() * 3);
     for (let i = 0; i < initialCount; i++) {
@@ -61,10 +61,22 @@ export class ParticleSystem {
     this.startLoop();
   }
 
-  public resize(): void {
+  public resize(force = false): void {
     if (!this.canvas) return;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+
+    const newWidth = window.innerWidth;
+    const newHeight = window.innerHeight;
+
+    // Ignore mobile address bar collapses / overscroll height changes
+    // unless forced on init or horizontal width actually changes (orientation change)
+    const widthChanged = Math.abs(newWidth - this.width) > 1;
+
+    if (!force && !widthChanged && this.width > 0 && this.height > 0) {
+      return;
+    }
+
+    this.width = newWidth;
+    this.height = newHeight;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
   }

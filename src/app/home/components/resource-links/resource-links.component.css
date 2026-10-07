@@ -113,7 +113,8 @@
   20% {
     opacity: 0.8;
     transform: scale(1.02) translateX(4px) skewX(-3deg);
-    filter: brightness(2.5) contrast(150%) drop-shadow(0 0 12px rgba(255, 0, 80, 0.8));
+    /* Replaced red rgba(255, 0, 80, 0.8) with cyan rgba(0, 229, 255, 0.8) */
+    filter: brightness(2.5) contrast(150%) drop-shadow(0 0 12px rgba(0, 229, 255, 0.8));
     clip-path: polygon(0 25%, 100% 25%, 100% 85%, 0 85%);
   }
   35% {
