@@ -1,5 +1,7 @@
 import { Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { ParticleSystem } from './engine/particle-system';
 
 @Component({
@@ -13,8 +15,23 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   @ViewChild('bgCanvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
   private engine = new ParticleSystem();
+  private isHomePage = true;
 
-  constructor(private ngZone: NgZone) {}
+  constructor(
+    private ngZone: NgZone,
+    private router: Router
+  ) {
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const url = event.urlAfterRedirects;
+        this.isHomePage = url === '/' || url === '/home' || url === '';
+
+        if (!this.isHomePage) {
+          this.engine.clearMousePosition();
+        }
+      });
+  }
 
   ngOnInit(): void {
     this.ngZone.runOutsideAngular(() => {
@@ -64,6 +81,10 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
     this.engine.setMaxLifespanMs(ms);
   }
 
+  private isInteractionDisabled(): boolean {
+    return !this.isHomePage;
+  }
+
   @HostListener('window:resize')
   onResize(): void {
     this.engine.resize();
@@ -71,6 +92,10 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
+    if (this.isInteractionDisabled()) {
+      this.engine.clearMousePosition();
+      return;
+    }
     this.engine.updateMousePosition(event.clientX, event.clientY, true);
   }
 
@@ -81,16 +106,25 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   @HostListener('window:mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
+    if (this.isInteractionDisabled()) {
+      return;
+    }
     this.engine.startCharge(event.clientX, event.clientY);
   }
 
   @HostListener('window:mouseup')
   onMouseUp(): void {
+    if (this.isInteractionDisabled()) {
+      return;
+    }
     this.engine.releaseChargeExplosion();
   }
 
   @HostListener('window:touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
+    if (this.isInteractionDisabled()) {
+      return;
+    }
     if (event.touches.length > 0) {
       const touch = event.touches[0];
       this.engine.updateMousePosition(touch.clientX, touch.clientY, true);
@@ -100,6 +134,10 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   @HostListener('window:touchmove', ['$event'])
   onTouchMove(event: TouchEvent): void {
+    if (this.isInteractionDisabled()) {
+      this.engine.clearMousePosition();
+      return;
+    }
     if (event.touches.length > 0) {
       const touch = event.touches[0];
       this.engine.updateMousePosition(touch.clientX, touch.clientY, true);
@@ -108,6 +146,9 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   @HostListener('window:touchend')
   onTouchEnd(): void {
+    if (this.isInteractionDisabled()) {
+      return;
+    }
     this.engine.releaseChargeExplosion();
     this.engine.clearMousePosition();
   }
@@ -117,6 +158,8 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   }
 
   public setSpeed(multiplier: number): void {
-    this.engine.setSpeed(multiplier);
+    this.speedMultiplier = multiplier;
   }
+
+  private speedMultiplier = 1.0;
 }
