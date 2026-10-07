@@ -16,6 +16,7 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   private engine = new ParticleSystem();
   private isHomePage = true;
+  private resizeTimeout: any;
 
   constructor(
     private ngZone: NgZone,
@@ -42,6 +43,9 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
     this.engine.destroy();
   }
 
@@ -87,7 +91,12 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
 
   @HostListener('window:resize')
   onResize(): void {
-    this.engine.resize();
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    this.resizeTimeout = setTimeout(() => {
+      this.engine.resize();
+    }, 100);
   }
 
   @HostListener('window:mousemove', ['$event'])

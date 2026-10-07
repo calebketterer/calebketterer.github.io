@@ -40,7 +40,7 @@ export class ParticleRenderer {
   public drawDebugOverlay(ctx: CanvasRenderingContext2D): void {
     ctx.font = '10px "Courier New", Courier, monospace';
     ctx.fillStyle = '#8faec5';
-    ctx.fillText('Simulation version no: 2026.10.06', 20, 32);
+    ctx.fillText('Simulation version no: 2026.10.07', 20, 32);
 
     ctx.fillStyle = '#00e5ff';
     ctx.fillRect(20, 40, 16, 16);
