@@ -9,13 +9,9 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  width: 100%;
 }
 
 .particle-cap-controls {
-  display: grid;
-  grid-template-columns: 120px 100px 1fr;
-  align-items: center;
   background: rgba(8, 16, 26, 0.4);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -28,6 +24,7 @@
   font-size: 0.7rem;
   color: #8faec5;
   letter-spacing: 1px;
+  margin-right: 0.25rem;
   white-space: nowrap;
 }
 
@@ -35,16 +32,16 @@
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.75rem;
   color: #00e5ff;
-  text-align: left;
+  min-width: 85px;
+  text-align: center;
   white-space: nowrap;
 }
 
 .action-buttons {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 0.3rem;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .glass-ctrl-btn {
@@ -63,8 +60,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
+/* Fixes button size jumping when toggling between PLAY and PAUSE */
 .glass-ctrl-btn.play-pause-btn {
   min-width: 82px;
 }
@@ -100,35 +99,37 @@
   }
 
   .engine-controls {
+    display: flex;
     flex-wrap: nowrap;
     justify-content: space-between;
+    align-items: center;
+    width: 100%;
     gap: 0.25rem;
-  }
-
-  .particle-cap-controls {
-    grid-template-columns: 100px 75px 1fr;
+    box-sizing: border-box;
   }
 
   .control-label {
     font-size: 0.65rem;
     letter-spacing: 0.5px;
+    margin-right: 0;
   }
 
   .particle-counter {
     font-size: 0.7rem;
+    min-width: auto;
   }
 
   .glass-ctrl-btn {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.45rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.4rem;
   }
 
   .glass-ctrl-btn.play-pause-btn {
-    min-width: 74px;
+    min-width: 72px;
   }
 
   .glass-ctrl-btn.hold-btn {
-    padding: 0.15rem 0.4rem;
-    min-width: 24px;
+    padding: 0.15rem 0.35rem;
+    min-width: 22px;
   }
 }

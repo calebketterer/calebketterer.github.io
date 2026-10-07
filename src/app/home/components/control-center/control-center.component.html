@@ -2,7 +2,7 @@
   <div class="engine-controls">
     <span class="control-label">SIM_SPEED</span>
     <div class="action-buttons">
-      <button class="glass-ctrl-btn" [class.active]="isPlaying" (click)="toggleEngine()">
+      <button class="glass-ctrl-btn play-pause-btn" [class.active]="isPlaying" (click)="toggleEngine()">
         {{ isPlaying ? 'PAUSE ❚❚' : 'PLAY ▶' }}
       </button>
       <button class="glass-ctrl-btn" [class.active]="currentSpeed === 1" (click)="setSpeed(1)">1x</button>
