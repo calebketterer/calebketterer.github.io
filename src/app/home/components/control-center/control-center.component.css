@@ -9,13 +9,18 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  width: 100%;
 }
 
 .particle-cap-controls {
+  display: grid;
+  grid-template-columns: 120px 100px 1fr;
+  align-items: center;
   background: rgba(8, 16, 26, 0.4);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   border: 1px solid rgba(0, 229, 255, 0.1);
+  box-sizing: border-box;
 }
 
 .control-label {
@@ -23,15 +28,23 @@
   font-size: 0.7rem;
   color: #8faec5;
   letter-spacing: 1px;
-  margin-right: 0.25rem;
+  white-space: nowrap;
 }
 
 .particle-counter {
   font-family: 'Courier New', Courier, monospace;
   font-size: 0.75rem;
   color: #00e5ff;
-  min-width: 85px;
-  text-align: center;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  margin-left: auto;
 }
 
 .glass-ctrl-btn {
@@ -46,11 +59,20 @@
   backdrop-filter: blur(6px);
   transition: all 0.2s ease;
   user-select: none;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glass-ctrl-btn.play-pause-btn {
+  min-width: 82px;
 }
 
 .glass-ctrl-btn.hold-btn {
   font-weight: bold;
   padding: 0.2rem 0.55rem;
+  min-width: 28px;
 }
 
 .glass-ctrl-btn:hover {
@@ -73,12 +95,40 @@
 
 @media (max-width: 768px) {
   .controls-wrapper {
-    align-items: flex-start;
+    align-items: stretch;
     width: 100%;
   }
 
   .engine-controls {
-    flex-wrap: wrap;
-    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+
+  .particle-cap-controls {
+    grid-template-columns: 100px 75px 1fr;
+  }
+
+  .control-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.5px;
+  }
+
+  .particle-counter {
+    font-size: 0.7rem;
+  }
+
+  .glass-ctrl-btn {
+    font-size: 0.7rem;
+    padding: 0.25rem 0.45rem;
+  }
+
+  .glass-ctrl-btn.play-pause-btn {
+    min-width: 74px;
+  }
+
+  .glass-ctrl-btn.hold-btn {
+    padding: 0.15rem 0.4rem;
+    min-width: 24px;
   }
 }
