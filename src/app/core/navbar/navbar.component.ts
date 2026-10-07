@@ -24,7 +24,7 @@ export class NavbarComponent implements OnInit {
     { label: 'DIEP.IO', path: '/diep', badge: 'CANVAS' },
     { label: 'SNAKE', path: '/snake', badge: 'RETRO' },
     { label: 'SUDOKU', path: '/sudoku', badge: 'PUZZLE' },
-    { label: 'TESTING COMPENDIUM', externalUrl: 'https://calebketterer.github.io/Calebs-Compendium/', badge: 'EXT' }
+    { label: 'TESTING COMPENDIUM', externalUrl: 'https://calebketterer.github.io/Testing-Compendium/', badge: 'EXT' }
   ];
 
   ngOnInit(): void {
