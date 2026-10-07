@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -16,7 +16,7 @@ interface NavItem {
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   isCollapsed = false;
 
   navItems: NavItem[] = [
@@ -26,6 +26,16 @@ export class NavbarComponent {
     { label: 'SUDOKU', path: '/sudoku', badge: 'PUZZLE' },
     { label: 'TESTING COMPENDIUM', externalUrl: 'https://calebketterer.github.io/Calebs-Compendium/', badge: 'EXT' }
   ];
+
+  ngOnInit(): void {
+    this.checkInitialMobileState();
+  }
+
+  private checkInitialMobileState(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      this.isCollapsed = true;
+    }
+  }
 
   toggleNavbar(): void {
     this.isCollapsed = !this.isCollapsed;
