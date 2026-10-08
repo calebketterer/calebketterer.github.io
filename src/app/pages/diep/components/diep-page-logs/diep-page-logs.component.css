@@ -1,0 +1,127 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.logs-card {
+  background: rgba(13, 17, 23, 0.75);
+  border: 1px solid rgba(88, 166, 255, 0.25);
+  border-radius: 8px;
+  backdrop-filter: blur(12px);
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  color: #c9d1d9;
+}
+
+.logs-header {
+  margin-bottom: 20px;
+}
+
+.terminal-breadcrumbs {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  color: #8b949e;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.terminal-breadcrumbs .separator {
+  color: #58a6ff;
+  margin: 0 6px;
+}
+
+.terminal-breadcrumbs .active {
+  color: #58a6ff;
+}
+
+.terminal-title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f0f6fc;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+  background: rgba(22, 27, 34, 0.6);
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(240, 246, 252, 0.05);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  color: #8b949e;
+}
+
+.meta-value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e6edf3;
+}
+
+.status-green {
+  color: #3fb950;
+}
+
+.status-blue {
+  color: #58a6ff;
+}
+
+.terminal-divider {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(88, 166, 255, 0.4) 0%, rgba(88, 166, 255, 0.05) 100%);
+  margin: 20px 0;
+}
+
+.log-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.section-heading {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #58a6ff;
+  letter-spacing: 0.08em;
+  margin: 0 0 6px 0;
+}
+
+.section-heading .prefix {
+  color: #8b949e;
+}
+
+.paragraph {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #8b949e;
+  margin: 0;
+}
+
+.logs-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(240, 246, 252, 0.05);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.7rem;
+  color: #484f58;
+}

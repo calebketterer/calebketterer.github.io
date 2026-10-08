@@ -1,0 +1,71 @@
+<div class="viewer-card">
+  @if (isMobileDevice()) {
+    <div class="mobile-warning-banner">
+      <div class="warning-header">
+        <span class="warning-icon">⚠</span>
+        <span class="warning-title">SYSTEM ADVISORY</span>
+      </div>
+      <p class="warning-message">
+        CRITICAL: COMBAT INTERFACE OPTIMIZED FOR DESKTOP HARDWARE & KEYBOARD/MOUSE PROTOCOLS.
+      </p>
+    </div>
+  }
+
+  <div class="viewer-header">
+    <div class="header-status">
+      <span class="status-beacon"></span>
+      <span class="status-text">SYSTEM ACTIVE // TACTICAL VIEWPORT</span>
+    </div>
+
+    <div class="viewport-controls">
+      <button 
+        type="button" 
+        class="ctrl-btn" 
+        [class.active]="isFitToWidth()" 
+        (click)="toggleFitToWidth()" 
+        title="Fit Viewport to Container Width">
+        FIT
+      </button>
+
+      <button 
+        type="button" 
+        class="ctrl-btn" 
+        (click)="setScale(scale() - 0.1)" 
+        title="Scale Down Viewport">
+        -
+      </button>
+
+      <span class="scale-readout">{{ isFitToWidth() ? 'FIT' : ((scale() * 100) | number:'1.0-0') + '%' }}</span>
+
+      <button 
+        type="button" 
+        class="ctrl-btn" 
+        (click)="setScale(scale() + 0.1)" 
+        title="Scale Up Viewport">
+        +
+      </button>
+
+      <button 
+        type="button" 
+        class="ctrl-btn reset-btn" 
+        (click)="resetViewport()" 
+        title="Reset Scaling">
+        RESET
+      </button>
+
+      <button 
+        type="button" 
+        class="ctrl-btn fullscreen-btn" 
+        (click)="toggleFullScreen()" 
+        title="Toggle Full Screen Mode">
+        {{ isFullScreen() ? 'EXIT FULL' : 'FULLSCREEN' }}
+      </button>
+    </div>
+  </div>
+
+  <div #stageContainer class="viewer-viewport-stage" [class.fit-mode]="isFitToWidth()" [class.is-fullscreen]="isFullScreen()">
+    <div class="canvas-scaler" [style.transform]="isFitToWidth() || isFullScreen() ? 'none' : 'scale(' + scale() + ')'">
+      <app-diep></app-diep>
+    </div>
+  </div>
+</div>
