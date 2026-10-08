@@ -1,11 +1,14 @@
-<div class="diep-page-shell">
-  <div class="page-layout">
-    <section class="viewer-section">
-      <app-diep-page-viewer></app-diep-page-viewer>
-    </section>
+<div class="page-container">
+  <app-game-viewport statusText="SYSTEM ACTIVE // EXECUTABLE VIEWPORT">
+    <app-diep></app-diep>
+  </app-game-viewport>
 
-    <section class="logs-section">
-      <app-diep-page-logs></app-diep-page-logs>
-    </section>
-  </div>
+  <app-game-logs
+    [breadcrumbs]="breadcrumbs"
+    [title]="title"
+    [metaItems]="metaItems"
+    [sections]="sections"
+    classification="PUBLIC ACCESS"
+    motto="PER ASPERA AD ASTRA">
+  </app-game-logs>
 </div>

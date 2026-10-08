@@ -1,0 +1,40 @@
+<section class="logs-card">
+  <header class="logs-header">
+    <div class="terminal-breadcrumbs">
+      @for (crumb of breadcrumbs; track $index; let last = $last) {
+        <span class="crumb" [class.active]="last">{{ crumb }}</span>
+        @if (!last) {
+          <span class="separator">//</span>
+        }
+      }
+    </div>
+    <h1 class="terminal-title">{{ title }}</h1>
+  </header>
+
+  @if (metaItems.length > 0) {
+    <div class="meta-grid">
+      @for (item of metaItems; track item.label) {
+        <div class="meta-item">
+          <span class="meta-label">{{ item.label }}</span>
+          <span class="meta-value" [class]="item.statusClass || ''">{{ item.value }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  <hr class="terminal-divider" />
+
+  <article class="log-body">
+    @for (section of sections; track section.heading) {
+      <div class="log-section">
+        <h2 class="section-heading"><span class="prefix">#</span> {{ section.heading }}</h2>
+        <p class="paragraph">{{ section.content }}</p>
+      </div>
+    }
+  </article>
+
+  <footer class="logs-footer">
+    <span class="footer-tag">CLASSIFICATION: {{ classification }}</span>
+    <span class="footer-tag">{{ motto }}</span>
+  </footer>
+</section>

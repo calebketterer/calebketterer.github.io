@@ -11,6 +11,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   overflow: hidden;
   transition: border-color 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .viewer-card:hover {
@@ -184,20 +186,9 @@
   max-height: 100%;
 }
 
-.viewer-viewport-stage.fit-mode app-diep,
-.viewer-viewport-stage:fullscreen app-diep,
-.viewer-viewport-stage:-webkit-full-screen app-diep {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.viewer-viewport-stage.fit-mode app-diep canvas,
-.viewer-viewport-stage:fullscreen app-diep canvas,
-.viewer-viewport-stage:-webkit-full-screen app-diep canvas {
+.viewer-viewport-stage.fit-mode ::ng-deep canvas,
+.viewer-viewport-stage:fullscreen ::ng-deep canvas,
+.viewer-viewport-stage:-webkit-full-screen ::ng-deep canvas {
   max-width: 100% !important;
   height: auto !important;
   object-fit: contain;
@@ -208,7 +199,7 @@
     min-height: auto;
     padding: 8px;
   }
-  
+
   .viewer-header {
     flex-direction: column;
     align-items: stretch;

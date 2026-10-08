@@ -14,7 +14,7 @@
   <div class="viewer-header">
     <div class="header-status">
       <span class="status-beacon"></span>
-      <span class="status-text">SYSTEM ACTIVE // TACTICAL VIEWPORT</span>
+      <span class="status-text">{{ statusText }}</span>
     </div>
 
     <div class="viewport-controls">
@@ -65,7 +65,7 @@
 
   <div #stageContainer class="viewer-viewport-stage" [class.fit-mode]="isFitToWidth()" [class.is-fullscreen]="isFullScreen()">
     <div class="canvas-scaler" [style.transform]="isFitToWidth() || isFullScreen() ? 'none' : 'scale(' + scale() + ')'">
-      <app-diep></app-diep>
+      <ng-content></ng-content>
     </div>
   </div>
 </div>

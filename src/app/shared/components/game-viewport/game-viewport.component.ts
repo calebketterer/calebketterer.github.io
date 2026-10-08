@@ -1,17 +1,18 @@
-import { Component, ChangeDetectionStrategy, signal, ElementRef, ViewChild, HostListener, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, ElementRef, ViewChild, HostListener, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DiepComponent } from '../../../../games/diep/diep.component';
 
 @Component({
-  selector: 'app-diep-page-viewer',
+  selector: 'app-game-viewport',
   standalone: true,
-  imports: [CommonModule, DiepComponent],
-  templateUrl: './diep-page-viewer.component.html',
-  styleUrls: ['./diep-page-viewer.component.css'],
+  imports: [CommonModule],
+  templateUrl: './game-viewport.component.html',
+  styleUrls: ['./game-viewport.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DiepPageViewerComponent implements OnInit {
+export class GameViewportComponent implements OnInit {
   @ViewChild('stageContainer') private stageContainer!: ElementRef<HTMLDivElement>;
+
+  @Input() public statusText: string = 'SYSTEM ACTIVE // EXECUTABLE VIEWPORT';
 
   public scale = signal<number>(1.0);
   public isFitToWidth = signal<boolean>(false);
@@ -41,7 +42,7 @@ export class DiepPageViewerComponent implements OnInit {
       webkitFullscreenElement?: Element;
       msFullscreenElement?: Element;
     };
-    
+
     const fsElement = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
     this.isFullScreen.set(!!fsElement);
   }
