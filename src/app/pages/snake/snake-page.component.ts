@@ -14,7 +14,7 @@ import { SnakeComponent } from '../../games/snake/snake.component';
 })
 export class SnakePageComponent {
   public breadcrumbs: string[] = ['COMPENDIUM', 'GAMES', 'SERPENT_PROTOCOL.LOG'];
-  public title: string = 'SNAKE ARCHIVE // NEON VECTOR GRID';
+  public title: string = 'SNAKE ARCHIVE // THE NEON GRID';
 
   public metaItems: LogMetaItem[] = [
     { label: 'PROJECT INITIATION', value: 'DECEMBER 12, 2025' },

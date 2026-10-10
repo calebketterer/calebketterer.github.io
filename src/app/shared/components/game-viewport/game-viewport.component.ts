@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, ElementRef, ViewChild, HostListener, OnInit, Input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, ElementRef, ViewChild, HostListener, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -18,9 +18,15 @@ export class GameViewportComponent implements OnInit {
   public isFitToWidth = signal<boolean>(false);
   public isFullScreen = signal<boolean>(false);
   public isMobileDevice = signal<boolean>(false);
+  public recommendedPlatform = signal<string>('ANY');
+
+  public showMobileWarning = computed(() => {
+    return this.isMobileDevice() && this.recommendedPlatform() === 'DESKTOP BROWSER';
+  });
 
   public ngOnInit(): void {
     this.checkMobileDevice();
+    this.checkRecommendedPlatform();
   }
 
   private checkMobileDevice(): void {
@@ -31,6 +37,16 @@ export class GameViewportComponent implements OnInit {
     if (isMobileUA || isSmallScreen) {
       this.isMobileDevice.set(true);
       this.isFitToWidth.set(true);
+    }
+  }
+
+  private checkRecommendedPlatform(): void {
+    const path = window.location.pathname.toLowerCase();
+    // Desktop-only games get flagged here automatically based on route
+    if (path.includes('diep')) {
+      this.recommendedPlatform.set('DESKTOP BROWSER');
+    } else {
+      this.recommendedPlatform.set('ANY');
     }
   }
 
@@ -75,6 +91,13 @@ export class GameViewportComponent implements OnInit {
     };
 
     const fsElement = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+
+    const supportsFullscreen = !!(elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen);
+
+    if (!supportsFullscreen || this.isMobileDevice()) {
+      this.isFullScreen.update(current => !current);
+      return;
+    }
 
     if (!fsElement) {
       if (elem.requestFullscreen) {
