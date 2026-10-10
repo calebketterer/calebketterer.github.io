@@ -1,9 +1,8 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SnakeEngineService } from './engine/snake-engine.service';
 import { SnakeRenderer } from './engine/snake-renderer';
 import { Direction, GameState } from './models/snake.types';
-import { SnakeTitleScreenComponent } from './components/snake-title-screen/snake-title-screen.component';
 import { SnakeMenuScreenComponent } from './components/snake-menu-screen/snake-menu-screen.component';
 import { Subscription } from 'rxjs';
 
@@ -12,7 +11,6 @@ import { Subscription } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    SnakeTitleScreenComponent,
     SnakeMenuScreenComponent
   ],
   templateUrl: './snake.component.html',
@@ -21,7 +19,7 @@ import { Subscription } from 'rxjs';
 export class SnakeComponent implements OnInit, OnDestroy {
   @ViewChild('gameCanvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  gameState: GameState = 'TITLE';
+  gameState: GameState = 'MENU';
   score = 0;
   highScores: Record<string, number> = {};
   countdown = 3;
@@ -31,19 +29,34 @@ export class SnakeComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
   private animFrameId: number | null = null;
 
-  constructor(public engine: SnakeEngineService) {}
+  constructor(
+    public engine: SnakeEngineService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    this.engine.setGameState('MENU');
+
     this.subs.push(
       this.engine.gameState$.subscribe(state => {
         this.gameState = state;
+        this.cdr.detectChanges();
         if (state === 'PLAYING' || state === 'COUNTDOWN') {
           setTimeout(() => this.initCanvas(), 0);
         }
       }),
-      this.engine.score$.subscribe(s => this.score = s),
-      this.engine.highScores$.subscribe(hs => this.highScores = hs),
-      this.engine.countdown$.subscribe(c => this.countdown = c)
+      this.engine.score$.subscribe(s => {
+        this.score = s;
+        this.cdr.detectChanges();
+      }),
+      this.engine.highScores$.subscribe(hs => {
+        this.highScores = hs;
+        this.cdr.detectChanges();
+      }),
+      this.engine.countdown$.subscribe(c => {
+        this.countdown = c;
+        this.cdr.detectChanges();
+      })
     );
   }
 
@@ -52,10 +65,6 @@ export class SnakeComponent implements OnInit, OnDestroy {
     if (this.animFrameId) {
       cancelAnimationFrame(this.animFrameId);
     }
-  }
-
-  onTitleReady(): void {
-    this.engine.setGameState('MENU');
   }
 
   onSelectDifficultyLevel(level: number): void {

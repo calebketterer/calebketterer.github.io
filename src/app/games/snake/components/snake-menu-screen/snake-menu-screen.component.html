@@ -4,6 +4,10 @@
     <span class="value">{{ currentHighScore }}</span>
   </div>
 
+  <div class="demo-canvas-box">
+    <canvas #demoCanvas width="280" height="110"></canvas>
+  </div>
+
   <div class="menu-section">
     <div class="slider-header">
       <span class="section-title">DIFFICULTY</span>
@@ -19,9 +23,9 @@
       class="difficulty-slider"
     />
     <div class="slider-labels">
-      <span>1</span>
-      <span>2</span>
-      <span>3</span>
+      <span>EASY</span>
+      <span>MEDIUM</span>
+      <span>HARD</span>
     </div>
   </div>
 
@@ -39,7 +43,5 @@
     </div>
   </div>
 
-  <div class="action-section">
-    <button class="play-btn" (click)="startGame.emit()">PLAY</button>
-  </div>
+  <button class="play-btn" (click)="startGame.emit()">PLAY</button>
 </div>

@@ -1,13 +1,14 @@
 <div class="title-container" (click)="ready.emit()">
-  <div class="glitch-title">SERPENT // OS</div>
-  <div class="subtitle">TACTICAL RECONNAISSANCE GRID</div>
-
-  <div class="progress-bar-wrap">
-    <div class="progress-bar-fill" [style.width.%]="loadingProgress"></div>
+  <div class="title-header">
+    <div class="glitch-title">SERPENT</div>
+    <div class="subtitle">TACTICAL RECONNAISSANCE GRID</div>
   </div>
 
-  <div class="prompt-text">
-    <span *ngIf="loadingProgress < 100">INITIALIZING NEURAL INTERFACE {{ loadingProgress }}%</span>
-    <span *ngIf="loadingProgress >= 100" class="blink">SYSTEM READY. TAP OR CLICK TO ENTER</span>
+  <div class="canvas-wrapper">
+    <canvas #previewCanvas width="260" height="150"></canvas>
+  </div>
+
+  <div class="prompt-box">
+    <span class="blink">TAP OR CLICK TO ENTER</span>
   </div>
 </div>

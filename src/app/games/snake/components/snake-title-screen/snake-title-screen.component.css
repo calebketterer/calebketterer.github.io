@@ -2,13 +2,21 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   height: 100%;
-  padding: 2rem;
-  background: radial-gradient(circle at center, rgba(0, 255, 128, 0.05) 0%, transparent 70%);
+  width: 100%;
+  padding: 1.5rem 1rem;
+  box-sizing: border-box;
+  background: radial-gradient(circle at center, rgba(0, 255, 128, 0.05) 0%, transparent 75%);
   color: #00ff80;
   text-align: center;
   cursor: pointer;
+}
+
+.title-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
 .glitch-title {
@@ -16,41 +24,37 @@
   font-weight: 900;
   letter-spacing: 0.25em;
   color: #00ff80;
-  text-shadow: 0 0 12px rgba(0, 255, 128, 0.6);
-  margin-bottom: 0.25rem;
+  text-shadow: 0 0 14px rgba(0, 255, 128, 0.6);
 }
 
 .subtitle {
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
   color: #00cc66;
   opacity: 0.8;
-  margin-bottom: 2.5rem;
 }
 
-.progress-bar-wrap {
-  width: 80%;
-  max-width: 260px;
-  height: 6px;
-  background: rgba(0, 255, 128, 0.1);
-  border: 1px solid rgba(0, 255, 128, 0.3);
-  border-radius: 3px;
+.canvas-wrapper {
+  border: 1px solid rgba(0, 255, 128, 0.25);
+  border-radius: 6px;
   overflow: hidden;
-  margin-bottom: 1rem;
+  box-shadow: 0 0 15px rgba(0, 255, 128, 0.1);
+  background: #040805;
 }
 
-.progress-bar-fill {
-  height: 100%;
-  background: #00ff80;
-  box-shadow: 0 0 10px #00ff80;
-  transition: width 0.05s linear;
+canvas {
+  display: block;
 }
 
-.prompt-text {
+.prompt-box {
   font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  color: #a3ffcc;
-  min-height: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #00ff80;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(0, 255, 128, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 255, 128, 0.05);
 }
 
 .blink {

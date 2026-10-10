@@ -1,5 +1,5 @@
 <div class="snake-shell">
-  <!-- HUD Top Header -->
+  <!-- HUD Header -->
   <div class="hud-header">
     <div class="hud-title">SERPENT</div>
     <div class="hud-score">
@@ -8,13 +8,8 @@
     </div>
   </div>
 
-  <!-- Main Viewport (Fixed Size Container) -->
+  <!-- Locked Main Viewport Area -->
   <div class="viewport-box" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
-    <app-snake-title-screen
-      *ngIf="gameState === 'TITLE'"
-      (ready)="onTitleReady()"
-    ></app-snake-title-screen>
-
     <app-snake-menu-screen
       *ngIf="gameState === 'MENU'"
       [difficulties]="engine.difficulties"
@@ -31,8 +26,8 @@
     <canvas
       #gameCanvas
       width="360"
-      height="360"
-      [class.hidden]="gameState === 'TITLE' || gameState === 'MENU'"
+      height="420"
+      [class.hidden]="gameState === 'MENU'"
     ></canvas>
 
     <!-- Countdown Overlay -->
@@ -60,13 +55,15 @@
     </div>
   </div>
 
-  <!-- Mobile Touch Controls -->
-  <div class="dpad-controls" *ngIf="gameState === 'PLAYING' || gameState === 'COUNTDOWN'">
-    <button class="dpad-btn up" (click)="onMove('UP')">▲</button>
-    <div class="dpad-mid">
-      <button class="dpad-btn left" (click)="onMove('LEFT')">◀</button>
-      <button class="dpad-btn down" (click)="onMove('DOWN')">▼</button>
-      <button class="dpad-btn right" (click)="onMove('RIGHT')">▶</button>
+  <!-- Fixed Height Controls Footer -->
+  <div class="controls-footer">
+    <div class="dpad-controls" *ngIf="gameState === 'PLAYING' || gameState === 'COUNTDOWN'">
+      <button class="dpad-btn up" (click)="onMove('UP')">▲</button>
+      <div class="dpad-mid">
+        <button class="dpad-btn left" (click)="onMove('LEFT')">◀</button>
+        <button class="dpad-btn down" (click)="onMove('DOWN')">▼</button>
+        <button class="dpad-btn right" (click)="onMove('RIGHT')">▶</button>
+      </div>
     </div>
   </div>
 </div>

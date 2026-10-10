@@ -1,7 +1,13 @@
-.snake-shell {
+:host {
+  display: block;
   width: 100%;
-  max-width: 400px;
-  margin: 0.5rem auto;
+}
+
+/* Strictly fixed size container - never resizes across any menu or state */
+.snake-shell {
+  width: 360px;
+  height: 620px;
+  margin: 0 auto;
   padding: 1rem;
   box-sizing: border-box;
   background: rgba(10, 16, 12, 0.95);
@@ -10,6 +16,11 @@
   box-shadow: 0 0 25px rgba(0, 255, 128, 0.08);
   font-family: monospace, system-ui;
   color: #00ff80;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
 }
 
 .hud-header {
@@ -17,9 +28,9 @@
   justify-content: space-between;
   align-items: center;
   height: 28px;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid rgba(0, 255, 128, 0.15);
-  margin-bottom: 0.75rem;
+  flex-shrink: 0;
 }
 
 .hud-title {
@@ -38,16 +49,17 @@
   margin-left: 0.3rem;
 }
 
+/* Main Viewport maintains a locked height regardless of game state */
 .viewport-box {
   position: relative;
   width: 100%;
-  min-height: 320px;
-  aspect-ratio: 1;
+  height: 420px;
   background: #040805;
   border: 1px solid rgba(0, 255, 128, 0.25);
   border-radius: 8px;
   overflow: hidden;
   box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 canvas {
@@ -63,7 +75,7 @@ canvas.hidden {
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(4, 8, 5, 0.9);
+  background: rgba(4, 8, 5, 0.92);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -72,14 +84,14 @@ canvas.hidden {
 }
 
 .countdown-overlay {
-  background: rgba(4, 8, 5, 0.6);
+  background: rgba(4, 8, 5, 0.65);
 }
 
 .countdown-num {
-  font-size: 4rem;
+  font-size: 5rem;
   font-weight: 900;
   color: #00ff80;
-  text-shadow: 0 0 20px #00ff80;
+  text-shadow: 0 0 25px #00ff80;
   animation: pulse 0.8s ease-in-out infinite;
 }
 
@@ -98,20 +110,20 @@ canvas.hidden {
 .over-title {
   color: #00ff80;
   letter-spacing: 0.2em;
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   font-weight: 800;
   margin: 0 0 0.25rem;
 }
 
 .over-desc {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.7);
   margin-bottom: 0.75rem;
 }
 
 .final-score {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: bold;
   margin-bottom: 1.25rem;
   color: #ffffff;
@@ -140,31 +152,46 @@ canvas.hidden {
   box-shadow: none;
 }
 
+/* Reserved controls area - always takes up fixed space at the bottom */
+.controls-footer {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .dpad-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 0.85rem;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .dpad-mid {
   display: flex;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .dpad-btn {
-  width: 3rem;
-  height: 3rem;
+  width: 2.6rem;
+  height: 2.6rem;
   background: rgba(0, 255, 128, 0.05);
   border: 1px solid rgba(0, 255, 128, 0.25);
   color: #00ff80;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   touch-action: manipulation;
 }
 
 .dpad-btn:active {
   background: rgba(0, 255, 128, 0.25);
+}
+
+@media (max-width: 400px) {
+  .snake-shell {
+    width: 100%;
+    max-width: 360px;
+  }
 }

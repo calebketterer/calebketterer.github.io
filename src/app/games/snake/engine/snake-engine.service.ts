@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Coord, DifficultyConfig, Direction, GameState } from '../models/snake.types';
 import { SnakeAudioService } from './snake-audio.service';
@@ -12,8 +12,8 @@ export class SnakeEngineService {
 
   readonly difficulties: DifficultyConfig[] = [
     { level: 1, label: 'EASY', interval: 150, multiplier: 1 },
-    { level: 2, label: 'MEDIUM', interval: 100, multiplier: 1.5 },
-    { level: 3, label: 'HARD', interval: 60, multiplier: 2 }
+    { level: 2, label: 'MEDIUM', interval: 100, multiplier: 1 },
+    { level: 3, label: 'HARD', interval: 60, multiplier: 1 }
   ];
 
   selectedDifficulty: DifficultyConfig = this.difficulties[1];
@@ -29,7 +29,7 @@ export class SnakeEngineService {
   private timer: ReturnType<typeof setInterval> | null = null;
   private countdownTimer: ReturnType<typeof setInterval> | null = null;
 
-  constructor(private audio: SnakeAudioService) {
+  constructor(private audio: SnakeAudioService, private ngZone: NgZone) {
     this.resetState();
   }
 
@@ -61,20 +61,27 @@ export class SnakeEngineService {
       clearInterval(this.countdownTimer);
     }
 
-    this.countdownTimer = setInterval(() => {
-      const nextVal = this.countdown$.value - 1;
-      if (nextVal > 0) {
-        this.countdown$.next(nextVal);
-        this.audio.playTurnSound();
-      } else {
-        if (this.countdownTimer) {
-          clearInterval(this.countdownTimer);
-          this.countdownTimer = null;
+    this.ngZone.runOutsideAngular(() => {
+      this.countdownTimer = setInterval(() => {
+        const currentVal = this.countdown$.value;
+        if (currentVal > 1) {
+          const nextVal = currentVal - 1;
+          this.ngZone.run(() => {
+            this.countdown$.next(nextVal);
+            this.audio.playTurnSound();
+          });
+        } else {
+          if (this.countdownTimer) {
+            clearInterval(this.countdownTimer);
+            this.countdownTimer = null;
+          }
+          this.ngZone.run(() => {
+            this.gameState$.next('PLAYING');
+            this.startLoop();
+          });
         }
-        this.gameState$.next('PLAYING');
-        this.startLoop();
-      }
-    }, 1000);
+      }, 1000);
+    });
   }
 
   pauseGame(): void {
@@ -102,7 +109,11 @@ export class SnakeEngineService {
 
   private startLoop(): void {
     this.stopLoop();
-    this.timer = setInterval(() => this.tick(), this.selectedDifficulty.interval);
+    this.ngZone.runOutsideAngular(() => {
+      this.timer = setInterval(() => {
+        this.tick();
+      }, this.selectedDifficulty.interval);
+    });
   }
 
   private stopLoop(): void {
@@ -130,17 +141,20 @@ export class SnakeEngineService {
     }
 
     if (this.checkCollision(head)) {
-      this.handleGameOver();
+      this.ngZone.run(() => {
+        this.handleGameOver();
+      });
       return;
     }
 
     this.snake.unshift(head);
 
     if (head.x === this.food.x && head.y === this.food.y) {
-      const points = Math.round(10 * this.selectedDifficulty.multiplier);
-      this.score$.next(this.score$.value + points);
-      this.audio.playEatSound();
-      this.spawnFood();
+      this.ngZone.run(() => {
+        this.score$.next(this.score$.value + 1);
+        this.audio.playEatSound();
+        this.spawnFood();
+      });
     } else {
       this.snake.pop();
     }
