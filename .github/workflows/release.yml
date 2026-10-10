@@ -1,0 +1,45 @@
+name: Build and Release Desktop Apps
+
+on:
+  push:
+    tags:
+      - 'v*_*' # Matches tags like v1.0.0_snake, v1.0.0_sudoku, v1.0.0_diep
+
+jobs:
+  release:
+    name: Build ${{ matrix.game }} for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Game Name from Tag
+        id: extract_game
+        run: |
+          # Grabs whatever comes after the underscore in the tag (e.g. v1.0.0_snake -> snake)
+          TAG_NAME="${{ github.ref_name }}"
+          GAME_NAME="${TAG_NAME##*_}"
+          echo "game=$GAME_NAME" >> $GITHUB_OUTPUT
+          echo "Building game: $GAME_NAME"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular and Run Electron Builder
+        uses: electron-userland/action-electron-builder@v25
+        with:
+          release: true
+          args: --mac --win --linux
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_GAME: ${{ steps.extract_game.outputs.game }}
