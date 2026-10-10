@@ -6,12 +6,18 @@ on:
       - 'v*_*' # Matches tags like v1.0.0_snake, v1.0.0_sudoku, v1.0.0_diep
 
 jobs:
-  release:
-    name: Build ${{ matrix.game }} for ${{ matrix.os }}
+  build:
+    name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform_flag: --linux
+          - os: windows-latest
+            platform_flag: --win
+          - os: macos-latest
+            platform_flag: --mac
 
     steps:
       - name: Checkout repository
@@ -19,8 +25,8 @@ jobs:
 
       - name: Extract Game Name from Tag
         id: extract_game
+        shell: bash
         run: |
-          # Grabs whatever comes after the underscore in the tag (e.g. v1.0.0_snake -> snake)
           TAG_NAME="${{ github.ref_name }}"
           GAME_NAME="${TAG_NAME##*_}"
           echo "game=$GAME_NAME" >> $GITHUB_OUTPUT
@@ -36,10 +42,35 @@ jobs:
         run: npm ci
 
       - name: Build Angular and Run Electron Builder
-        uses: electron-userland/action-electron-builder@v25
+        env:
+          TARGET_GAME: ${{ steps.extract_game.outputs.game }}
+        run: |
+          npx cross-env TARGET_GAME=$TARGET_GAME ng build --configuration production
+          npx electron-builder ${{ matrix.platform_flag }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          release: true
-          args: --mac --win --linux
+          name: installers-${{ matrix.os }}
+          path: release/
+          if-no-files-found: error
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-artifacts
+          merge-to-subdir: true
+
+      - name: Publish Release to GitHub
+        uses: softprops/action-gh-release@v2
+        with:
+          files: all-artifacts/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_GAME: ${{ steps.extract_game.outputs.game }}
