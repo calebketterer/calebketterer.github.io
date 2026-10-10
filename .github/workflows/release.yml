@@ -5,11 +5,15 @@ on:
     tags:
       - 'v*_*' # Matches tags like v1.0.0_snake, v1.0.0_sudoku, v1.0.0_diep
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-latest
@@ -35,18 +39,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Angular and Run Electron Builder
+      - name: Build Angular
         env:
           TARGET_GAME: ${{ steps.extract_game.outputs.game }}
-        run: |
-          npx cross-env TARGET_GAME=$TARGET_GAME ng build --configuration production
-          npx electron-builder ${{ matrix.platform_flag }}
+        run: npx ng build --configuration production
+
+      - name: Package with Electron Builder
+        env:
+          TARGET_GAME: ${{ steps.extract_game.outputs.game }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder ${{ matrix.platform_flag }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -66,11 +74,16 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: all-artifacts
-          merge-to-subdir: true
+          merge-multiple: true
 
       - name: Publish Release to GitHub
         uses: softprops/action-gh-release@v2
         with:
-          files: all-artifacts/*
+          files: |
+            all-artifacts/*.exe
+            all-artifacts/*.dmg
+            all-artifacts/*.AppImage
+            all-artifacts/*.zip
+            all-artifacts/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
