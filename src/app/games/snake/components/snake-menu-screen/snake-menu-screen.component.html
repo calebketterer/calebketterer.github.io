@@ -1,11 +1,14 @@
 <div class="menu-container">
-  <div class="high-score-display">
-    <span class="label">BEST SCORE</span>
-    <span class="value">{{ currentHighScore }}</span>
+  <div class="menu-top-header">
+    <h1 class="menu-title">SERPENT</h1>
+    <div class="high-score-display">
+      <span class="label">BEST SCORE</span>
+      <span class="value">{{ currentHighScore }}</span>
+    </div>
   </div>
 
   <div class="demo-canvas-box">
-    <canvas #demoCanvas width="280" height="110"></canvas>
+    <canvas #demoCanvas width="320" height="130"></canvas>
   </div>
 
   <div class="menu-section">
@@ -43,5 +46,8 @@
     </div>
   </div>
 
-  <button class="play-btn" (click)="startGame.emit()">PLAY</button>
+  <div class="action-section">
+    <button class="play-btn" (click)="startGame.emit()">PLAY</button>
+    <app-snake-flavor-text></app-snake-flavor-text>
+  </div>
 </div>

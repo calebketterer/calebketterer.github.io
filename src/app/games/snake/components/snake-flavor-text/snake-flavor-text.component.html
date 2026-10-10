@@ -1,0 +1,8 @@
+<div 
+  class="flavor-container" 
+  (click)="triggerNextQuote()" 
+  title="Click to cycle trivia">
+  <p class="flavor-text" [class.fading]="isFading">
+    "{{ quotes[currentQuoteIndex] }}"
+  </p>
+</div>

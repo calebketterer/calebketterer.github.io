@@ -8,8 +8,8 @@
     </div>
   </div>
 
-  <!-- Locked Main Viewport Area -->
-  <div class="viewport-box" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+  <!-- Viewport Box: Fills height on MENU, locks to square on PLAYING/GAMEOVER -->
+  <div class="viewport-box" [class.menu-expanded]="gameState === 'MENU'" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
     <app-snake-menu-screen
       *ngIf="gameState === 'MENU'"
       [difficulties]="engine.difficulties"
@@ -25,14 +25,16 @@
     <!-- Canvas Playfield -->
     <canvas
       #gameCanvas
-      width="360"
-      height="420"
+      width="326"
+      height="326"
       [class.hidden]="gameState === 'MENU'"
     ></canvas>
 
     <!-- Countdown Overlay -->
     <div class="overlay countdown-overlay" *ngIf="gameState === 'COUNTDOWN'">
-      <div class="countdown-num">{{ countdown }}</div>
+      <ng-container *ngFor="let num of [countdown]">
+        <div class="countdown-num" [attr.data-step]="num">{{ num }}</div>
+      </ng-container>
     </div>
 
     <!-- Game Over Overlay -->
@@ -55,9 +57,9 @@
     </div>
   </div>
 
-  <!-- Fixed Height Controls Footer -->
-  <div class="controls-footer">
-    <div class="dpad-controls" *ngIf="gameState === 'PLAYING' || gameState === 'COUNTDOWN'">
+  <!-- Controls Footer: ONLY visible during Game, Countdown, Pause, and Game Over -->
+  <div class="controls-footer" *ngIf="gameState !== 'MENU'">
+    <div class="dpad-controls" [class.disabled]="gameState === 'GAMEOVER' || gameState === 'PAUSED'">
       <button class="dpad-btn up" (click)="onMove('UP')">▲</button>
       <div class="dpad-mid">
         <button class="dpad-btn left" (click)="onMove('LEFT')">◀</button>
@@ -65,5 +67,6 @@
         <button class="dpad-btn right" (click)="onMove('RIGHT')">▶</button>
       </div>
     </div>
+    <div class="desktop-tooltip">You can also use WASD to move on desktop.</div>
   </div>
 </div>

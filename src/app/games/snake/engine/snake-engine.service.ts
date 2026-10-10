@@ -17,7 +17,7 @@ export class SnakeEngineService {
   ];
 
   selectedDifficulty: DifficultyConfig = this.difficulties[1];
-  gameState$ = new BehaviorSubject<GameState>('TITLE');
+  gameState$ = new BehaviorSubject<GameState>('MENU');
   score$ = new BehaviorSubject<number>(0);
   highScores$ = new BehaviorSubject<Record<string, number>>({});
   countdown$ = new BehaviorSubject<number>(3);
@@ -25,7 +25,7 @@ export class SnakeEngineService {
   snake: Coord[] = [];
   food: Coord = { x: 0, y: 0 };
   direction: Direction = 'UP';
-  private nextDirection: Direction = 'UP';
+  private directionQueue: Direction[] = [];
   private timer: ReturnType<typeof setInterval> | null = null;
   private countdownTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -95,14 +95,18 @@ export class SnakeEngineService {
   }
 
   setDirection(dir: Direction): void {
-    const isOpposite =
-      (dir === 'UP' && this.direction === 'DOWN') ||
-      (dir === 'DOWN' && this.direction === 'UP') ||
-      (dir === 'LEFT' && this.direction === 'RIGHT') ||
-      (dir === 'RIGHT' && this.direction === 'LEFT');
+    const lastQueuedDir = this.directionQueue.length > 0 
+      ? this.directionQueue[this.directionQueue.length - 1] 
+      : this.direction;
 
-    if (!isOpposite && dir !== this.direction) {
-      this.nextDirection = dir;
+    const isOpposite =
+      (dir === 'UP' && lastQueuedDir === 'DOWN') ||
+      (dir === 'DOWN' && lastQueuedDir === 'UP') ||
+      (dir === 'LEFT' && lastQueuedDir === 'RIGHT') ||
+      (dir === 'RIGHT' && lastQueuedDir === 'LEFT');
+
+    if (!isOpposite && dir !== lastQueuedDir && this.directionQueue.length < 2) {
+      this.directionQueue.push(dir);
       this.audio.playTurnSound();
     }
   }
@@ -130,7 +134,10 @@ export class SnakeEngineService {
   private tick(): void {
     if (this.gameState$.value !== 'PLAYING') return;
 
-    this.direction = this.nextDirection;
+    if (this.directionQueue.length > 0) {
+      this.direction = this.directionQueue.shift()!;
+    }
+
     const head = { ...this.snake[0] };
 
     switch (this.direction) {
@@ -199,7 +206,7 @@ export class SnakeEngineService {
 
   private resetState(): void {
     this.direction = 'UP';
-    this.nextDirection = 'UP';
+    this.directionQueue = [];
     const mid = Math.floor(this.boardSize / 2);
     this.snake = [
       { x: mid, y: mid },

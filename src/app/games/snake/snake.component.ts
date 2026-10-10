@@ -80,7 +80,9 @@ export class SnakeComponent implements OnInit, OnDestroy {
   }
 
   onMove(dir: Direction): void {
-    this.engine.setDirection(dir);
+    if (this.gameState === 'PLAYING') {
+      this.engine.setDirection(dir);
+    }
   }
 
   @HostListener('window:keydown', ['$event'])

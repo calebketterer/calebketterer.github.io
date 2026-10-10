@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, Output, OnInit, OnDestroy, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DifficultyConfig } from '../../models/snake.types';
+import { SnakeFlavorTextComponent } from '../snake-flavor-text/snake-flavor-text.component';
 
 @Component({
   selector: 'app-snake-menu-screen',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SnakeFlavorTextComponent],
   templateUrl: './snake-menu-screen.component.html',
   styleUrls: ['./snake-menu-screen.component.css']
 })
@@ -24,14 +25,14 @@ export class SnakeMenuScreenComponent implements OnInit, OnDestroy, OnChanges {
 
   private animId: number | null = null;
   private snake = [
-    { x: 100, y: 70 },
-    { x: 85, y: 70 },
-    { x: 70, y: 70 },
-    { x: 55, y: 70 }
+    { x: 120, y: 60 },
+    { x: 105, y: 60 },
+    { x: 90, y: 60 },
+    { x: 75, y: 60 }
   ];
-  private food = { x: 175, y: 70 };
+  private food = { x: 210, y: 60 };
   private dir = { x: 1, y: 0 };
-  private stepInterval = 6;
+  private stepInterval = 5;
 
   get currentHighScore(): number {
     const key = `${this.selectedDifficulty.level}_${this.currentBoardSize}`;
@@ -63,9 +64,9 @@ export class SnakeMenuScreenComponent implements OnInit, OnDestroy, OnChanges {
   private updateSpeedByDifficulty(): void {
     if (!this.selectedDifficulty) return;
     switch (this.selectedDifficulty.level) {
-      case 1: this.stepInterval = 9; break;  // Easy
-      case 2: this.stepInterval = 5; break;  // Medium
-      case 3: this.stepInterval = 2; break;  // Hard
+      case 1: this.stepInterval = 9; break;
+      case 2: this.stepInterval = 5; break;
+      case 3: this.stepInterval = 2; break;
       default: this.stepInterval = 5;
     }
   }
@@ -86,7 +87,6 @@ export class SnakeMenuScreenComponent implements OnInit, OnDestroy, OnChanges {
       ctx.fillStyle = '#040805';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Grid background
       ctx.strokeStyle = 'rgba(0, 255, 128, 0.05)';
       ctx.lineWidth = 1;
       for (let x = 0; x < canvas.width; x += 15) {
@@ -102,20 +102,18 @@ export class SnakeMenuScreenComponent implements OnInit, OnDestroy, OnChanges {
         ctx.stroke();
       }
 
-      // Target Food Node
       ctx.shadowBlur = 10;
       ctx.shadowColor = '#00ff80';
       ctx.fillStyle = '#00ff80';
       ctx.beginPath();
-      ctx.arc(this.food.x, this.food.y, 4.5, 0, Math.PI * 2);
+      ctx.arc(this.food.x, this.food.y, 4, 0, Math.PI * 2);
       ctx.fill();
 
-      // Snake Body
       this.snake.forEach((seg, i) => {
         ctx.shadowBlur = i === 0 ? 8 : 3;
         ctx.shadowColor = '#00ff80';
         ctx.fillStyle = i === 0 ? '#00ff80' : 'rgba(0, 204, 102, 0.75)';
-        ctx.fillRect(seg.x - 5.5, seg.y - 5.5, 11, 11);
+        ctx.fillRect(seg.x - 5, seg.y - 5, 10, 10);
       });
       ctx.shadowBlur = 0;
 
@@ -140,8 +138,8 @@ export class SnakeMenuScreenComponent implements OnInit, OnDestroy, OnChanges {
 
     if (Math.abs(newHead.x - this.food.x) < 10 && Math.abs(newHead.y - this.food.y) < 10) {
       this.food = {
-        x: Math.floor(Math.random() * (w - 40) / 15) * 15 + 20,
-        y: Math.floor(Math.random() * (h - 40) / 15) * 15 + 20
+        x: Math.floor(Math.random() * (w - 30) / 15) * 15 + 15,
+        y: Math.floor(Math.random() * (h - 30) / 15) * 15 + 15
       };
     }
 
