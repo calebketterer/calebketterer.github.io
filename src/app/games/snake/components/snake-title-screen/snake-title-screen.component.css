@@ -1,0 +1,63 @@
+.title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 2rem;
+  background: radial-gradient(circle at center, rgba(0, 255, 128, 0.05) 0%, transparent 70%);
+  color: #00ff80;
+  text-align: center;
+  cursor: pointer;
+}
+
+.glitch-title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  color: #00ff80;
+  text-shadow: 0 0 12px rgba(0, 255, 128, 0.6);
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #00cc66;
+  opacity: 0.8;
+  margin-bottom: 2.5rem;
+}
+
+.progress-bar-wrap {
+  width: 80%;
+  max-width: 260px;
+  height: 6px;
+  background: rgba(0, 255, 128, 0.1);
+  border: 1px solid rgba(0, 255, 128, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #00ff80;
+  box-shadow: 0 0 10px #00ff80;
+  transition: width 0.05s linear;
+}
+
+.prompt-text {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: #a3ffcc;
+  min-height: 1.2rem;
+}
+
+.blink {
+  animation: blinkAnim 1.2s infinite;
+}
+
+@keyframes blinkAnim {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}

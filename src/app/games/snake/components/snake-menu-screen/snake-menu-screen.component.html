@@ -1,0 +1,45 @@
+<div class="menu-container">
+  <div class="high-score-display">
+    <span class="label">BEST SCORE</span>
+    <span class="value">{{ currentHighScore }}</span>
+  </div>
+
+  <div class="menu-section">
+    <div class="slider-header">
+      <span class="section-title">DIFFICULTY</span>
+      <span class="difficulty-tag">{{ selectedDifficulty.label }}</span>
+    </div>
+    <input
+      type="range"
+      min="1"
+      max="3"
+      step="1"
+      [value]="selectedDifficulty.level"
+      (input)="onSliderChange($event)"
+      class="difficulty-slider"
+    />
+    <div class="slider-labels">
+      <span>1</span>
+      <span>2</span>
+      <span>3</span>
+    </div>
+  </div>
+
+  <div class="menu-section">
+    <span class="section-title">GRID SIZE</span>
+    <div class="size-options">
+      <button
+        *ngFor="let size of availableBoardSizes"
+        class="size-btn"
+        [class.active]="size === currentBoardSize"
+        (click)="selectBoardSize.emit(size)"
+      >
+        {{ size }}x{{ size }}
+      </button>
+    </div>
+  </div>
+
+  <div class="action-section">
+    <button class="play-btn" (click)="startGame.emit()">PLAY</button>
+  </div>
+</div>
