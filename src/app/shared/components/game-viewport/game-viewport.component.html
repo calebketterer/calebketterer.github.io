@@ -1,5 +1,5 @@
-<div class="viewer-card">
-  @if (showMobileWarning()) {
+<div class="viewer-card" [class.is-fullscreen]="isFullScreen()">
+  @if (showMobileWarning() && !isFullScreen()) {
     <div class="mobile-warning-banner">
       <div class="warning-header">
         <span class="warning-icon">⚠</span>
@@ -20,7 +20,7 @@
     <div class="viewport-controls">
       <button 
         type="button" 
-        class="ctrl-btn" 
+        class="ctrl-btn desktop-only-control" 
         [class.active]="isFitToWidth()" 
         (click)="toggleFitToWidth()" 
         title="Fit Viewport to Container Width">
@@ -29,17 +29,17 @@
 
       <button 
         type="button" 
-        class="ctrl-btn" 
+        class="ctrl-btn desktop-only-control" 
         (click)="setScale(scale() - 0.1)" 
         title="Scale Down Viewport">
         -
       </button>
 
-      <span class="scale-readout">{{ isFitToWidth() ? 'FIT' : ((scale() * 100) | number:'1.0-0') + '%' }}</span>
+      <span class="scale-readout desktop-only-control">{{ isFitToWidth() ? 'FIT' : ((scale() * 100) | number:'1.0-0') + '%' }}</span>
 
       <button 
         type="button" 
-        class="ctrl-btn" 
+        class="ctrl-btn desktop-only-control" 
         (click)="setScale(scale() + 0.1)" 
         title="Scale Up Viewport">
         +
@@ -47,7 +47,7 @@
 
       <button 
         type="button" 
-        class="ctrl-btn reset-btn" 
+        class="ctrl-btn reset-btn desktop-only-control" 
         (click)="resetViewport()" 
         title="Reset Scaling">
         RESET
@@ -63,7 +63,7 @@
     </div>
   </div>
 
-  <div #stageContainer class="viewer-viewport-stage" [class.fit-mode]="isFitToWidth()" [class.is-fullscreen]="isFullScreen()">
+  <div #stageContainer class="viewer-viewport-stage" [class.fit-mode]="isFitToWidth() || isFullScreen()">
     <div class="canvas-scaler" [style.transform]="isFitToWidth() || isFullScreen() ? 'none' : 'scale(' + scale() + ')'">
       <ng-content></ng-content>
     </div>

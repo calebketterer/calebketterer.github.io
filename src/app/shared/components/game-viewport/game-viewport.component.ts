@@ -42,7 +42,6 @@ export class GameViewportComponent implements OnInit {
 
   private checkRecommendedPlatform(): void {
     const path = window.location.pathname.toLowerCase();
-    // Desktop-only games get flagged here automatically based on route
     if (path.includes('diep')) {
       this.recommendedPlatform.set('DESKTOP BROWSER');
     } else {
@@ -91,7 +90,6 @@ export class GameViewportComponent implements OnInit {
     };
 
     const fsElement = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
-
     const supportsFullscreen = !!(elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen);
 
     if (!supportsFullscreen || this.isMobileDevice()) {
