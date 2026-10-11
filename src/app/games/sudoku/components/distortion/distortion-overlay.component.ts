@@ -9,11 +9,11 @@ import { CommonModule } from '@angular/common';
     <div class="distortion-overlay" [class.active]="active">
       <div class="scanline"></div>
       <div class="matrix-content">
-        <div class="glitch-text" data-text="SYNCHRONIZING MATRIX...">SYNCHRONIZING MATRIX...</div>
+        <div class="glitch-text" [attr.data-text]="text">{{ text }}</div>
         <div class="progress-container">
           <div class="progress-bar" [style.width.%]="progress"></div>
         </div>
-        <div class="progress-percentage">{{ progress }}%</div>
+        <div class="progress-percentage">{{ progress | number:'1.0-0' }}%</div>
       </div>
     </div>
   `,
@@ -28,12 +28,11 @@ import { CommonModule } from '@angular/common';
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.2s ease;
     }
     .distortion-overlay.active {
       opacity: 0.98;
       pointer-events: all;
-      animation: glitch-anim 0.3s infinite;
     }
     .scanline {
       position: absolute; width: 100%; height: 2px;
@@ -69,7 +68,6 @@ import { CommonModule } from '@angular/common';
       height: 100%;
       background: var(--primary);
       box-shadow: 0 0 10px var(--primary);
-      transition: width 0.1s linear;
     }
     .progress-percentage {
       color: var(--primary);
@@ -80,17 +78,10 @@ import { CommonModule } from '@angular/common';
       0% { top: 0%; }
       100% { top: 100%; }
     }
-    @keyframes glitch-anim {
-      0% { transform: translate(0); }
-      20% { transform: translate(-1px, 1px); }
-      40% { transform: translate(-1px, -1px); }
-      60% { transform: translate(1px, 1px); }
-      80% { transform: translate(1px, -1px); }
-      100% { transform: translate(0); }
-    }
   `]
 })
 export class DistortionOverlayComponent {
   @Input() active = false;
   @Input() progress = 0;
+  @Input() text = 'GENERATING MATRIX...';
 }

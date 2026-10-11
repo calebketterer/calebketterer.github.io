@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SudokuGameService } from './services/sudoku-game.service';
 import { Cell, Difficulty, ThemeColorName, ThemeColors } from './models/sudoku.model';
@@ -16,12 +16,13 @@ export class SudokuComponent implements OnInit, OnDestroy {
   viewState: 'menu' | 'game' = 'menu';
   isGenerating = false;
   generationProgress = 0;
+  overlayText = 'GENERATING MATRIX...';
 
   difficulty: Difficulty = 'medium';
   difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'expert'];
   
-  selectedPrimaryTheme: ThemeColorName = 'Green';
-  selectedSecondaryTheme: ThemeColorName = 'Blue';
+  primaryTheme: ThemeColorName = 'Green';
+  secondaryTheme: ThemeColorName | null = 'Blue';
   currentPrimary: ThemeColors;
   currentSecondary: ThemeColors;
 
@@ -39,12 +40,18 @@ export class SudokuComponent implements OnInit, OnDestroy {
   timerInterval: any;
   gameCompleted = false;
   mistakesCount = 0;
+  errorMessage: string | null = null;
+  errorTimeout: any;
 
   themes: ThemeColorName[] = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'];
 
-  constructor(public sudokuService: SudokuGameService) {
-    this.currentPrimary = this.sudokuService.themes[this.selectedPrimaryTheme];
-    this.currentSecondary = this.sudokuService.themes[this.selectedSecondaryTheme];
+  constructor(
+    public sudokuService: SudokuGameService, 
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.currentPrimary = this.sudokuService.themes[this.primaryTheme];
+    this.currentSecondary = this.secondaryTheme ? this.sudokuService.themes[this.secondaryTheme] : this.currentPrimary;
   }
 
   ngOnInit(): void {
@@ -59,11 +66,15 @@ export class SudokuComponent implements OnInit, OnDestroy {
   clearTimers(): void {
     if (this.flavorInterval) clearInterval(this.flavorInterval);
     if (this.timerInterval) clearInterval(this.timerInterval);
+    if (this.errorTimeout) clearTimeout(this.errorTimeout);
   }
 
   startFlavorTimer(): void {
     this.flavorInterval = setInterval(() => {
-      this.nextFlavorText();
+      this.ngZone.run(() => {
+        this.nextFlavorText();
+        this.cdr.detectChanges();
+      });
     }, 20000);
   }
 
@@ -71,65 +82,110 @@ export class SudokuComponent implements OnInit, OnDestroy {
     this.currentFlavorIndex = (this.currentFlavorIndex + 1) % this.flavorTexts.length;
   }
 
-  setPrimaryTheme(themeName: ThemeColorName): void {
-    this.selectedPrimaryTheme = themeName;
-    this.currentPrimary = this.sudokuService.themes[themeName];
-  }
-
-  setSecondaryTheme(themeName: ThemeColorName): void {
-    this.selectedSecondaryTheme = themeName;
-    this.currentSecondary = this.sudokuService.themes[themeName];
+  selectTheme(t: ThemeColorName): void {
+    if (this.primaryTheme === t) {
+      if (this.secondaryTheme) {
+        this.primaryTheme = this.secondaryTheme;
+        this.secondaryTheme = null;
+      }
+    } else if (this.secondaryTheme === t) {
+      this.secondaryTheme = null;
+    } else {
+      if (!this.secondaryTheme) {
+        this.secondaryTheme = t;
+      } else {
+        this.secondaryTheme = this.primaryTheme;
+        this.primaryTheme = t;
+      }
+    }
+    this.currentPrimary = this.sudokuService.themes[this.primaryTheme];
+    this.currentSecondary = this.secondaryTheme ? this.sudokuService.themes[this.secondaryTheme] : this.currentPrimary;
+    this.cdr.detectChanges();
   }
 
   setDifficulty(diff: Difficulty): void {
     this.difficulty = diff;
+    this.cdr.detectChanges();
   }
 
   initializeGame(): void {
+    if (this.isGenerating) return;
+    this.overlayText = 'GENERATING MATRIX...';
     this.isGenerating = true;
     this.generationProgress = 0;
+    this.cdr.detectChanges();
 
-    const totalDuration = 3500; // 3.5 seconds
-    const intervalTime = 35;
-    const increment = 100 / (totalDuration / intervalTime);
+    const duration = 3000;
+    const intervalTime = 50;
+    const step = (intervalTime / duration) * 100;
 
-    const progressInterval = setInterval(() => {
-      this.generationProgress += increment;
-      if (this.generationProgress >= 100) {
-        this.generationProgress = 100;
-        clearInterval(progressInterval);
-        
-        const gameData = this.sudokuService.generatePuzzle(this.difficulty);
-        this.board = gameData.board;
-        this.solution = gameData.solution;
-        this.selectedCell = null;
-        this.timerSeconds = 0;
-        this.gameCompleted = false;
-        this.newHighScoreAchieved = false;
-        this.mistakesCount = 0;
-        this.viewState = 'game';
-        
-        setTimeout(() => {
+    const progressTimer = setInterval(() => {
+      this.ngZone.run(() => {
+        this.generationProgress += step;
+        if (this.generationProgress >= 100) {
+          this.generationProgress = 100;
+          clearInterval(progressTimer);
+          
+          const gameData = this.sudokuService.generatePuzzle(this.difficulty);
+          this.board = gameData.board;
+          this.solution = gameData.solution;
+          this.selectedCell = null;
+          this.timerSeconds = 0;
+          this.gameCompleted = false;
+          this.newHighScoreAchieved = false;
+          this.mistakesCount = 0;
+          this.errorMessage = null;
+          this.viewState = 'game';
           this.isGenerating = false;
           this.startTimer();
-        }, 250);
-      }
+          this.cdr.detectChanges();
+        } else {
+          this.cdr.detectChanges();
+        }
+      });
     }, intervalTime);
   }
 
   returnToMenu(): void {
-    this.clearTimers();
-    this.highScores = this.sudokuService.getHighScores();
-    this.viewState = 'menu';
-    this.startFlavorTimer();
+    if (this.isGenerating) return;
+    this.overlayText = 'GENERATING MENU...';
+    this.isGenerating = true;
+    this.generationProgress = 0;
+    this.cdr.detectChanges();
+
+    const duration = 3000;
+    const intervalTime = 50;
+    const step = (intervalTime / duration) * 100;
+
+    const progressTimer = setInterval(() => {
+      this.ngZone.run(() => {
+        this.generationProgress += step;
+        if (this.generationProgress >= 100) {
+          this.generationProgress = 100;
+          clearInterval(progressTimer);
+          
+          this.clearTimers();
+          this.highScores = this.sudokuService.getHighScores();
+          this.viewState = 'menu';
+          this.isGenerating = false;
+          this.startFlavorTimer();
+          this.cdr.detectChanges();
+        } else {
+          this.cdr.detectChanges();
+        }
+      });
+    }, intervalTime);
   }
 
   startTimer(): void {
     if (this.timerInterval) clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
-      if (!this.gameCompleted) {
-        this.timerSeconds++;
-      }
+      this.ngZone.run(() => {
+        if (!this.gameCompleted) {
+          this.timerSeconds++;
+          this.cdr.detectChanges();
+        }
+      });
     }, 1000);
   }
 
@@ -141,6 +197,12 @@ export class SudokuComponent implements OnInit, OnDestroy {
 
   selectCell(cell: Cell): void {
     if (cell.initial || this.gameCompleted) return;
+    if (cell.selected) {
+      cell.selected = false;
+      this.selectedCell = null;
+      this.cdr.detectChanges();
+      return;
+    }
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         this.board[r][c].selected = false;
@@ -148,6 +210,7 @@ export class SudokuComponent implements OnInit, OnDestroy {
     }
     cell.selected = true;
     this.selectedCell = cell;
+    this.cdr.detectChanges();
   }
 
   inputNumber(num: number): void {
@@ -155,16 +218,34 @@ export class SudokuComponent implements OnInit, OnDestroy {
     this.selectedCell.value = num;
     this.selectedCell.error = false;
     this.checkCompletionState();
+    this.cdr.detectChanges();
   }
 
   clearCell(): void {
     if (!this.selectedCell || this.selectedCell.initial || this.gameCompleted) return;
     this.selectedCell.value = 0;
     this.selectedCell.error = false;
+    this.cdr.detectChanges();
   }
 
   checkAnswers(): void {
     if (this.gameCompleted) return;
+
+    // Check if any empty cells remain
+    let emptyCount = 0;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        if (this.board[r][c].value === 0) {
+          emptyCount++;
+        }
+      }
+    }
+
+    if (emptyCount > 0) {
+      this.showErrorMessage(`ERROR: GRID INCOMPLETE (${emptyCount} NODES REMAINING).`);
+      return;
+    }
+
     let errors = 0;
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
@@ -178,7 +259,23 @@ export class SudokuComponent implements OnInit, OnDestroy {
       }
     }
     this.mistakesCount += errors;
+    if (errors > 0) {
+      this.showErrorMessage(`VERIFICATION FAILED: ${errors} INCORRECT NODES DETECTED.`);
+    }
     this.checkCompletionState();
+    this.cdr.detectChanges();
+  }
+
+  showErrorMessage(msg: string): void {
+    this.errorMessage = msg;
+    if (this.errorTimeout) clearTimeout(this.errorTimeout);
+    this.errorTimeout = setTimeout(() => {
+      this.ngZone.run(() => {
+        this.errorMessage = null;
+        this.cdr.detectChanges();
+      });
+    }, 3500);
+    this.cdr.detectChanges();
   }
 
   checkCompletionState(): void {

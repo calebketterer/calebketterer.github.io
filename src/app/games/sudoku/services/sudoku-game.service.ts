@@ -6,13 +6,13 @@ import { Cell, Difficulty, ThemeColors, ThemeColorName } from '../models/sudoku.
 })
 export class SudokuGameService {
   public themes: Record<ThemeColorName, ThemeColors> = {
-    Green: { name: 'Green', primary: '#00ff66', secondary: '#051a0b', glow: 'rgba(0, 255, 102, 0.25)' },
-    Blue: { name: 'Blue', primary: '#00b4d8', secondary: '#03131a', glow: 'rgba(0, 180, 216, 0.25)' },
-    Red: { name: 'Red', primary: '#ff334b', secondary: '#1a0508', glow: 'rgba(255, 51, 75, 0.25)' },
-    Orange: { name: 'Orange', primary: '#ff8800', secondary: '#1a0a00', glow: 'rgba(255, 136, 0, 0.25)' },
-    Yellow: { name: 'Yellow', primary: '#ffd000', secondary: '#1a1600', glow: 'rgba(255, 208, 0, 0.25)' },
-    Indigo: { name: 'Indigo', primary: '#6366f1', secondary: '#0e0e1a', glow: 'rgba(99, 102, 241, 0.25)' },
-    Violet: { name: 'Violet', primary: '#d946ef', secondary: '#1a051a', glow: 'rgba(217, 70, 239, 0.25)' }
+    Green: { name: 'Green', primary: '#00ff66', secondary: '#003311', glow: 'rgba(0, 255, 102, 0.25)' },
+    Blue: { name: 'Blue', primary: '#00b4d8', secondary: '#001a26', glow: 'rgba(0, 180, 216, 0.25)' },
+    Red: { name: 'Red', primary: '#ff334b', secondary: '#330a0f', glow: 'rgba(255, 51, 75, 0.25)' },
+    Orange: { name: 'Orange', primary: '#ff8800', secondary: '#331a00', glow: 'rgba(255, 136, 0, 0.25)' },
+    Yellow: { name: 'Yellow', primary: '#ffd000', secondary: '#332a00', glow: 'rgba(255, 208, 0, 0.25)' },
+    Indigo: { name: 'Indigo', primary: '#6366f1', secondary: '#131433', glow: 'rgba(99, 102, 241, 0.25)' },
+    Violet: { name: 'Violet', primary: '#d946ef', secondary: '#330a38', glow: 'rgba(217, 70, 239, 0.25)' }
   };
 
   constructor() {}

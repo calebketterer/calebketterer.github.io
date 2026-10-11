@@ -1,16 +1,17 @@
 <div class="sudoku-container" 
      [style.--primary]="currentPrimary.primary" 
-     [style.--secondary]="currentSecondary.secondary" 
+     [style.--secondary]="currentSecondary.primary" 
      [style.--glow]="currentPrimary.glow">
   
   <!-- MATRIX SYNCHRONIZATION OVERLAY -->
-  <app-distortion-overlay [active]="isGenerating" [progress]="generationProgress"></app-distortion-overlay>
+  <app-distortion-overlay [active]="isGenerating" [progress]="generationProgress" [text]="overlayText"></app-distortion-overlay>
 
   <!-- STATIC iPHONE 15 PORTRAIT BOUNDS WRAPPER -->
   <div class="screen-bounds">
 
     <!-- MAIN MENU VIEW -->
     <div class="menu-view" *ngIf="viewState === 'menu'">
+      
       <div class="header-section">
         <h1 class="glitch-title" data-text="SUDOKU">SUDOKU</h1>
         <p class="subtitle">SYSTEM INTERFACE v4.8</p>
@@ -38,36 +39,24 @@
         </div>
       </div>
 
-      <!-- SEPARATED COLOR PALETTE SECTIONS -->
-      <div class="palettes-wrapper">
-        <div class="theme-section">
-          <label class="section-label">PRIMARY COLOR</label>
-          <div class="theme-buttons">
-            <button *ngFor="let t of themes" 
-                    [class.active]="selectedPrimaryTheme === t"
-                    [style.background]="sudokuService.themes[t].primary"
-                    (click)="setPrimaryTheme(t)"
-                    class="sci-fi-btn"
-                    [title]="t">
-            </button>
-          </div>
-        </div>
-
-        <div class="theme-section">
-          <label class="section-label">SECONDARY DETAILS</label>
-          <div class="theme-buttons">
-            <button *ngFor="let t of themes" 
-                    [class.active]="selectedSecondaryTheme === t"
-                    [style.background]="sudokuService.themes[t].primary"
-                    (click)="setSecondaryTheme(t)"
-                    class="sci-fi-btn"
-                    [title]="t">
-            </button>
-          </div>
+      <!-- COMBINED 1-LINE PALETTE SELECTION -->
+      <div class="palette-section">
+        <label class="section-label">INTERFACE PALETTE (PRIMARY / SECONDARY)</label>
+        <div class="theme-buttons">
+          <button *ngFor="let t of themes" 
+                  [style.background]="sudokuService.themes[t].primary"
+                  (click)="selectTheme(t)"
+                  class="sci-fi-btn"
+                  [class.primary-selected]="primaryTheme === t"
+                  [class.secondary-selected]="secondaryTheme === t"
+                  [title]="t">
+            <span class="badge" *ngIf="primaryTheme === t">01</span>
+            <span class="badge secondary-badge" *ngIf="secondaryTheme === t">10</span>
+          </button>
         </div>
       </div>
 
-      <!-- INITIALIZE GAME BUTTON ABOVE FLAVOR TEXT -->
+      <!-- INITIALIZE GAME BUTTON -->
       <button class="init-btn" (click)="initializeGame()">
         <span>INITIALIZE GAME</span>
         <div class="btn-glow"></div>
@@ -90,6 +79,11 @@
       </div>
 
       <div class="game-board-title">SUDOKU</div>
+
+      <!-- ERROR NOTIFICATION BANNER -->
+      <div class="error-banner animate-fade" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
 
       <!-- SUDOKU BOARD (9x9) -->
       <div class="board-grid">
