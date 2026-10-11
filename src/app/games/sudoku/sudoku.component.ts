@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SudokuGameService } from './services/sudoku-game.service';
 import { Cell, Difficulty, ThemeColorName, ThemeColors } from './models/sudoku.model';
@@ -25,7 +25,7 @@ export class SudokuComponent implements OnInit, OnDestroy {
   difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'expert'];
   
   primaryTheme: ThemeColorName = 'Orange';
-  secondaryTheme: ThemeColorName | null = 'Blue';
+  secondaryTheme: ThemeColorName | null = 'Indigo';
   currentPrimary: ThemeColors;
   currentSecondary: ThemeColors;
 
@@ -46,7 +46,7 @@ export class SudokuComponent implements OnInit, OnDestroy {
   errorMessage: string | null = null;
   errorTimeout: any;
 
-  // Randomized animation timing variables for individual menu components (lower frequency)
+  // Randomized animation timing variables for individual menu components
   headerDelay = '0.05s';
   hsDelay = '0.15s';
   diffDelay = '0.22s';
@@ -86,6 +86,38 @@ export class SudokuComponent implements OnInit, OnDestroy {
     this.clearTimers();
   }
 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    if (this.viewState !== 'game' || this.gameCompleted || this.isGenerating) return;
+
+    // Number input 1-9
+    if (/^[1-9]$/.test(event.key)) {
+      const num = parseInt(event.key, 10);
+      this.inputNumber(num);
+      event.preventDefault();
+    } 
+    // Clear cell with Backspace, Delete, 'x', 'X'
+    else if (event.key === 'Backspace' || event.key === 'Delete' || event.key.toLowerCase() === 'x') {
+      this.clearCell();
+      event.preventDefault();
+    }
+    // Arrow key navigation on the grid
+    else if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
+      if (!this.selectedCell) {
+        this.selectCell(this.board[0][0]);
+      } else {
+        let r = this.selectedCell.row;
+        let c = this.selectedCell.col;
+        if (event.key === 'ArrowUp') r = Math.max(0, r - 1);
+        if (event.key === 'ArrowDown') r = Math.min(8, r + 1);
+        if (event.key === 'ArrowLeft') c = Math.max(0, c - 1);
+        if (event.key === 'ArrowRight') c = Math.min(8, c + 1);
+        this.selectCell(this.board[r][c]);
+      }
+      event.preventDefault();
+    }
+  }
+
   randomizeAnimTimings(): void {
     this.headerDelay = (Math.random() * 0.25).toFixed(2) + 's';
     this.hsDelay = (Math.random() * 0.35 + 0.05).toFixed(2) + 's';
@@ -94,7 +126,6 @@ export class SudokuComponent implements OnInit, OnDestroy {
     this.initDelay = (Math.random() * 0.45 + 0.15).toFixed(2) + 's';
     this.flavorDelay = (Math.random() * 0.4 + 0.1).toFixed(2) + 's';
 
-    // Increased durations significantly to decrease glitch frequency (14s - 24s range)
     this.blinkDur1 = (Math.random() * 8 + 14).toFixed(1) + 's';
     this.blinkDel1 = (Math.random() * 6).toFixed(1) + 's';
     this.blinkDur2 = (Math.random() * 8 + 16).toFixed(1) + 's';
@@ -295,35 +326,40 @@ export class SudokuComponent implements OnInit, OnDestroy {
     if (this.gameCompleted) return;
 
     let emptyCount = 0;
-    for (let r = 0; r < 9; r++) {
-      for (let c = 0; c < 9; c++) {
-        if (this.board[r][c].value === 0) {
-          emptyCount++;
-        }
-      }
-    }
+    let correctCount = 0;
+    let incorrectCount = 0;
 
-    if (emptyCount > 0) {
-      this.showErrorMessage(`ERROR: GRID INCOMPLETE (${emptyCount} NODES REMAINING).`);
-      return;
-    }
-
-    let errors = 0;
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         const cell = this.board[r][c];
-        if (cell.value !== 0 && cell.value !== cell.solution) {
-          cell.error = true;
-          errors++;
-        } else {
+        if (cell.value === 0) {
+          emptyCount++;
+        } else if (cell.value === cell.solution) {
+          correctCount++;
           cell.error = false;
+        } else {
+          incorrectCount++;
+          cell.error = true;
         }
       }
     }
-    this.mistakesCount += errors;
-    if (errors > 0) {
-      this.showErrorMessage(`VERIFICATION FAILED: ${errors} INCORRECT NODES.`);
+
+    this.mistakesCount += incorrectCount;
+
+    if (emptyCount === 81) {
+      this.showErrorMessage("All nodes are empty");
+    } else if (correctCount === 81) {
+      this.showErrorMessage("All nodes are correct");
+    } else if (incorrectCount === 81 && emptyCount === 0) {
+      this.showErrorMessage("All nodes are incorrect");
+    } else {
+      const parts: string[] = [];
+      if (correctCount > 0) parts.push(`${correctCount} Nodes are correct`);
+      if (incorrectCount > 0) parts.push(`${incorrectCount} Nodes are incorrect`);
+      if (emptyCount > 0) parts.push(`${emptyCount} Nodes are empty`);
+      this.showErrorMessage(parts.join(', '));
     }
+
     this.checkCompletionState();
     this.cdr.detectChanges();
   }

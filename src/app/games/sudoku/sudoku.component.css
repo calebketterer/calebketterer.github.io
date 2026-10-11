@@ -145,7 +145,7 @@
   99% { opacity: 1; filter: none; }
 }
 
-/* MAIN MENU VIEW (BACKGROUND GRADIENT REMOVED) */
+/* MAIN MENU VIEW */
 .menu-view {
   display: flex;
   flex-direction: column;
