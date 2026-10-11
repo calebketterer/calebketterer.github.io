@@ -1,282 +1,206 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-type Difficulty = 'easy' | 'medium' | 'hard';
+import { SudokuGameService } from './services/sudoku-game.service';
+import { Cell, Difficulty, ThemeColorName, ThemeColors } from './models/sudoku.model';
+import { SUDOKU_FLAVOR_TEXTS } from './data/flavor-text.data';
+import { DistortionOverlayComponent } from './components/distortion/distortion-overlay.component';
 
 @Component({
   selector: 'app-sudoku',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DistortionOverlayComponent],
   templateUrl: './sudoku.component.html',
-  styleUrls: ['./sudoku.component.css'],
+  styleUrls: ['./sudoku.component.css']
 })
-export class SudokuComponent implements OnDestroy {
-  readonly difficulties = [
-    { label: 'Easy', value: 'easy', blanks: 34 },
-    { label: 'Medium', value: 'medium', blanks: 44 },
-    { label: 'Hard', value: 'hard', blanks: 54 }
-  ];
-  selectedDifficulty: Difficulty = 'easy';
+export class SudokuComponent implements OnInit, OnDestroy {
+  viewState: 'menu' | 'game' = 'menu';
+  isGenerating = false;
+  generationProgress = 0;
 
-  START_PUZZLE: number[][] = [[]];
-  SOLUTION: number[][] = [[]];
+  difficulty: Difficulty = 'medium';
+  difficulties: Difficulty[] = ['easy', 'medium', 'hard', 'expert'];
+  
+  selectedPrimaryTheme: ThemeColorName = 'Green';
+  selectedSecondaryTheme: ThemeColorName = 'Blue';
+  currentPrimary: ThemeColors;
+  currentSecondary: ThemeColors;
 
-  puzzle: number[][] = [];
-  initial: number[][] = [];
-  selectedCell: { row: number; col: number } | null = null;
-  errorCells = new Set<string>();
-  correctCells = new Set<string>();
-  checkMode = false;
-  showResult = false;
-  resultMessage = '';
-  revealMode = false;
-  userInputsBackup: number[][] = [];
-  checkCount = 0;
+  highScores: Record<Difficulty, number> = { easy: 0, medium: 0, hard: 0, expert: 0 };
+  newHighScoreAchieved = false;
 
-  // Timer-related fields
-  timerValue = 0; // seconds
-  timerInterval: ReturnType<typeof setInterval> | null = null;
-  timerRunning = false;
+  flavorTexts = SUDOKU_FLAVOR_TEXTS;
+  currentFlavorIndex = 0;
+  flavorInterval: any;
 
-  // Reveal-used indicator
-  revealUsed = false;
+  board: Cell[][] = [];
+  solution: number[][] = [];
+  selectedCell: Cell | null = null;
+  timerSeconds = 0;
+  timerInterval: any;
+  gameCompleted = false;
+  mistakesCount = 0;
 
-  ngOnInit() {
-    this.newGame();
+  themes: ThemeColorName[] = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'];
+
+  constructor(public sudokuService: SudokuGameService) {
+    this.currentPrimary = this.sudokuService.themes[this.selectedPrimaryTheme];
+    this.currentSecondary = this.sudokuService.themes[this.selectedSecondaryTheme];
   }
 
-  ngOnDestroy() {
-    this.clearTimer();
+  ngOnInit(): void {
+    this.highScores = this.sudokuService.getHighScores();
+    this.startFlavorTimer();
   }
 
-  startTimer() {
-    if (this.timerInterval) return;
-    this.timerRunning = true;
+  ngOnDestroy(): void {
+    this.clearTimers();
+  }
+
+  clearTimers(): void {
+    if (this.flavorInterval) clearInterval(this.flavorInterval);
+    if (this.timerInterval) clearInterval(this.timerInterval);
+  }
+
+  startFlavorTimer(): void {
+    this.flavorInterval = setInterval(() => {
+      this.nextFlavorText();
+    }, 20000);
+  }
+
+  nextFlavorText(): void {
+    this.currentFlavorIndex = (this.currentFlavorIndex + 1) % this.flavorTexts.length;
+  }
+
+  setPrimaryTheme(themeName: ThemeColorName): void {
+    this.selectedPrimaryTheme = themeName;
+    this.currentPrimary = this.sudokuService.themes[themeName];
+  }
+
+  setSecondaryTheme(themeName: ThemeColorName): void {
+    this.selectedSecondaryTheme = themeName;
+    this.currentSecondary = this.sudokuService.themes[themeName];
+  }
+
+  setDifficulty(diff: Difficulty): void {
+    this.difficulty = diff;
+  }
+
+  initializeGame(): void {
+    this.isGenerating = true;
+    this.generationProgress = 0;
+
+    const totalDuration = 3500; // 3.5 seconds
+    const intervalTime = 35;
+    const increment = 100 / (totalDuration / intervalTime);
+
+    const progressInterval = setInterval(() => {
+      this.generationProgress += increment;
+      if (this.generationProgress >= 100) {
+        this.generationProgress = 100;
+        clearInterval(progressInterval);
+        
+        const gameData = this.sudokuService.generatePuzzle(this.difficulty);
+        this.board = gameData.board;
+        this.solution = gameData.solution;
+        this.selectedCell = null;
+        this.timerSeconds = 0;
+        this.gameCompleted = false;
+        this.newHighScoreAchieved = false;
+        this.mistakesCount = 0;
+        this.viewState = 'game';
+        
+        setTimeout(() => {
+          this.isGenerating = false;
+          this.startTimer();
+        }, 250);
+      }
+    }, intervalTime);
+  }
+
+  returnToMenu(): void {
+    this.clearTimers();
+    this.highScores = this.sudokuService.getHighScores();
+    this.viewState = 'menu';
+    this.startFlavorTimer();
+  }
+
+  startTimer(): void {
+    if (this.timerInterval) clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
-      this.timerValue++;
+      if (!this.gameCompleted) {
+        this.timerSeconds++;
+      }
     }, 1000);
   }
 
-  clearTimer() {
-    if (this.timerInterval) {
+  formatTime(totalSec: number): string {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  selectCell(cell: Cell): void {
+    if (cell.initial || this.gameCompleted) return;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        this.board[r][c].selected = false;
+      }
+    }
+    cell.selected = true;
+    this.selectedCell = cell;
+  }
+
+  inputNumber(num: number): void {
+    if (!this.selectedCell || this.selectedCell.initial || this.gameCompleted) return;
+    this.selectedCell.value = num;
+    this.selectedCell.error = false;
+    this.checkCompletionState();
+  }
+
+  clearCell(): void {
+    if (!this.selectedCell || this.selectedCell.initial || this.gameCompleted) return;
+    this.selectedCell.value = 0;
+    this.selectedCell.error = false;
+  }
+
+  checkAnswers(): void {
+    if (this.gameCompleted) return;
+    let errors = 0;
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const cell = this.board[r][c];
+        if (cell.value !== 0 && cell.value !== cell.solution) {
+          cell.error = true;
+          errors++;
+        } else {
+          cell.error = false;
+        }
+      }
+    }
+    this.mistakesCount += errors;
+    this.checkCompletionState();
+  }
+
+  checkCompletionState(): void {
+    let isFull = true;
+    let isCorrect = true;
+
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const cell = this.board[r][c];
+        if (cell.value === 0) {
+          isFull = false;
+        }
+        if (cell.value !== cell.solution) {
+          isCorrect = false;
+        }
+      }
+    }
+
+    if (isFull && isCorrect) {
+      this.gameCompleted = true;
       clearInterval(this.timerInterval);
-      this.timerInterval = null;
+      this.newHighScoreAchieved = this.sudokuService.saveHighScore(this.difficulty, this.timerSeconds);
     }
-    this.timerRunning = false;
-  }
-
-  resetTimer() {
-    this.clearTimer();
-    this.timerValue = 0;
-    this.startTimer();
-  }
-
-  formatTimer(): string {
-    const min = Math.floor(this.timerValue / 60);
-    const sec = this.timerValue % 60;
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-  }
-
-  newGame() {
-    // Generate a new valid board and puzzle for selected difficulty
-    const filled = this.generateFullSolution();
-    this.SOLUTION = filled.map(row => [...row]);
-    const blanks = this.difficulties.find(d => d.value === this.selectedDifficulty)!.blanks;
-    this.START_PUZZLE = this.removeCells(filled, blanks);
-    this.puzzle = this.START_PUZZLE.map(row => [...row]);
-    this.initial = this.START_PUZZLE.map(row => [...row]);
-    this.selectedCell = null;
-    this.errorCells.clear();
-    this.correctCells.clear();
-    this.checkMode = false;
-    this.showResult = false;
-    this.resultMessage = '';
-    this.revealMode = false;
-    this.userInputsBackup = [];
-    this.checkCount = 0;
-    this.revealUsed = false;
-    this.resetTimer();
-  }
-
-  selectCell(row: number, col: number) {
-    if (!this.revealMode && this.initial[row][col] === 0) {
-      this.selectedCell = { row, col };
-      this.startTimer();
-    }
-  }
-
-  handleKey(event: KeyboardEvent) {
-    if (this.revealMode) return;
-    if (!this.selectedCell) return;
-    const { row, col } = this.selectedCell;
-    this.startTimer();
-    if (event.key >= '1' && event.key <= '9') {
-      this.puzzle[row][col] = Number(event.key);
-    } else if (
-      event.key === 'Backspace' ||
-      event.key === 'Delete' ||
-      event.key === '0'
-    ) {
-      this.puzzle[row][col] = 0;
-    }
-    if (this.checkMode) {
-      this.checkMode = false;
-      this.errorCells.clear();
-      this.correctCells.clear();
-      this.showResult = false;
-    }
-  }
-
-  onDifficultyChange(event: Event) {
-    this.selectedDifficulty = (event.target as HTMLSelectElement).value as Difficulty;
-    this.newGame();
-  }
-
-  isInitial(row: number, col: number) {
-    return this.initial[row][col] !== 0;
-  }
-
-  isErrorCell(row: number, col: number) {
-    return this.errorCells.has(`${row},${col}`);
-  }
-
-  isCorrectCell(row: number, col: number) {
-    return this.correctCells.has(`${row},${col}`);
-  }
-
-  reset() {
-    this.puzzle = this.START_PUZZLE.map(row => [...row]);
-    this.selectedCell = null;
-    this.errorCells.clear();
-    this.correctCells.clear();
-    this.checkMode = false;
-    this.showResult = false;
-    this.resultMessage = '';
-    this.revealMode = false;
-    this.userInputsBackup = [];
-    this.checkCount = 0;
-    this.revealUsed = false;
-    this.resetTimer();
-  }
-
-  checkAnswers() {
-    if (this.revealMode) return;
-    this.errorCells.clear();
-    this.correctCells.clear();
-    let allFilled = true;
-    let allCorrect = true;
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        if (this.initial[i][j] !== 0) continue;
-        if (this.puzzle[i][j] === 0) {
-          allFilled = false;
-        }
-        if (this.puzzle[i][j] !== 0 && this.puzzle[i][j] !== this.SOLUTION[i][j]) {
-          this.errorCells.add(`${i},${j}`);
-          allCorrect = false;
-        } else if (this.puzzle[i][j] === this.SOLUTION[i][j]) {
-          this.correctCells.add(`${i},${j}`);
-        }
-      }
-    }
-    this.checkMode = true;
-    this.showResult = true;
-    this.checkCount++;
-    if (!allFilled) {
-      this.resultMessage = 'Keep going! Some cells are still empty.';
-    } else if (allCorrect) {
-      this.resultMessage = '🎉 Congratulations! You solved it!';
-      this.clearTimer();
-    } else {
-      this.resultMessage = 'Some answers are incorrect. Try again!';
-    }
-  }
-
-  toggleRevealSolution() {
-    if (!this.revealMode) {
-      this.userInputsBackup = this.puzzle.map((row: number[]) => row.slice());
-      this.puzzle = this.SOLUTION.map((row: number[]) => row.slice());
-      this.revealMode = true;
-      this.selectedCell = null;
-      this.revealUsed = true;
-    } else {
-      if (this.userInputsBackup.length === 9) {
-        this.puzzle = this.userInputsBackup.map((row: number[]) => row.slice());
-      }
-      this.revealMode = false;
-    }
-    this.errorCells.clear();
-    this.correctCells.clear();
-    this.checkMode = false;
-    this.showResult = false;
-    this.resultMessage = '';
-  }
-
-  // -- SUDOKU GENERATION LOGIC --
-
-  generateFullSolution(): number[][] {
-    const grid = Array.from({ length: 9 }, () => Array(9).fill(0));
-    this.solveSudoku(grid, true);
-    return grid;
-  }
-
-  removeCells(solved: number[][], blanks: number): number[][] {
-    const puzzle = solved.map(row => [...row]);
-    let count = 0;
-    while (count < blanks) {
-      const row = Math.floor(Math.random() * 9);
-      const col = Math.floor(Math.random() * 9);
-      if (puzzle[row][col] !== 0) {
-        puzzle[row][col] = 0;
-        count++;
-      }
-    }
-    return puzzle;
-  }
-
-  solveSudoku(grid: number[][], randomize: boolean = false): boolean {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (grid[row][col] === 0) {
-          let numbers = [1,2,3,4,5,6,7,8,9];
-          if (randomize) {
-            // Shuffle numbers for more random boards
-            for (let i = numbers.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
-            }
-          }
-          for (let num of numbers) {
-            if (this.isSafe(grid, row, col, num)) {
-              grid[row][col] = num;
-              if (this.solveSudoku(grid, randomize)) {
-                return true;
-              }
-              grid[row][col] = 0;
-            }
-          }
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  isSafe(grid: number[][], row: number, col: number, num: number): boolean {
-    for (let i = 0; i < 9; i++) {
-      if (grid[row][i] === num || grid[i][col] === num) {
-        return false;
-      }
-    }
-    const boxRow = row - row % 3;
-    const boxCol = col - col % 3;
-    for (let r = 0; r < 3; r++) {
-      for (let c = 0; c < 3; c++) {
-        if (grid[boxRow + r][boxCol + c] === num) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 }
