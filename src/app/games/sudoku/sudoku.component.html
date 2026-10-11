@@ -7,17 +7,17 @@
   <app-distortion-overlay [active]="isGenerating" [progress]="generationProgress" [text]="overlayText"></app-distortion-overlay>
 
   <!-- STATIC iPHONE 15 PORTRAIT BOUNDS WRAPPER -->
-  <div class="screen-bounds">
+  <div class="screen-bounds" [style.--blur-dur]="blurDur" [style.--blur-del]="blurDel">
 
     <!-- MAIN MENU VIEW -->
     <div class="menu-view" *ngIf="viewState === 'menu'" [class.glitch-out]="isGlitchOut">
       
-      <div class="header-section" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.05s;">
+      <div class="header-section" [class.glitch-in]="isGlitchIn" [style.animation-delay]="headerDelay">
         <h1 class="glitch-title" data-text="SUDOKU">SUDOKU</h1>
         <p class="subtitle">SYSTEM INTERFACE v4.8</p>
       </div>
 
-      <div class="high-scores-box random-blink" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.12s;">
+      <div class="high-scores-box random-blink" [class.glitch-in]="isGlitchIn" [style.animation-delay]="hsDelay" [style.--blink-dur]="blinkDur1" [style.--blink-del]="blinkDel1">
         <div class="hs-title">HIGH SCORES</div>
         <div class="hs-grid">
           <div class="hs-item"><span>EASY</span> <strong>{{ formatTime(highScores.easy) }}</strong></div>
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="difficulty-section" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.18s;">
+      <div class="difficulty-section" [class.glitch-in]="isGlitchIn" [style.animation-delay]="diffDelay">
         <label class="section-label">DIFFICULTY</label>
         <div class="diff-buttons">
           <button *ngFor="let diff of difficulties" 
@@ -40,7 +40,7 @@
       </div>
 
       <!-- COMBINED 1-LINE PALETTE SELECTION -->
-      <div class="palette-section random-blink" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.24s;">
+      <div class="palette-section random-blink" [class.glitch-in]="isGlitchIn" [style.animation-delay]="paletteDelay" [style.--blink-dur]="blinkDur2" [style.--blink-del]="blinkDel2">
         <label class="section-label">INTERFACE PALETTE (PRIMARY / SECONDARY)</label>
         <div class="theme-buttons">
           <button *ngFor="let t of themes" 
@@ -57,13 +57,13 @@
       </div>
 
       <!-- INITIALIZE GAME BUTTON -->
-      <button class="init-btn" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.3s;" (click)="initializeGame()">
+      <button class="init-btn" [class.glitch-in]="isGlitchIn" [style.animation-delay]="initDelay" (click)="initializeGame()">
         <span>INITIALIZE GAME</span>
         <div class="btn-glow"></div>
       </button>
 
       <!-- FLAVOR TEXT SECTION -->
-      <div class="flavor-text-box random-blink" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.36s;" (click)="nextFlavorText()" title="Click for next diagnostic">
+      <div class="flavor-text-box random-blink" [class.glitch-in]="isGlitchIn" [style.animation-delay]="flavorDelay" [style.--blink-dur]="blinkDur3" [style.--blink-del]="blinkDel3" (click)="nextFlavorText()" title="Click for next diagnostic">
         <div class="flavor-content animate-fade">
           {{ flavorTexts[currentFlavorIndex] }}
         </div>

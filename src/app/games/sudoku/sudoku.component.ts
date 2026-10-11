@@ -46,6 +46,24 @@ export class SudokuComponent implements OnInit, OnDestroy {
   errorMessage: string | null = null;
   errorTimeout: any;
 
+  // Randomized animation timing variables for individual menu components (lower frequency)
+  headerDelay = '0.05s';
+  hsDelay = '0.15s';
+  diffDelay = '0.22s';
+  paletteDelay = '0.08s';
+  initDelay = '0.35s';
+  flavorDelay = '0.28s';
+
+  blinkDur1 = '16s';
+  blinkDel1 = '1.2s';
+  blinkDur2 = '20s';
+  blinkDel2 = '3.4s';
+  blinkDur3 = '18s';
+  blinkDel3 = '0.5s';
+
+  blurDur = '14s';
+  blurDel = '0s';
+
   themes: ThemeColorName[] = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet'];
 
   constructor(
@@ -60,11 +78,32 @@ export class SudokuComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.highScores = this.sudokuService.getHighScores();
     this.startFlavorTimer();
+    this.randomizeAnimTimings();
     this.triggerGlitchIn();
   }
 
   ngOnDestroy(): void {
     this.clearTimers();
+  }
+
+  randomizeAnimTimings(): void {
+    this.headerDelay = (Math.random() * 0.25).toFixed(2) + 's';
+    this.hsDelay = (Math.random() * 0.35 + 0.05).toFixed(2) + 's';
+    this.diffDelay = (Math.random() * 0.4 + 0.1).toFixed(2) + 's';
+    this.paletteDelay = (Math.random() * 0.3 + 0.02).toFixed(2) + 's';
+    this.initDelay = (Math.random() * 0.45 + 0.15).toFixed(2) + 's';
+    this.flavorDelay = (Math.random() * 0.4 + 0.1).toFixed(2) + 's';
+
+    // Increased durations significantly to decrease glitch frequency (14s - 24s range)
+    this.blinkDur1 = (Math.random() * 8 + 14).toFixed(1) + 's';
+    this.blinkDel1 = (Math.random() * 6).toFixed(1) + 's';
+    this.blinkDur2 = (Math.random() * 8 + 16).toFixed(1) + 's';
+    this.blinkDel2 = (Math.random() * 6).toFixed(1) + 's';
+    this.blinkDur3 = (Math.random() * 8 + 15).toFixed(1) + 's';
+    this.blinkDel3 = (Math.random() * 5).toFixed(1) + 's';
+
+    this.blurDur = (Math.random() * 6 + 12).toFixed(1) + 's';
+    this.blurDel = (Math.random() * 4).toFixed(1) + 's';
   }
 
   clearTimers(): void {
@@ -88,6 +127,7 @@ export class SudokuComponent implements OnInit, OnDestroy {
 
   triggerGlitchIn(): void {
     this.isGlitchIn = true;
+    this.randomizeAnimTimings();
     setTimeout(() => {
       this.ngZone.run(() => {
         this.isGlitchIn = false;

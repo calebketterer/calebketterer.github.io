@@ -17,7 +17,7 @@
   overflow: hidden;
 }
 
-/* HARD BORDER = PRIMARY, DOTTED BORDER = SECONDARY */
+/* HARD BORDER = PRIMARY, DOTTED INNER BORDER WITH RANDOMIZED GAUSSIAN BLUR */
 .screen-bounds {
   width: 393px;
   height: 852px;
@@ -42,6 +42,7 @@
   border: 1px dashed var(--secondary);
   border-radius: 12px;
   pointer-events: none;
+  animation: gaussianBlurBorder var(--blur-dur, 14s) infinite var(--blur-del, 0s);
 }
 
 @keyframes dual-bg-pulse {
@@ -49,7 +50,14 @@
   100% { box-shadow: 0 0 35px var(--secondary), inset 0 0 20px rgba(0,0,0,0.9); }
 }
 
-/* PREY GLITCH-IN & RANDOM BLINK ANIMATIONS */
+@keyframes gaussianBlurBorder {
+  0%, 88%, 100% { filter: blur(0px); opacity: 0.85; }
+  91% { filter: blur(2.2px); opacity: 0.35; }
+  94% { filter: blur(0.8px); opacity: 0.9; }
+  96% { filter: blur(1.5px); opacity: 0.5; }
+}
+
+/* PREY GLITCH-IN & LOW-FREQUENCY RANDOM BLINK ANIMATIONS */
 .glitch-in {
   opacity: 0;
   animation: preyGlitchIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
@@ -60,7 +68,7 @@
 }
 
 .random-blink {
-  animation: randomBlink 8s infinite;
+  animation: randomBlink var(--blink-dur, 18s) infinite var(--blink-del, 0s);
 }
 
 @keyframes preyGlitchIn {
@@ -130,14 +138,14 @@
 }
 
 @keyframes randomBlink {
-  0%, 88%, 100% { opacity: 1; filter: none; transform: none; }
-  90% { opacity: 0.3; filter: brightness(2.2) contrast(200%) blur(1px); transform: translateX(2px); }
-  92% { opacity: 0.9; filter: none; transform: translateX(-1px); }
-  94% { opacity: 0.2; filter: brightness(0.1) contrast(300%); }
-  96% { opacity: 1; filter: none; }
+  0%, 94%, 100% { opacity: 1; filter: none; transform: none; }
+  95% { opacity: 0.2; filter: brightness(2.6) contrast(240%) blur(2px); transform: translateX(3px) skewX(-3deg); }
+  97% { opacity: 0.9; filter: none; transform: translateX(-1px); }
+  98% { opacity: 0.1; filter: brightness(0.05) contrast(300%); }
+  99% { opacity: 1; filter: none; }
 }
 
-/* MENU VIEW */
+/* MAIN MENU VIEW (BACKGROUND GRADIENT REMOVED) */
 .menu-view {
   display: flex;
   flex-direction: column;
@@ -145,12 +153,13 @@
   padding: 26px 20px 20px 20px;
   box-sizing: border-box;
   justify-content: space-between;
+  background: transparent;
 }
 
-/* SUDOKU TITLE MOVED DOWN MORE */
+/* SUDOKU TITLE MOVED DOWN FURTHER */
 .header-section {
   text-align: center;
-  padding-top: 22px;
+  padding-top: 36px;
 }
 
 /* DUAL-COLOR SUDOKU TITLE */
