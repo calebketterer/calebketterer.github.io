@@ -10,14 +10,14 @@
   <div class="screen-bounds">
 
     <!-- MAIN MENU VIEW -->
-    <div class="menu-view" *ngIf="viewState === 'menu'">
+    <div class="menu-view" *ngIf="viewState === 'menu'" [class.glitch-out]="isGlitchOut">
       
-      <div class="header-section">
+      <div class="header-section" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.05s;">
         <h1 class="glitch-title" data-text="SUDOKU">SUDOKU</h1>
         <p class="subtitle">SYSTEM INTERFACE v4.8</p>
       </div>
 
-      <div class="high-scores-box">
+      <div class="high-scores-box random-blink" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.12s;">
         <div class="hs-title">HIGH SCORES</div>
         <div class="hs-grid">
           <div class="hs-item"><span>EASY</span> <strong>{{ formatTime(highScores.easy) }}</strong></div>
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="difficulty-section">
+      <div class="difficulty-section" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.18s;">
         <label class="section-label">DIFFICULTY</label>
         <div class="diff-buttons">
           <button *ngFor="let diff of difficulties" 
@@ -40,7 +40,7 @@
       </div>
 
       <!-- COMBINED 1-LINE PALETTE SELECTION -->
-      <div class="palette-section">
+      <div class="palette-section random-blink" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.24s;">
         <label class="section-label">INTERFACE PALETTE (PRIMARY / SECONDARY)</label>
         <div class="theme-buttons">
           <button *ngFor="let t of themes" 
@@ -57,13 +57,13 @@
       </div>
 
       <!-- INITIALIZE GAME BUTTON -->
-      <button class="init-btn" (click)="initializeGame()">
+      <button class="init-btn" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.3s;" (click)="initializeGame()">
         <span>INITIALIZE GAME</span>
         <div class="btn-glow"></div>
       </button>
 
       <!-- FLAVOR TEXT SECTION -->
-      <div class="flavor-text-box" (click)="nextFlavorText()" title="Click for next diagnostic">
+      <div class="flavor-text-box random-blink" [class.glitch-in]="isGlitchIn" style="animation-delay: 0.36s;" (click)="nextFlavorText()" title="Click for next diagnostic">
         <div class="flavor-content animate-fade">
           {{ flavorTexts[currentFlavorIndex] }}
         </div>
@@ -79,11 +79,6 @@
       </div>
 
       <div class="game-board-title">SUDOKU</div>
-
-      <!-- ERROR NOTIFICATION BANNER -->
-      <div class="error-banner animate-fade" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
 
       <!-- SUDOKU BOARD (9x9) -->
       <div class="board-grid">
@@ -120,9 +115,16 @@
         </div>
       </div>
 
-      <!-- CHECK ANSWERS BUTTON -->
-      <div class="game-actions">
-        <button class="action-btn" (click)="checkAnswers()">CHECK ANSWERS</button>
+      <!-- FIXED-HEIGHT ERROR CONTAINER & CHECK ANSWERS BUTTON -->
+      <div class="action-section-wrapper">
+        <div class="error-container">
+          <div class="error-banner animate-fade" *ngIf="errorMessage">
+            {{ errorMessage }}
+          </div>
+        </div>
+        <div class="game-actions">
+          <button class="action-btn" (click)="checkAnswers()">CHECK ANSWERS</button>
+        </div>
       </div>
 
       <!-- VICTORY OVERLAY -->
