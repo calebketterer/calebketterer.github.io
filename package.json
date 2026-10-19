@@ -9,12 +9,12 @@
     "postbuild": "node audit-components.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "wholeapptree": "find . -maxdepth 5 -not -path \"*/.*\" -not -path \"./.angular*\" -not -path \"./.vscode*\" -not -path \"./dist*\" -not -path \"./node_modules*\" | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
-    "apptree": "find src/app -maxdepth 5 -not -path \"src/app/games/*/*\" -not -path \"src/app/pages/*/*\" -not -path \"*/.*\" | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
-    "diepapptree": "find src/app/games/diep -not -path \"*/.*\" | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
-    "snakeapptree": "find src/app/games/snake -not -path \"*/.*\" | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\"",
-    "sudokuapptree": "find src/app/games/sudoku -not -path \"*/.*\" | sed -e \"s/[^-][^\\/]*\\// |/g\" -e \"s/|\\([^ ]\\)/|-\\1/\""
 
+    "wholeapptree": "node generate-context.js all",
+    "apptree": "node generate-context.js app",
+    "diepapptree": "node generate-context.js diep",
+    "snakeapptree": "node generate-context.js snake",
+    "sudokuapptree": "node generate-context.js sudoku"
   },
   "private": true,
   "dependencies": {
