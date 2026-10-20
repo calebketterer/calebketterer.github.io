@@ -3,6 +3,7 @@ import { HomeComponent } from './home/home.component';
 import { DiepPageComponent } from './pages/diep/diep-page.component';
 import { SnakePageComponent } from './pages/snake/snake-page.component';
 import { SudokuPageComponent } from './pages/sudoku/sudoku-page.component';
+import { LightbikePageComponent } from './pages/lightbike/lightbike-page.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -10,5 +11,6 @@ export const routes: Routes = [
   { path: 'diep', component: DiepPageComponent },
   { path: 'snake', component: SnakePageComponent },
   { path: 'sudoku', component: SudokuPageComponent },
+  { path: 'lightbike', component: LightbikePageComponent },
   { path: '**', redirectTo: 'home' }
 ];
