@@ -42,7 +42,7 @@ export class ResourceLinksComponent {
     {
       title: 'Paper Gwent Drive Storage',
       category: 'ASSETS & ARCHIVE',
-      description: 'Cloud drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
+      description: 'Google drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
       targetUrl: 'https://drive.google.com/drive/folders/1buJl4aGBJxhNY5lkLGh8VHywMnii-BaU'
     },
   ];

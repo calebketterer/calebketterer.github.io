@@ -54,7 +54,7 @@ function getFileDescription(filePath) {
     return '';
 }
 
-function walkDir(dir, prefix = '', depth = 0, maxDepth = 5) {
+function walkDir(dir, prefix = '', depth = 0, maxDepth = 10) {
     let output = '';
     if (depth > maxDepth) return output;
 
