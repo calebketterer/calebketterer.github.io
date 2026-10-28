@@ -1,3 +1,4 @@
+// Physics engine class handling particle movement, orbital velocities, mouse gravity attraction, and explosions.
 import { EngineConfig, Particle } from './particle.model';
 
 export class ParticlePhysics {

@@ -1,3 +1,4 @@
+// Reusable card component displaying metadata, descriptions, and sanitized embedded iframe content previews.
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';

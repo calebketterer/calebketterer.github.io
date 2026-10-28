@@ -1,3 +1,4 @@
+// Control center component providing interactive UI controls for adjusting background particle engine parameters.
 import { Component, Input, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BackgroundEngineComponent } from '../../../shared/background-engine/background-engine.component';

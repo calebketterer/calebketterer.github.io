@@ -1,3 +1,4 @@
+// Resource links component displaying curated external GitHub profiles, documentation hubs, and game design links.
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PreviewCardComponent } from '../preview-card/preview-card.component';

@@ -1,3 +1,4 @@
+// Root application component housing the global navigation bar, router outlet, and background engine wrapper.
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './core/navbar/navbar.component';

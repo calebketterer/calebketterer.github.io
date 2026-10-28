@@ -1,3 +1,4 @@
+// Spawner class managing particle creation, color palettes, spawn positions, and lifecycle management states.
 import { EngineConfig, Particle } from './particle.model';
 
 export class ParticleSpawner {

@@ -1,3 +1,4 @@
+// Angular navbar component handling responsive collapse state, navigation links, and external routing.
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';

@@ -1,3 +1,4 @@
+// Home page component integrating the background engine, control center, and resource link sections.
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResourceLinksComponent } from './components/resource-links/resource-links.component';

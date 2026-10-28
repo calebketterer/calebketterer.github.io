@@ -1,3 +1,4 @@
+// Renderer class handling HTML5 canvas drawing for background gradients, grid lines, debug overlays, and particles.
 import { EngineConfig, Particle } from './particle.model';
 
 export class ParticleRenderer {

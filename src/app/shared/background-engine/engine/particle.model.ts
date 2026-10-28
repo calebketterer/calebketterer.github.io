@@ -1,3 +1,4 @@
+// TypeScript interfaces defining individual particle properties and background engine configuration structures.
 export interface Particle {
   id: number;
   x: number;
