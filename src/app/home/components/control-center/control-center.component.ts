@@ -29,14 +29,14 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   private transitionTimeout: any = null;
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
-      this.isContentVisible = true; // Always visible on mobile/portrait
+    if (typeof window !== 'undefined' && window.innerWidth <= 780) {
+      this.isContentVisible = true;
     }
   }
 
   @HostListener('window:resize')
   onWindowResize(): void {
-    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+    if (typeof window !== 'undefined' && window.innerWidth <= 780) {
       this.isContentVisible = true;
       this.isAnimatingOut = false;
       if (this.transitionTimeout) {
@@ -47,19 +47,17 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   }
 
   toggleVisibility(): void {
-    // Disable minimizing on mobile/portrait mode entirely
-    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+    if (typeof window !== 'undefined' && window.innerWidth <= 780) {
       return;
     }
 
     if (this.isContentVisible) {
       this.isAnimatingOut = true;
       if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
-      // Give enough time for the prey glitch out animation to finish before sliding outer box shut
       this.transitionTimeout = setTimeout(() => {
         this.isContentVisible = false;
         this.isAnimatingOut = false;
-      }, 450);
+      }, 400);
     } else {
       if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
       this.isAnimatingOut = false;
