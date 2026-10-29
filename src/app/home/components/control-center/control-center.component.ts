@@ -1,5 +1,5 @@
 // Control center component providing interactive UI controls for adjusting background particle engine parameters.
-import { Component, Input, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BackgroundEngineComponent } from '../../../shared/background-engine/background-engine.component';
 
@@ -12,9 +12,10 @@ type ControlTarget = 'cap' | 'spawn' | 'minLife' | 'maxLife';
   templateUrl: './control-center.component.html',
   styleUrl: './control-center.component.css'
 })
-export class ControlCenterComponent implements OnDestroy {
+export class ControlCenterComponent implements OnInit, OnDestroy {
   @Input() bgEngine!: BackgroundEngineComponent;
 
+  isContentVisible = true;
   isPlaying = true;
   currentSpeed = 1;
   maxParticles = 200;
@@ -24,6 +25,16 @@ export class ControlCenterComponent implements OnDestroy {
 
   private holdTimer: any = null;
   private holdInterval: any = null;
+
+  ngOnInit(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      this.isContentVisible = false;
+    }
+  }
+
+  toggleVisibility(): void {
+    this.isContentVisible = !this.isContentVisible;
+  }
 
   toggleEngine(): void {
     if (this.bgEngine) {
