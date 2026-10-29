@@ -123,6 +123,7 @@
   border-radius: 4px;
   letter-spacing: 1.5px;
   width: fit-content;
+  white-space: nowrap;
 }
 
 .section-title-wrapper .desktop-click-title {
@@ -343,7 +344,7 @@
   }
 }
 
-/* Compact / Mobile / Portrait handling: Switch version badge inline and right-aligned, description below */
+/* Compact / Mobile / Portrait handling: Version badge scales down smoothly to fit inline without overlapping */
 @media (max-width: 600px) {
   .control-panel-box {
     padding-left: 3.5rem !important;
@@ -375,13 +376,23 @@
   .section-title-wrapper .hero-badge {
     order: 2;
     margin-bottom: 0;
-    margin-left: auto; /* Right-aligned next to title */
+    margin-left: auto;
+    font-size: 0.6rem !important; /* Scaled down smoothly to fit inline */
+    padding: 0.15rem 0.4rem !important;
+    letter-spacing: 1px !important;
   }
 
   .section-title-wrapper .section-subtitle {
     order: 3;
     width: 100%;
     margin-top: 0.5rem;
+  }
+}
+
+/* Extra tight viewports: Badge shrinks further or hides only when space is entirely exhausted */
+@media (max-width: 500px) {
+  .section-title-wrapper .hero-badge {
+    display: none !important; /* Disappears only on extremely narrow widths where scaling isn't enough */
   }
 }
 

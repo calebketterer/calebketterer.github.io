@@ -29,14 +29,14 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   private transitionTimeout: any = null;
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.innerWidth <= 780) {
+    if (typeof window !== 'undefined' && window.innerWidth <= 600) {
       this.isContentVisible = true;
     }
   }
 
   @HostListener('window:resize')
   onWindowResize(): void {
-    if (typeof window !== 'undefined' && window.innerWidth <= 780) {
+    if (typeof window !== 'undefined' && window.innerWidth <= 600) {
       this.isContentVisible = true;
       this.isAnimatingOut = false;
       if (this.transitionTimeout) {
@@ -47,7 +47,7 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   }
 
   toggleVisibility(): void {
-    if (typeof window !== 'undefined' && window.innerWidth <= 780) {
+    if (typeof window !== 'undefined' && window.innerWidth <= 600) {
       return;
     }
 
