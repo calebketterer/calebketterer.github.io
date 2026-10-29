@@ -1,3 +1,4 @@
+// Resource links component displaying curated external GitHub profiles, documentation hubs, and game design links.
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PreviewCardComponent } from '../preview-card/preview-card.component';
@@ -42,7 +43,7 @@ export class ResourceLinksComponent {
     {
       title: 'Paper Gwent Drive Storage',
       category: 'ASSETS & ARCHIVE',
-      description: 'Cloud drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
+      description: 'Google drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
       targetUrl: 'https://drive.google.com/drive/folders/1buJl4aGBJxhNY5lkLGh8VHywMnii-BaU'
     },
   ];

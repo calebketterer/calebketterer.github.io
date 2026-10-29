@@ -1,3 +1,4 @@
+// Angular wrapper component initializing the background particle canvas and routing global mouse and touch events.
 import { Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';

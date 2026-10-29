@@ -1,3 +1,4 @@
+// Core particle system manager coordinating animation loops, mouse interactions, physics, rendering, and lifecycle updates.
 import { EngineConfig, Particle } from './particle.model';
 import { ParticleSpawner } from './particle-spawner';
 import { ParticlePhysics } from './particle-physics';

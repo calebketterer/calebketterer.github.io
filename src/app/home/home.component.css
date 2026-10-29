@@ -8,6 +8,13 @@
   transition: padding-top 0.4s ease;
 }
 
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
 .hero-banner {
   background: rgba(11, 19, 32, 0.7);
   backdrop-filter: blur(12px);
@@ -17,21 +24,15 @@
   padding: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   position: relative;
-}
-
-.banner-top-row {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hero-left-group {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 700px;
 }
 
 .hero-badge {
@@ -61,13 +62,14 @@
   line-height: 1.6;
 }
 
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 768px) {
   .home-container {
     padding-top: 1rem;
-  }
-
-  .banner-top-row {
-    flex-direction: column;
-    align-items: flex-start;
   }
 }

@@ -54,7 +54,7 @@ function getFileDescription(filePath) {
     return '';
 }
 
-function walkDir(dir, prefix = '', depth = 0, maxDepth = 5) {
+function walkDir(dir, prefix = '', depth = 0, maxDepth = 10) {
     let output = '';
     if (depth > maxDepth) return output;
 
@@ -94,7 +94,7 @@ function walkDir(dir, prefix = '', depth = 0, maxDepth = 5) {
         } else {
             const description = getFileDescription(fullPath);
             if (description) {
-                output += `${prefix}${pointer}${entry.name} — *${description}*\n`;
+                output += `${prefix}${pointer}${entry.name} — "${description}"\n`;
             } else {
                 output += `${prefix}${pointer}${entry.name}\n`;
             }

@@ -1,38 +1,207 @@
+.control-panel-box {
+  background: rgba(11, 19, 32, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 8px;
+  padding: 2rem;
+  padding-left: 3.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 240px;
+  width: 100%;
+  max-width: 100%;
+  /* Slower, smooth 1.2s transition for expansion and contraction in both directions */
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              padding 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              max-width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.desktop-sidebar-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3rem;
+  height: 100%;
+  background: rgba(0, 229, 255, 0.05);
+  border-right: 1px solid rgba(0, 229, 255, 0.2);
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.3s ease;
+  z-index: 5;
+}
+
+.desktop-sidebar-title:hover {
+  background: rgba(0, 229, 255, 0.15);
+}
+
+.rotated-title {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  color: #00e5ff;
+  letter-spacing: 2px;
+  white-space: pre-line;
+  line-height: 1.4;
+  text-align: center;
+  height: auto;
+  max-height: 100%;
+}
+
+.control-panel-box.collapsed-drawer {
+  padding-left: 3rem;
+  padding-right: 0.5rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  width: 3rem;
+  min-width: 3rem;
+  max-width: 3rem;
+  min-height: 240px;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              padding 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              max-width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-drawer-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: opacity 0.5s ease 0.15s, visibility 0.5s ease;
+  width: 100%;
+}
+
+.panel-drawer-content.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+}
+
+.panel-layout-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.section-title-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: 3px solid #00e5ff;
+  padding-left: 1rem;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+  cursor: default;
+}
+
+/* Default Desktop Badge and Title Order */
+.section-title-wrapper .hero-badge {
+  order: 1;
+  margin-bottom: 0.5rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 1.5px;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.section-title-wrapper .desktop-click-title {
+  order: 2;
+  margin-bottom: 0.5rem;
+}
+
+.section-title-wrapper .section-subtitle {
+  order: 3;
+  font-size: 0.8rem;
+  color: #8faec5;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.desktop-title-main {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.3rem;
+  color: #00e5ff;
+  margin: 0;
+  letter-spacing: 1.5px;
+  line-height: 1.3;
+  white-space: pre-line;
+}
+
+.grid-collapse-wrapper {
+  display: grid;
+  grid-template-rows: 1fr;
+  overflow: visible;
+  width: 100%;
+}
+
+.grid-collapse-inner {
+  overflow: visible;
+  width: 100%;
+}
+
 .controls-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .engine-controls {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.3rem;
+  width: 100%;
+  justify-content: space-between;
+  box-sizing: border-box;
 }
 
 .particle-cap-controls {
   background: rgba(8, 16, 26, 0.4);
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 4px;
   border: 1px solid rgba(0, 229, 255, 0.1);
   box-sizing: border-box;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .control-label {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #8faec5;
-  letter-spacing: 1px;
-  margin-right: 0.25rem;
+  letter-spacing: 0.5px;
+  margin-right: 0.2rem;
   white-space: nowrap;
 }
 
 .particle-counter {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #00e5ff;
-  min-width: 85px;
+  min-width: 70px;
   text-align: center;
   white-space: nowrap;
 }
@@ -40,7 +209,7 @@
 .action-buttons {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   flex-shrink: 0;
 }
 
@@ -49,8 +218,8 @@
   border: 1px solid rgba(0, 229, 255, 0.2);
   color: #8faec5;
   font-family: 'Courier New', Courier, monospace;
-  font-size: 0.75rem;
-  padding: 0.3rem 0.65rem;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
   cursor: pointer;
   backdrop-filter: blur(6px);
@@ -63,15 +232,14 @@
   box-sizing: border-box;
 }
 
-/* Fixes button size jumping when toggling between PLAY and PAUSE */
 .glass-ctrl-btn.play-pause-btn {
-  min-width: 82px;
+  min-width: 76px;
 }
 
 .glass-ctrl-btn.hold-btn {
   font-weight: bold;
-  padding: 0.2rem 0.55rem;
-  min-width: 28px;
+  padding: 0.15rem 0.45rem;
+  min-width: 24px;
 }
 
 .glass-ctrl-btn:hover {
@@ -92,7 +260,143 @@
   border-color: #00e5ff;
 }
 
-@media (max-width: 768px) {
+/* Individual Config Row Animation Effects */
+.panel-drawer-content:not(.is-hidden):not(.is-animating-out) .card-animator {
+  animation: preyGlitchIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  animation-delay: calc(var(--i) * 0.08s + 0.5s);
+  will-change: transform, opacity;
+  clip-path: none;
+  overflow: visible;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.panel-drawer-content.is-animating-out .card-animator {
+  animation: preyGlitchOut 0.4s cubic-bezier(0.7, 0, 0.84, 0) both;
+  animation-delay: calc((4 - var(--i)) * 0.05s);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+@keyframes preyGlitchIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateX(-6px);
+    filter: brightness(0) contrast(200%) blur(3px);
+    clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%);
+  }
+  20% {
+    opacity: 0.8;
+    transform: scale(1.02) translateX(4px) skewX(-3deg);
+    filter: brightness(2.5) contrast(150%) drop-shadow(0 0 12px rgba(0, 229, 255, 0.8));
+    clip-path: polygon(0 25%, 100% 25%, 100% 85%, 0 85%);
+  }
+  35% {
+    opacity: 0.2;
+    transform: scale(0.98) translateX(-2px) skewX(2deg);
+    filter: brightness(0.2) blur(1px);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(1.01) translateX(1px);
+    filter: brightness(1.6) contrast(110%);
+    clip-path: none;
+  }
+  80% {
+    opacity: 0.7;
+    transform: scale(0.995);
+    filter: brightness(0.8);
+    clip-path: none;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateX(0) skewX(0);
+    filter: brightness(1) contrast(100%) blur(0px);
+    clip-path: none;
+  }
+}
+
+@keyframes preyGlitchOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+    filter: brightness(1) contrast(100%);
+    clip-path: none;
+  }
+  30% {
+    opacity: 0.8;
+    transform: scale(1.02) translateX(-8px) skewX(6deg);
+    filter: brightness(2) contrast(200%) drop-shadow(-4px 0 8px rgba(0, 229, 255, 0.9));
+    clip-path: polygon(0 40%, 100% 40%, 100% 60%, 0 60%);
+  }
+  65% {
+    opacity: 0.3;
+    transform: scale(0.92) translateX(5px) skewX(-4deg);
+    filter: brightness(0.1) blur(2px);
+    clip-path: polygon(0 80%, 100% 80%, 100% 100%, 0 100%);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) translateX(0) scaleY(0.1);
+    filter: brightness(0) blur(6px);
+    clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  }
+}
+
+/* Compact / Mobile / Portrait handling: Version badge scales down smoothly to fit inline without overlapping */
+@media (max-width: 600px) {
+  .control-panel-box {
+    padding-left: 3.5rem !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+
+  .desktop-sidebar-title {
+    cursor: default !important;
+  }
+
+  .panel-layout-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .section-title-wrapper {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .section-title-wrapper .desktop-click-title {
+    order: 1;
+    margin-bottom: 0;
+  }
+
+  .section-title-wrapper .hero-badge {
+    order: 2;
+    margin-bottom: 0;
+    margin-left: auto;
+    font-size: 0.6rem !important; /* Scaled down smoothly to fit inline */
+    padding: 0.15rem 0.4rem !important;
+    letter-spacing: 1px !important;
+  }
+
+  .section-title-wrapper .section-subtitle {
+    order: 3;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Extra tight viewports: Badge shrinks further or hides only when space is entirely exhausted */
+@media (max-width: 500px) {
+  .section-title-wrapper .hero-badge {
+    display: none !important; /* Disappears only on extremely narrow widths where scaling isn't enough */
+  }
+}
+
+@media (max-width: 750px) {
   .controls-wrapper {
     align-items: stretch;
     width: 100%;
@@ -109,27 +413,27 @@
   }
 
   .control-label {
-    font-size: 0.65rem;
-    letter-spacing: 0.5px;
+    font-size: 0.6rem;
+    letter-spacing: 0.3px;
     margin-right: 0;
   }
 
   .particle-counter {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     min-width: auto;
   }
 
   .glass-ctrl-btn {
-    font-size: 0.65rem;
-    padding: 0.25rem 0.4rem;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.35rem;
   }
 
   .glass-ctrl-btn.play-pause-btn {
-    min-width: 72px;
+    min-width: 68px;
   }
 
   .glass-ctrl-btn.hold-btn {
-    padding: 0.15rem 0.35rem;
-    min-width: 22px;
+    padding: 0.1rem 0.3rem;
+    min-width: 20px;
   }
 }

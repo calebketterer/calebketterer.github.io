@@ -1,3 +1,4 @@
+// Game viewport component managing zoom scaling, fit-to-width toggles, fullscreen states, and mobile device detection.
 import { Component, ChangeDetectionStrategy, signal, computed, ElementRef, ViewChild, HostListener, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 

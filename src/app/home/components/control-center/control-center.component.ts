@@ -1,4 +1,5 @@
-import { Component, Input, OnDestroy } from '@angular/core';
+// Control center component providing interactive UI controls for adjusting background particle engine parameters.
+import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BackgroundEngineComponent } from '../../../shared/background-engine/background-engine.component';
 
@@ -11,9 +12,11 @@ type ControlTarget = 'cap' | 'spawn' | 'minLife' | 'maxLife';
   templateUrl: './control-center.component.html',
   styleUrl: './control-center.component.css'
 })
-export class ControlCenterComponent implements OnDestroy {
+export class ControlCenterComponent implements OnInit, OnDestroy {
   @Input() bgEngine!: BackgroundEngineComponent;
 
+  isContentVisible = true;
+  isAnimatingOut = false;
   isPlaying = true;
   currentSpeed = 1;
   maxParticles = 200;
@@ -23,6 +26,44 @@ export class ControlCenterComponent implements OnDestroy {
 
   private holdTimer: any = null;
   private holdInterval: any = null;
+  private transitionTimeout: any = null;
+
+  ngOnInit(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 600) {
+      this.isContentVisible = true;
+    }
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 600) {
+      this.isContentVisible = true;
+      this.isAnimatingOut = false;
+      if (this.transitionTimeout) {
+        clearTimeout(this.transitionTimeout);
+        this.transitionTimeout = null;
+      }
+    }
+  }
+
+  toggleVisibility(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 600) {
+      return;
+    }
+
+    if (this.isContentVisible) {
+      this.isAnimatingOut = true;
+      if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
+      this.transitionTimeout = setTimeout(() => {
+        this.isContentVisible = false;
+        this.isAnimatingOut = false;
+      }, 400);
+    } else {
+      if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
+      this.isAnimatingOut = false;
+      this.isContentVisible = true;
+    }
+  }
 
   toggleEngine(): void {
     if (this.bgEngine) {
@@ -81,10 +122,10 @@ export class ControlCenterComponent implements OnDestroy {
     }
   }
 
-  startHoldAdjust(target: ControlTarget, initialSign: number, baseStep: number = 1): void {
+  startHoldAdjust(target: ControlTarget, initialSign: number, baseSpeed: number = 1): void {
     this.stopHoldAdjust();
 
-    let stepMagnitude = baseStep;
+    let stepMagnitude = baseSpeed;
     this.adjustValue(target, initialSign, stepMagnitude);
 
     const speedMs = 120;
@@ -114,5 +155,6 @@ export class ControlCenterComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stopHoldAdjust();
+    if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
   }
 }

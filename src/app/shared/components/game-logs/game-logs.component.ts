@@ -1,3 +1,4 @@
+// Game logs component accepting structured metadata and section inputs to render detailed contextual entries.
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
