@@ -36,6 +36,12 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
     this.isContentVisible = !this.isContentVisible;
   }
 
+  onMobileHeaderClick(): void {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      this.toggleVisibility();
+    }
+  }
+
   toggleEngine(): void {
     if (this.bgEngine) {
       this.isPlaying = this.bgEngine.togglePlay();

@@ -10,6 +10,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 240px; /* Prevents vertical squishing/square collapse when minimized */
   transition: padding-left 0.4s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
 }
@@ -29,6 +30,7 @@
     padding-top: 2rem;
     padding-bottom: 2rem;
     max-width: 3rem;
+    min-height: 240px; /* Maintains full height matching expanded state */
   }
 
   .desktop-sidebar-title {
@@ -43,6 +45,8 @@
     height: 100%;
     background: rgba(0, 229, 255, 0.05);
     border-right: 1px solid rgba(0, 229, 255, 0.2);
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
     cursor: pointer;
     user-select: none;
     transition: background 0.3s ease;
@@ -65,6 +69,11 @@
     text-align: center;
     height: auto;
     max-height: 100%;
+  }
+
+  /* Disable clicking/toggling on header text on desktop */
+  .section-title-wrapper {
+    cursor: default !important;
   }
 }
 
@@ -97,7 +106,6 @@
 .section-title-wrapper {
   border-left: 3px solid #00e5ff;
   padding-left: 1rem;
-  cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   transition: border-color 0.4s ease, opacity 0.4s ease;
@@ -107,8 +115,13 @@
   justify-content: center;
 }
 
-.section-title-wrapper:hover .desktop-title-main {
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+@media (max-width: 1023px) {
+  .section-title-wrapper {
+    cursor: pointer;
+  }
+  .section-title-wrapper:hover .desktop-title-main {
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  }
 }
 
 .desktop-title-main {
@@ -254,7 +267,7 @@
   border-color: #00e5ff;
 }
 
-/* Individual Config Row Prey Glitch Animation Effects (Sequenced after drawer slide) */
+/* Individual Config Row Prey Glitch Animation Effects (Sequenced after drawer slide finishes) */
 .panel-drawer-content:not(.is-hidden) .card-animator {
   animation: preyGlitchIn 0.38s cubic-bezier(0.25, 1, 0.5, 1) both;
   animation-delay: calc(var(--i) * 0.08s + 0.4s);
@@ -304,7 +317,7 @@
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 750px) {
   .panel-layout-grid {
     grid-template-columns: 1fr;
     gap: 1rem;

@@ -1,13 +1,13 @@
 <div class="control-panel-box" [class.collapsed-drawer]="!isContentVisible">
-  <!-- Desktop Left Rotated Title Button (always visible drawer handle) -->
+  <!-- Desktop Left Rotated Title Button (Sidebar Handle) -->
   <div class="desktop-sidebar-title" (click)="toggleVisibility()" title="Toggle Control Panel">
     <span class="rotated-title">Background<br>Control Panel</span>
   </div>
 
   <div class="panel-drawer-content" [class.is-hidden]="!isContentVisible">
     <div class="panel-layout-grid">
-      <!-- Left Column / Header Info (Inline with configs) -->
-      <div class="section-title-wrapper" tabindex="0" (click)="toggleVisibility()">
+      <!-- Left Column / Header Info (Mobile clickable toggle, non-clickable on desktop) -->
+      <div class="section-title-wrapper mobile-toggle" tabindex="0" (click)="onMobileHeaderClick()">
         <div class="hero-badge">CONFIG_PANEL v1.1</div>
         <div class="desktop-click-title">
           <span class="desktop-title-main">Control Panel</span>
