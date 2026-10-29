@@ -1,5 +1,5 @@
 // Control center component providing interactive UI controls for adjusting background particle engine parameters.
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BackgroundEngineComponent } from '../../../shared/background-engine/background-engine.component';
 
@@ -16,6 +16,7 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   @Input() bgEngine!: BackgroundEngineComponent;
 
   isContentVisible = true;
+  isAnimatingOut = false;
   isPlaying = true;
   currentSpeed = 1;
   maxParticles = 200;
@@ -25,20 +26,44 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
 
   private holdTimer: any = null;
   private holdInterval: any = null;
+  private transitionTimeout: any = null;
 
   ngOnInit(): void {
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
-      this.isContentVisible = false;
+    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+      this.isContentVisible = true; // Always visible on mobile/portrait
+    }
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+      this.isContentVisible = true;
+      this.isAnimatingOut = false;
+      if (this.transitionTimeout) {
+        clearTimeout(this.transitionTimeout);
+        this.transitionTimeout = null;
+      }
     }
   }
 
   toggleVisibility(): void {
-    this.isContentVisible = !this.isContentVisible;
-  }
+    // Disable minimizing on mobile/portrait mode entirely
+    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+      return;
+    }
 
-  onMobileHeaderClick(): void {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      this.toggleVisibility();
+    if (this.isContentVisible) {
+      this.isAnimatingOut = true;
+      if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
+      // Give enough time for the prey glitch out animation to finish before sliding outer box shut
+      this.transitionTimeout = setTimeout(() => {
+        this.isContentVisible = false;
+        this.isAnimatingOut = false;
+      }, 450);
+    } else {
+      if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
+      this.isAnimatingOut = false;
+      this.isContentVisible = true;
     }
   }
 
@@ -99,10 +124,10 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
     }
   }
 
-  startHoldAdjust(target: ControlTarget, initialSign: number, baseStep: number = 1): void {
+  startHoldAdjust(target: ControlTarget, initialSign: number, baseSpeed: number = 1): void {
     this.stopHoldAdjust();
 
-    let stepMagnitude = baseStep;
+    let stepMagnitude = baseSpeed;
     this.adjustValue(target, initialSign, stepMagnitude);
 
     const speedMs = 120;
@@ -132,5 +157,6 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stopHoldAdjust();
+    if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
   }
 }
