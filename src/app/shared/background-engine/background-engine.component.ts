@@ -1,8 +1,9 @@
 // Angular wrapper component initializing the background particle canvas and routing global mouse and touch events.
-import { Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { ParticleSystem } from './engine/particle-system';
 
 @Component({
@@ -18,12 +19,12 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   private engine = new ParticleSystem();
   private isHomePage = true;
   private resizeTimeout: any;
+  private routerSub: Subscription;
 
   constructor(
-    private ngZone: NgZone,
     private router: Router
   ) {
-    this.router.events
+    this.routerSub = this.router.events
       .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const url = event.urlAfterRedirects;
@@ -36,16 +37,17 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.ngZone.runOutsideAngular(() => {
-      if (this.canvasRef?.nativeElement) {
-        this.engine.init(this.canvasRef.nativeElement);
-      }
-    });
+    if (this.canvasRef?.nativeElement) {
+      this.engine.init(this.canvasRef.nativeElement);
+    }
   }
 
   ngOnDestroy(): void {
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
+    }
+    if (this.routerSub) {
+      this.routerSub.unsubscribe();
     }
     this.engine.destroy();
   }
@@ -159,7 +161,6 @@ export class BackgroundEngineComponent implements OnInit, OnDestroy {
     if (this.isInteractionDisabled()) {
       return;
     }
-    this.engine.releaseChargeExplosion();
     this.engine.clearMousePosition();
   }
 

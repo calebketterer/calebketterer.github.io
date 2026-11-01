@@ -1,22 +1,26 @@
-// Core particle system manager coordinating animation loops, mouse interactions, physics, rendering, and lifecycle updates.
-import { EngineConfig, Particle } from './particle.model';
+// Core particle system manager coordinating animation loops, mouse interactions, physics, rendering, and independent speed-corrected ripple animations.
+import { EngineConfig, Particle, Planet } from './particle.model';
 import { ParticleSpawner } from './particle-spawner';
 import { ParticlePhysics } from './particle-physics';
 import { ParticleRenderer } from './particle-renderer';
+import { ParticlePlanets } from './particle-planets';
 
 export class ParticleSystem {
   private canvas!: HTMLCanvasElement;
   private ctx!: CanvasRenderingContext2D;
   private animationFrameId: number | null = null;
   private particles: Particle[] = [];
+  private planets: Planet[] = [];
 
   private spawner = new ParticleSpawner();
   private physics = new ParticlePhysics();
   private renderer = new ParticleRenderer();
+  private planetManager = new ParticlePlanets();
 
   private width = 0;
   private height = 0;
   private isPaused = false;
+  private isWindowHidden = false;
   private speedMultiplier = 1.0;
 
   private mouseX = -9999;
@@ -43,7 +47,22 @@ export class ParticleSystem {
     maxLifespanMs: 60000,
     baseSpeed: 0.6,
     gridSize: 60,
-    mouseGravityRadius: 220
+    mouseGravityRadius: 220,
+    planetCount: 3
+  };
+
+  private handleVisibilityChange = (): void => {
+    if (typeof document !== 'undefined') {
+      this.isWindowHidden = document.hidden;
+      if (this.isWindowHidden) {
+        if (this.animationFrameId !== null) {
+          cancelAnimationFrame(this.animationFrameId);
+          this.animationFrameId = null;
+        }
+      } else if (!this.isPaused) {
+        this.startLoop();
+      }
+    }
   };
 
   public init(canvas: HTMLCanvasElement): void {
@@ -59,27 +78,33 @@ export class ParticleSystem {
       this.spawnParticle();
     }
 
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', this.handleVisibilityChange);
+    }
+
     this.startLoop();
   }
 
   public resize(force = false): void {
     if (!this.canvas) return;
 
-    const newWidth = window.innerWidth;
-    const newHeight = window.innerHeight;
+    const rect = this.canvas.getBoundingClientRect();
+    const displayWidth = rect.width ? Math.round(rect.width) : window.innerWidth;
+    const displayHeight = rect.height ? Math.round(rect.height) : window.innerHeight;
 
-    // Ignore mobile address bar collapses / overscroll height changes
-    // unless forced on init or horizontal width actually changes (orientation change)
-    const widthChanged = Math.abs(newWidth - this.width) > 1;
+    const widthChanged = Math.abs(displayWidth - this.width) > 1;
+    const heightChanged = Math.abs(displayHeight - this.height) > 1;
 
-    if (!force && !widthChanged && this.width > 0 && this.height > 0) {
+    if (!force && !widthChanged && !heightChanged && this.width > 0 && this.height > 0) {
       return;
     }
 
-    this.width = newWidth;
-    this.height = newHeight;
+    this.width = displayWidth;
+    this.height = displayHeight;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
+
+    this.planets = this.planetManager.generatePlanets(this.config.planetCount, this.width, this.height);
   }
 
   public getActiveParticleCount(): number {
@@ -169,14 +194,14 @@ export class ParticleSystem {
     this.clickRippleRadius = 10;
     this.isRippling = true;
 
-    this.physics.applyExplosion(this.particles, this.chargeX, this.chargeY, intensity);
+    this.physics.applyExplosion(this.particles, this.chargeX, this.chargeY, intensity, this.speedMultiplier);
 
     this.isChargeHolding = false;
   }
 
   public togglePlay(): boolean {
     this.isPaused = !this.isPaused;
-    if (!this.isPaused) {
+    if (!this.isPaused && !this.isWindowHidden) {
       this.startLoop();
     } else if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
@@ -190,7 +215,7 @@ export class ParticleSystem {
   }
 
   private startLoop = (): void => {
-    if (this.isPaused) return;
+    if (this.isPaused || this.isWindowHidden) return;
 
     this.update();
     this.draw();
@@ -209,16 +234,18 @@ export class ParticleSystem {
     }
 
     if (this.isRippling) {
-      this.clickRippleRadius += 10 * this.speedMultiplier;
+      this.clickRippleRadius += (10 / Math.max(1, this.speedMultiplier)) * this.speedMultiplier;
       if (this.clickRippleRadius > 400) {
         this.isRippling = false;
       }
     }
 
+    this.planetManager.updatePlanets(this.planets, this.width, this.height, this.speedMultiplier);
     this.spawner.updateLifecycle(this.particles, this.speedMultiplier, this.width, this.height, now);
 
     this.physics.updateParticles(
       this.particles,
+      this.planets,
       this.config,
       this.speedMultiplier,
       this.width,
@@ -238,6 +265,11 @@ export class ParticleSystem {
     this.renderer.drawBackground(this.ctx, this.width, this.height, this.colorCycle);
     this.renderer.drawGrid(this.ctx, this.width, this.height, this.config.gridSize);
     this.renderer.drawDebugOverlay(this.ctx);
+    this.renderer.drawOrbitPaths(this.ctx, this.planets, this.width, this.height);
+
+    this.renderer.drawBackgroundParticles(this.ctx, this.particles);
+    this.renderer.drawPlanets(this.ctx, this.planets);
+    this.renderer.drawForegroundParticles(this.ctx, this.particles);
 
     if (this.isChargeHolding) {
       this.renderer.drawChargeAura(this.ctx, this.chargeX, this.chargeY, this.chargeStartTime);
@@ -246,11 +278,12 @@ export class ParticleSystem {
     if (this.isRippling) {
       this.renderer.drawRipple(this.ctx, this.clickRippleX, this.clickRippleY, this.clickRippleRadius);
     }
-
-    this.renderer.drawParticles(this.ctx, this.particles);
   }
 
   public destroy(): void {
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+    }
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
