@@ -56,13 +56,10 @@
   border-radius: 4px;
   letter-spacing: 1.5px;
   white-space: nowrap;
-  transition: opacity 0.2s ease;
 }
 
-.hero-badge.fade-out {
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
+.hero-banner.minimized .hero-badge {
+  display: none;
 }
 
 .command-action-buttons {
@@ -140,6 +137,14 @@
   letter-spacing: 2px;
   line-height: 1.2;
   font-family: 'Courier New', Courier, monospace;
+  white-space: nowrap;
+}
+
+/* Strictly triggers smooth 7vw scaling ONLY when width drops to 462px or below */
+@media (max-width: 462px) {
+  .hero-title {
+    font-size: 7vw;
+  }
 }
 
 .cursor {
@@ -163,11 +168,34 @@
 @media (max-width: 768px) {
   .hero-banner.minimized {
     width: 100% !important;
-    height: auto !important;
-    padding: 1.5rem !important;
+    height: 52px !important;
+    padding: .9rem !important;
   }
+
+  .hero-banner {
+    height: auto !important;
+    min-height: unset;
+  }
+  
   .hero-banner.minimized .command-action-buttons {
     position: static !important;
     transform: none !important;
+  }
+
+  .hero-banner.minimized .hero-badge {
+    display: block !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner.minimized {
+    width: 100% !important;
+    height: 52px !important;
+    padding: .9rem !important;
+  }
+
+  .hero-banner {
+    height: auto !important;
+    min-height: unset;
   }
 }
