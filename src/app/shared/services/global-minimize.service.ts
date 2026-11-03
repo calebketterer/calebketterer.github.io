@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { timer } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { GlitchHandler } from '../utils/glitch-handler';
 
 export interface MinimizeTarget {
@@ -23,6 +23,7 @@ export class GlobalMinimizeService {
   private controlCenterTarget?: MinimizeTarget;
   private centralCommandTarget?: CentralCommandTarget;
 
+  private activeTimeline?: Subscription;
   private _isMinimized = false;
   get isMinimized(): boolean {
     return this._isMinimized;
@@ -41,6 +42,11 @@ export class GlobalMinimizeService {
   }
 
   toggleGlobalMinimize(): void {
+    // Cancel any ongoing timer queue immediately to allow smooth mid-animation reversal
+    if (this.activeTimeline) {
+      this.activeTimeline.unsubscribe();
+    }
+
     this._isMinimized = !this._isMinimized;
 
     if (this.centralCommandTarget) {
@@ -49,55 +55,71 @@ export class GlobalMinimizeService {
 
     if (this._isMinimized) {
       // --- CENTRALIZED MINIMIZATION TIMELINE (--) ---
+      this.activeTimeline = new Subscription();
+
       // 1. Resource Links collapse immediately
       if (this.resourceTarget?.isContentVisible) {
         this.resourceTarget.toggleVisibility();
       }
 
       // 2. Resource Links glitch out at 300ms
-      timer(300).subscribe(() => {
-        this.resourceTarget?.glitch.triggerGlitchOut();
-      });
+      this.activeTimeline.add(
+        timer(300).subscribe(() => {
+          this.resourceTarget?.glitch.triggerGlitchOut();
+        })
+      );
 
       // 3. Control Center collapse starts at 400ms
-      timer(400).subscribe(() => {
-        if (this.controlCenterTarget?.isContentVisible) {
-          this.controlCenterTarget.toggleVisibility();
-        }
-      });
+      this.activeTimeline.add(
+        timer(400).subscribe(() => {
+          if (this.controlCenterTarget?.isContentVisible) {
+            this.controlCenterTarget.toggleVisibility();
+          }
+        })
+      );
 
-      // 4. Control Center glitch out at 1600ms (after 1.2s slide finishes)
-      timer(1500).subscribe(() => {
-        this.controlCenterTarget?.glitch.triggerGlitchOut();
-      });
+      // 4. Control Center glitch out at 1600ms
+      this.activeTimeline.add(
+        timer(1600).subscribe(() => {
+          this.controlCenterTarget?.glitch.triggerGlitchOut();
+        })
+      );
 
-      // 5. Central Command minimizes at 2100ms (after Control Center glitch out finishes)
-      timer(2000).subscribe(() => {
-        this.centralCommandTarget?.minimize();
-      });
+      // 5. Central Command minimizes at 2100ms
+      this.activeTimeline.add(
+        timer(2100).subscribe(() => {
+          this.centralCommandTarget?.minimize();
+        })
+      );
 
     } else {
       // --- CENTRALIZED RESTORE TIMELINE (++) ---
+      this.activeTimeline = new Subscription();
+
       // 1. Central Command expands first
       this.centralCommandTarget?.restore();
 
       // 2. Control Center restores at 400ms
-      timer(400).subscribe(() => {
-        this.controlCenterTarget?.glitch.triggerGlitchIn(() => {
-          if (this.controlCenterTarget && !this.controlCenterTarget.isContentVisible) {
-            this.controlCenterTarget.toggleVisibility();
-          }
-        });
-      });
+      this.activeTimeline.add(
+        timer(400).subscribe(() => {
+          this.controlCenterTarget?.glitch.triggerGlitchIn(() => {
+            if (this.controlCenterTarget && !this.controlCenterTarget.isContentVisible) {
+              this.controlCenterTarget.toggleVisibility();
+            }
+          });
+        })
+      );
 
       // 3. Resource Links restores at 1400ms
-      timer(1400).subscribe(() => {
-        this.resourceTarget?.glitch.triggerGlitchIn(() => {
-          if (this.resourceTarget && !this.resourceTarget.isContentVisible) {
-            this.resourceTarget.toggleVisibility();
-          }
-        });
-      });
+      this.activeTimeline.add(
+        timer(1400).subscribe(() => {
+          this.resourceTarget?.glitch.triggerGlitchIn(() => {
+            if (this.resourceTarget && !this.resourceTarget.isContentVisible) {
+              this.resourceTarget.toggleVisibility();
+            }
+          });
+        })
+      );
     }
   }
 }
