@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GlobalMinimizeService } from '../../../shared/services/global-minimize.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-central-command',
@@ -23,31 +22,11 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
 
   private typingTimer: any = null;
   private expandTimeout: any = null;
-  private sub!: Subscription;
 
   constructor(private globalMinimizeService: GlobalMinimizeService) {}
 
   ngOnInit(): void {
-    this.sub = this.globalMinimizeService.action$.subscribe(action => {
-      this.isGlobalMinimized = this.globalMinimizeService.isMinimized;
-      if (action === 'minimize') {
-        setTimeout(() => {
-          if (!this.isMinimized) {
-            this.isMinimized = true;
-            this.isTypingActive = false;
-          }
-        }, 1600);
-      } else if (action === 'restore') {
-        if (this.isMinimized) {
-          this.isMinimized = false;
-          this.typedTitle = '';
-          this.typedDesc = '';
-          this.expandTimeout = setTimeout(() => {
-            this.startTypingEffect();
-          }, 1050);
-        }
-      }
-    });
+    this.globalMinimizeService.registerCentralCommand(this);
 
     if (typeof window !== 'undefined' && window.innerWidth <= 768) {
       this.isMinimized = false;
@@ -56,6 +35,24 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
     } else {
       this.typedTitle = this.fullTitle;
       this.typedDesc = this.fullDesc;
+    }
+  }
+
+  minimize(): void {
+    if (!this.isMinimized) {
+      this.isMinimized = true;
+      this.isTypingActive = false;
+    }
+  }
+
+  restore(): void {
+    if (this.isMinimized) {
+      this.isMinimized = false;
+      this.typedTitle = '';
+      this.typedDesc = '';
+      this.expandTimeout = setTimeout(() => {
+        this.startTypingEffect();
+      }, 1050);
     }
   }
 
@@ -73,15 +70,9 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
   toggleMinimize(): void {
     this.clearTimers();
     if (this.isMinimized) {
-      this.isMinimized = false;
-      this.typedTitle = '';
-      this.typedDesc = '';
-      this.expandTimeout = setTimeout(() => {
-        this.startTypingEffect();
-      }, 1050);
+      this.restore();
     } else {
-      this.isMinimized = true;
-      this.isTypingActive = false;
+      this.minimize();
     }
   }
 
@@ -123,6 +114,5 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearTimers();
-    if (this.sub) this.sub.unsubscribe();
   }
 }

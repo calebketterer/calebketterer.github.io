@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { BackgroundEngineComponent } from '../../../shared/background-engine/background-engine.component';
 import { GlobalMinimizeService } from '../../../shared/services/global-minimize.service';
 import { GlitchHandler } from '../../../shared/utils/glitch-handler';
-import { Subscription } from 'rxjs';
 
 type ControlTarget = 'cap' | 'spawn' | 'minLife' | 'maxLife';
 
@@ -35,31 +34,11 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   private holdTimer: any = null;
   private holdInterval: any = null;
   private transitionTimeout: any = null;
-  private sub!: Subscription;
 
   constructor(private globalMinimizeService: GlobalMinimizeService) {}
 
   ngOnInit(): void {
-    this.sub = this.globalMinimizeService.action$.subscribe(action => {
-      if (action === 'minimize') {
-        setTimeout(() => {
-          if (this.isContentVisible) {
-            this.toggleVisibility();
-          }
-          setTimeout(() => {
-            this.glitch.triggerGlitchOut();
-          },900);
-        }, 400);
-      } else if (action === 'restore') {
-        setTimeout(() => {
-          this.glitch.triggerGlitchIn(() => {
-            if (!this.isContentVisible) {
-              this.toggleVisibility();
-            }
-          });
-        }, 400);
-      }
-    });
+    this.globalMinimizeService.registerControlCenter(this);
 
     if (typeof window !== 'undefined' && window.innerWidth <= 600) {
       this.isContentVisible = true;
@@ -188,6 +167,5 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopHoldAdjust();
     if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
-    if (this.sub) this.sub.unsubscribe();
   }
 }

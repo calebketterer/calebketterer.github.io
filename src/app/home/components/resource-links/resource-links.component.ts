@@ -1,9 +1,8 @@
-import { Component, HostBinding, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PreviewCardComponent } from '../preview-card/preview-card.component';
 import { GlobalMinimizeService } from '../../../shared/services/global-minimize.service';
 import { GlitchHandler } from '../../../shared/utils/glitch-handler';
-import { Subscription } from 'rxjs';
 
 interface ResourceItem {
   title: string;
@@ -20,7 +19,7 @@ interface ResourceItem {
   templateUrl: './resource-links.component.html',
   styleUrl: './resource-links.component.css'
 })
-export class ResourceLinksComponent implements OnInit, OnDestroy {
+export class ResourceLinksComponent implements OnInit {
   glitch = new GlitchHandler();
 
   @HostBinding('class.prey-glitch-out') get isGlitchingOut() { return this.glitch.isGlitchingOut; }
@@ -56,34 +55,13 @@ export class ResourceLinksComponent implements OnInit, OnDestroy {
     },
   ];
 
-  private sub!: Subscription;
-
   constructor(private globalMinimizeService: GlobalMinimizeService) {}
 
   ngOnInit(): void {
-    this.sub = this.globalMinimizeService.action$.subscribe(action => {
-      if (action === 'minimize') {
-        if (this.isContentVisible) {
-          this.toggleVisibility();
-        }
-        setTimeout(() => {
-          this.glitch.triggerGlitchOut();
-        }, 300);
-      } else if (action === 'restore') {
-        setTimeout(() => {
-          this.glitch.triggerGlitchIn(() => {
-            this.isContentVisible = true;
-          });
-        }, 800);
-      }
-    });
+    this.globalMinimizeService.registerResource(this);
   }
 
   toggleVisibility(): void {
     this.isContentVisible = !this.isContentVisible;
-  }
-
-  ngOnDestroy(): void {
-    if (this.sub) this.sub.unsubscribe();
   }
 }
