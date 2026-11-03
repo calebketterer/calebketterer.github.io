@@ -1,7 +1,8 @@
-// Resource links component displaying curated external GitHub profiles, documentation hubs, and game design links.
-import { Component } from '@angular/core';
+import { Component, HostBinding, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PreviewCardComponent } from '../preview-card/preview-card.component';
+import { GlobalMinimizeService } from '../../../shared/services/global-minimize.service';
+import { GlitchHandler } from '../../../shared/utils/glitch-handler';
 
 interface ResourceItem {
   title: string;
@@ -18,7 +19,13 @@ interface ResourceItem {
   templateUrl: './resource-links.component.html',
   styleUrl: './resource-links.component.css'
 })
-export class ResourceLinksComponent {
+export class ResourceLinksComponent implements OnInit {
+  glitch = new GlitchHandler();
+
+  @HostBinding('class.prey-glitch-out') get isGlitchingOut() { return this.glitch.isGlitchingOut; }
+  @HostBinding('class.prey-glitch-in') get isGlitchingIn() { return this.glitch.isGlitchingIn; }
+  @HostBinding('class.fully-hidden') get isFullyHidden() { return this.glitch.isFullyHidden; }
+
   isContentVisible = true;
 
   resources: ResourceItem[] = [
@@ -47,6 +54,12 @@ export class ResourceLinksComponent {
       targetUrl: 'https://drive.google.com/drive/folders/1buJl4aGBJxhNY5lkLGh8VHywMnii-BaU'
     },
   ];
+
+  constructor(private globalMinimizeService: GlobalMinimizeService) {}
+
+  ngOnInit(): void {
+    this.globalMinimizeService.registerResource(this);
+  }
 
   toggleVisibility(): void {
     this.isContentVisible = !this.isContentVisible;

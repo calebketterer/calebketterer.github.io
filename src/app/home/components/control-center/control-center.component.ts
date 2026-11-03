@@ -1,7 +1,8 @@
-// Control center component providing interactive UI controls for adjusting background particle engine parameters.
-import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener, HostBinding } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BackgroundEngineComponent } from '../../../shared/background-engine/background-engine.component';
+import { GlobalMinimizeService } from '../../../shared/services/global-minimize.service';
+import { GlitchHandler } from '../../../shared/utils/glitch-handler';
 
 type ControlTarget = 'cap' | 'spawn' | 'minLife' | 'maxLife';
 
@@ -14,6 +15,12 @@ type ControlTarget = 'cap' | 'spawn' | 'minLife' | 'maxLife';
 })
 export class ControlCenterComponent implements OnInit, OnDestroy {
   @Input() bgEngine!: BackgroundEngineComponent;
+
+  glitch = new GlitchHandler();
+
+  @HostBinding('class.prey-glitch-out') get isGlitchingOut() { return this.glitch.isGlitchingOut; }
+  @HostBinding('class.prey-glitch-in') get isGlitchingIn() { return this.glitch.isGlitchingIn; }
+  @HostBinding('class.fully-hidden') get isFullyHidden() { return this.glitch.isFullyHidden; }
 
   isContentVisible = true;
   isAnimatingOut = false;
@@ -28,7 +35,11 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   private holdInterval: any = null;
   private transitionTimeout: any = null;
 
+  constructor(private globalMinimizeService: GlobalMinimizeService) {}
+
   ngOnInit(): void {
+    this.globalMinimizeService.registerControlCenter(this);
+
     if (typeof window !== 'undefined' && window.innerWidth <= 600) {
       this.isContentVisible = true;
     }

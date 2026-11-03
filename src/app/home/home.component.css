@@ -15,53 +15,6 @@
   align-items: stretch;
 }
 
-.hero-banner {
-  background: rgba(11, 19, 32, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 229, 255, 0.2);
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.hero-left-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.hero-badge {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.75rem;
-  color: #00e5ff;
-  background: rgba(0, 229, 255, 0.1);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  padding: 0.2rem 0.6rem;
-  border-radius: 4px;
-  letter-spacing: 1.5px;
-  margin-bottom: 0.75rem;
-}
-
-.hero-title {
-  font-size: 2.2rem;
-  color: #ffffff;
-  margin: 0;
-  font-weight: 700;
-  letter-spacing: 2px;
-}
-
-.hero-desc {
-  font-size: 1rem;
-  color: #9cb3c5;
-  margin: 0.75rem 0 0 0;
-  line-height: 1.6;
-}
-
 @media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: 1fr;

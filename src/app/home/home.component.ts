@@ -1,8 +1,8 @@
-// Home page component integrating the background engine, control center, and resource link sections.
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResourceLinksComponent } from './components/resource-links/resource-links.component';
 import { ControlCenterComponent } from './components/control-center/control-center.component';
+import { CentralCommandComponent } from './components/central-command/central-command.component';
 import { BackgroundEngineComponent } from '../shared/background-engine/background-engine.component';
 
 @Component({
@@ -12,6 +12,7 @@ import { BackgroundEngineComponent } from '../shared/background-engine/backgroun
     CommonModule,
     ResourceLinksComponent,
     ControlCenterComponent,
+    CentralCommandComponent,
     BackgroundEngineComponent
   ],
   templateUrl: './home.component.html',
