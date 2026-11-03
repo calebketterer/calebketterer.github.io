@@ -3,20 +3,21 @@ export class GlitchHandler {
   isGlitchingIn = false;
   isFullyHidden = false;
 
-  triggerGlitchOut(onComplete: () => void): void {
+  triggerGlitchOut(onComplete?: () => void): void {
     this.isGlitchingOut = true;
     setTimeout(() => {
       this.isGlitchingOut = false;
       this.isFullyHidden = true;
-      onComplete();
+      if (onComplete) onComplete();
     }, 500);
   }
 
-  triggerGlitchIn(): void {
+  triggerGlitchIn(onComplete?: () => void): void {
     this.isFullyHidden = false;
     this.isGlitchingIn = true;
     setTimeout(() => {
       this.isGlitchingIn = false;
+      if (onComplete) onComplete();
     }, 500);
   }
 }

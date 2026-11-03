@@ -23,23 +23,29 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
 
   private typingTimer: any = null;
   private expandTimeout: any = null;
-  private globalSub!: Subscription;
+  private sub!: Subscription;
 
   constructor(private globalMinimizeService: GlobalMinimizeService) {}
 
   ngOnInit(): void {
-    this.globalSub = this.globalMinimizeService.isMinimized$.subscribe(minimized => {
-      this.isGlobalMinimized = minimized;
-      if (minimized && !this.isMinimized) {
-        this.isMinimized = true;
-        this.isTypingActive = false;
-      } else if (!minimized && this.isMinimized) {
-        this.isMinimized = false;
-        this.typedTitle = '';
-        this.typedDesc = '';
-        this.expandTimeout = setTimeout(() => {
-          this.startTypingEffect();
-        }, 1050);
+    this.sub = this.globalMinimizeService.action$.subscribe(action => {
+      this.isGlobalMinimized = this.globalMinimizeService.isMinimized;
+      if (action === 'minimize') {
+        setTimeout(() => {
+          if (!this.isMinimized) {
+            this.isMinimized = true;
+            this.isTypingActive = false;
+          }
+        }, 1600);
+      } else if (action === 'restore') {
+        if (this.isMinimized) {
+          this.isMinimized = false;
+          this.typedTitle = '';
+          this.typedDesc = '';
+          this.expandTimeout = setTimeout(() => {
+            this.startTypingEffect();
+          }, 1050);
+        }
       }
     });
 
@@ -59,6 +65,8 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
       this.isMinimized = false;
       this.typedTitle = this.fullTitle;
       this.typedDesc = this.fullDesc;
+    } else {
+      this.isGlobalMinimized = this.globalMinimizeService.isMinimized;
     }
   }
 
@@ -115,6 +123,6 @@ export class CentralCommandComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearTimers();
-    if (this.globalSub) this.globalSub.unsubscribe();
+    if (this.sub) this.sub.unsubscribe();
   }
 }

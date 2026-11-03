@@ -35,28 +35,29 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   private holdTimer: any = null;
   private holdInterval: any = null;
   private transitionTimeout: any = null;
-  private globalSub!: Subscription;
+  private sub!: Subscription;
 
   constructor(private globalMinimizeService: GlobalMinimizeService) {}
 
   ngOnInit(): void {
-    this.globalSub = this.globalMinimizeService.isMinimized$.subscribe(minimized => {
-      if (minimized) {
-        // Step 1: Trigger local collapse animation first (e.g. toggleVisibility state)
-        if (this.isContentVisible) {
-          this.isAnimatingOut = true;
-        }
-        // Step 2: After local close animation completes, trigger preyGlitchOut sequentially
+    this.sub = this.globalMinimizeService.action$.subscribe(action => {
+      if (action === 'minimize') {
         setTimeout(() => {
-          this.isAnimatingOut = false;
-          this.glitch.triggerGlitchOut(() => {
-            this.isContentVisible = false;
+          if (this.isContentVisible) {
+            this.toggleVisibility();
+          }
+          setTimeout(() => {
+            this.glitch.triggerGlitchOut();
+          },900);
+        }, 400);
+      } else if (action === 'restore') {
+        setTimeout(() => {
+          this.glitch.triggerGlitchIn(() => {
+            if (!this.isContentVisible) {
+              this.toggleVisibility();
+            }
           });
         }, 400);
-      } else {
-        // Step 3: Sequential restore: Glitch in first, then expand inner content
-        this.isContentVisible = true;
-        this.glitch.triggerGlitchIn();
       }
     });
 
@@ -187,6 +188,6 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.stopHoldAdjust();
     if (this.transitionTimeout) clearTimeout(this.transitionTimeout);
-    if (this.globalSub) this.globalSub.unsubscribe();
+    if (this.sub) this.sub.unsubscribe();
   }
 }

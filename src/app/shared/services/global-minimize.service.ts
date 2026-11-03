@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GlobalMinimizeService {
-  private isMinimizedSubject = new BehaviorSubject<boolean>(false);
-  isMinimized$ = this.isMinimizedSubject.asObservable();
+  private actionSubject = new Subject<'minimize' | 'restore'>();
+  action$ = this.actionSubject.asObservable();
 
+  private _isMinimized = false;
   get isMinimized(): boolean {
-    return this.isMinimizedSubject.value;
+    return this._isMinimized;
   }
 
   toggleGlobalMinimize(): void {
-    this.isMinimizedSubject.next(!this.isMinimizedSubject.value);
+    this._isMinimized = !this._isMinimized;
+    this.actionSubject.next(this._isMinimized ? 'minimize' : 'restore');
   }
 }

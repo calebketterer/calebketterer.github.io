@@ -56,23 +56,25 @@ export class ResourceLinksComponent implements OnInit, OnDestroy {
     },
   ];
 
-  private globalSub!: Subscription;
+  private sub!: Subscription;
 
   constructor(private globalMinimizeService: GlobalMinimizeService) {}
 
   ngOnInit(): void {
-    this.globalSub = this.globalMinimizeService.isMinimized$.subscribe(minimized => {
-      if (minimized) {
-        // Step 1: Trigger local component collapse animation first
-        this.isContentVisible = false;
-        // Step 2: Sequentially trigger preyGlitchOut animation
+    this.sub = this.globalMinimizeService.action$.subscribe(action => {
+      if (action === 'minimize') {
+        if (this.isContentVisible) {
+          this.toggleVisibility();
+        }
         setTimeout(() => {
-          this.glitch.triggerGlitchOut(() => {});
-        }, 200);
-      } else {
-        // Step 3: Sequentially restore: Glitch in, then show inner content
-        this.isContentVisible = true;
-        this.glitch.triggerGlitchIn();
+          this.glitch.triggerGlitchOut();
+        }, 300);
+      } else if (action === 'restore') {
+        setTimeout(() => {
+          this.glitch.triggerGlitchIn(() => {
+            this.isContentVisible = true;
+          });
+        }, 800);
       }
     });
   }
@@ -82,6 +84,6 @@ export class ResourceLinksComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.globalSub) this.globalSub.unsubscribe();
+    if (this.sub) this.sub.unsubscribe();
   }
 }
