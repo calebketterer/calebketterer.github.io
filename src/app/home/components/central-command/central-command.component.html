@@ -3,8 +3,11 @@
     <div class="hero-header-row">
       <div class="hero-badge">STATION_INTERFACE v2.0</div>
       <div class="command-action-buttons">
-        <button class="glass-ctrl-btn mini-ctrl-btn" (click)="toggleMinimize()" [title]="isMinimized ? 'Expand Command Block' : 'Minimize Command Block'">
+        <button *ngIf="!isGlobalMinimized" class="glass-ctrl-btn mini-ctrl-btn" (click)="toggleMinimize()" [title]="isMinimized ? 'Expand Command Block' : 'Minimize Command Block'">
           {{ isMinimized ? '+' : '-' }}
+        </button>
+        <button class="glass-ctrl-btn mini-ctrl-btn" (click)="onGlobalMinimizeClick()" [title]="isGlobalMinimized ? 'Restore All Components' : 'Minimize All Components'">
+          {{ isGlobalMinimized ? '++' : '--' }}
         </button>
       </div>
     </div>
