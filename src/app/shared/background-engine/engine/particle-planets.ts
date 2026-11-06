@@ -40,9 +40,8 @@ export class ParticlePlanets {
       const radius = this.configParams.minRadius + Math.random() * (this.configParams.maxRadius - this.configParams.minRadius);
       const mass = radius * 1.8;
 
-      // Strictly scale moon count proportional to radius size with a power bias for larger planets
       const radiusRatio = (radius - this.configParams.minRadius) / (this.configParams.maxRadius - this.configParams.minRadius);
-      const biasedRatio = Math.pow(radiusRatio, 1.2); // Biases larger planets toward higher counts
+      const biasedRatio = Math.pow(radiusRatio, 1.2);
       const moonCount = Math.round(this.configParams.minMoonCount + biasedRatio * (this.configParams.maxMoonCount - this.configParams.minMoonCount));
 
       const moons: Moon[] = [];
@@ -50,7 +49,7 @@ export class ParticlePlanets {
 
       for (let m = 0; m < moonCount; m++) {
         const moonOrbitX = lastMoonDist + 12 + Math.random() * 16;
-        const moonOrbitY = moonOrbitX * (0.5 + Math.random() * 0.4); // Semi-random elliptical aspect ratio
+        const moonOrbitY = moonOrbitX * (0.5 + Math.random() * 0.4);
         lastMoonDist = moonOrbitX + moonOrbitX * 0.3;
 
         moons.push({
@@ -117,6 +116,22 @@ export class ParticlePlanets {
 
         moon.x = planet.x + (mcx * moonCosRot - mcy * moonSinRot);
         moon.y = planet.y + (mcx * moonSinRot + mcy * moonCosRot);
+      }
+    }
+  }
+
+  public scalePlanets(planets: Planet[], oldWidth: number, oldHeight: number, newWidth: number, newHeight: number): void {
+    const scaleX = oldWidth > 0 ? newWidth / oldWidth : 1;
+    const scaleY = oldHeight > 0 ? newHeight / oldHeight : 1;
+    const avgScale = (scaleX + scaleY) / 2;
+
+    for (const planet of planets) {
+      planet.orbitRadiusX *= avgScale;
+      planet.orbitRadiusY *= avgScale;
+
+      for (const moon of planet.moons) {
+        moon.orbitRadiusX *= avgScale;
+        moon.orbitRadiusY *= avgScale;
       }
     }
   }

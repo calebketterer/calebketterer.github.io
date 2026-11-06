@@ -99,12 +99,19 @@ export class ParticleSystem {
       return;
     }
 
+    const oldWidth = this.width;
+    const oldHeight = this.height;
+
     this.width = displayWidth;
     this.height = displayHeight;
     this.canvas.width = this.width;
     this.canvas.height = this.height;
 
-    this.planets = this.planetManager.generatePlanets(this.config.planetCount, this.width, this.height);
+    if (this.planets.length === 0) {
+      this.planets = this.planetManager.generatePlanets(this.config.planetCount, this.width, this.height);
+    } else {
+      this.planetManager.scalePlanets(this.planets, oldWidth, oldHeight, this.width, this.height);
+    }
   }
 
   public getActiveParticleCount(): number {
