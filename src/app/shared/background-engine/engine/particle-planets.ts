@@ -40,7 +40,11 @@ export class ParticlePlanets {
       const radius = this.configParams.minRadius + Math.random() * (this.configParams.maxRadius - this.configParams.minRadius);
       const mass = radius * 1.8;
 
-      const moonCount = Math.floor(this.configParams.minMoonCount + Math.random() * (this.configParams.maxMoonCount - this.configParams.minMoonCount + 1));
+      // Strictly scale moon count proportional to radius size with a power bias for larger planets
+      const radiusRatio = (radius - this.configParams.minRadius) / (this.configParams.maxRadius - this.configParams.minRadius);
+      const biasedRatio = Math.pow(radiusRatio, 1.2); // Biases larger planets toward higher counts
+      const moonCount = Math.round(this.configParams.minMoonCount + biasedRatio * (this.configParams.maxMoonCount - this.configParams.minMoonCount));
+
       const moons: Moon[] = [];
       let lastMoonDist = radius * 1.8;
 
