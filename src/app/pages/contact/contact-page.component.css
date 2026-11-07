@@ -100,11 +100,11 @@
 }
 
 .portrait-frame {
-  width: 68px;
-  height: 68px;
+  width: 128px;
+  height: 128px;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(8, 16, 26, 0.8) 100%);
-  border: 1.5px solid rgba(0, 229, 255, 0.5);
+  border: 4px solid rgba(0, 229, 255, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -114,7 +114,7 @@
 
 .portrait-fallback {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 1.15rem;
+  font-size: 3rem;
   color: #00e5ff;
   font-weight: bold;
   letter-spacing: 1.5px;
@@ -137,7 +137,7 @@
 
 .operator-name {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 1.65rem;
+  font-size: 2rem;
   color: #ffffff;
   margin: 0;
   font-weight: 700;
@@ -149,7 +149,7 @@
 
 .operator-title {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 0.75rem;
+  font-size: 1.25rem;
   color: #00e5ff;
   margin: 0;
   letter-spacing: 0.5px;
@@ -283,8 +283,8 @@
     gap: 1rem;
   }
   .portrait-frame {
-    width: 56px;
-    height: 56px;
+    width: 128px;
+    height: 128px;
     flex-shrink: 0;
   }
   .operator-name {
