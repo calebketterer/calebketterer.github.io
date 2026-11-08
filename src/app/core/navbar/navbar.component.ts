@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit {
 
   navItems: NavItem[] = [
     { label: 'HOME', path: '/home' },
+    { label: 'CONTACT', path: '/contact'},
     { label: 'DIEP.IO', path: '/diep', badge: 'CANVAS' },
     { label: 'SNAKE', path: '/snake', badge: 'RETRO' },
     { label: 'SUDOKU', path: '/sudoku', badge: 'PUZZLE' },

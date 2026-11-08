@@ -1,6 +1,7 @@
 <main class="contact-page-container">
   <div class="card-wrapper card-animator">
-    <div class="biz-card">
+    <!-- Bound with #bizCardRef for html2canvas targeting -->
+    <div #bizCardRef class="biz-card">
       <!-- 3D Layered Lighting & Frame Effects -->
       <div class="card-accent-bar"></div>
       <div class="card-background-grid"></div>
@@ -59,6 +60,12 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="card-actions-row">
+      <button class="glass-ctrl-btn download-card-btn" (click)="downloadCard()" title="Download exact print-ready business card image">
+        <span class="btn-icon">↓</span> DOWNLOAD CARD (PNG)
+      </button>
     </div>
   </div>
 </main>
