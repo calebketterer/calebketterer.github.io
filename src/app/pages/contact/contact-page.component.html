@@ -1,0 +1,71 @@
+<main class="contact-page-container">
+  <div class="card-wrapper card-animator">
+    <!-- Bound with #bizCardRef for html2canvas targeting -->
+    <div #bizCardRef class="biz-card">
+      <!-- 3D Layered Lighting & Frame Effects -->
+      <div class="card-accent-bar"></div>
+      <div class="card-background-grid"></div>
+      <div class="card-ambient-glow"></div>
+      
+      <div class="card-inner-layout">
+        <!-- Left Column: Identity, Title & Portrait -->
+        <div class="card-left-col">
+          <div class="operator-identity">
+            <span class="operator-node-id">SYS_ID // 001_CK</span>
+            <h1 class="operator-name">{{ cardInfo.name }}</h1>
+            <p class="operator-title">
+              Software Engineer &<br>
+              Frontend Architect
+            </p>
+          </div>
+
+          <div class="portrait-frame" title="Operator Portrait">
+            <div class="portrait-fallback">CK</div>
+          </div>
+        </div>
+
+        <!-- Right Column: Professional Metadata & Channels -->
+        <div class="card-right-col">
+          <div class="biz-meta-group">
+            <div class="biz-meta-item">
+              <span class="meta-label">DIRECT COMMS</span>
+              <span class="meta-value email-action" (click)="copyEmail()" title="Click to copy email">
+                {{ cardInfo.email }}
+                <button class="glass-ctrl-btn copy-btn" [class.active]="copied">
+                  {{ copied ? 'COPIED' : 'COPY' }}
+                </button>
+              </span>
+            </div>
+
+            <div class="biz-meta-item">
+              <span class="meta-label">PORTFOLIO</span>
+              <a [href]="'https://' + cardInfo.website" target="_blank" rel="noopener noreferrer" class="meta-value web-link">
+                {{ cardInfo.website }}
+                <span class="link-icon">↗</span>
+              </a>
+            </div>
+
+            <div class="biz-meta-item">
+              <span class="meta-label">SOURCE REPO</span>
+              <a [href]="'https://' + cardInfo.github" target="_blank" rel="noopener noreferrer" class="meta-value web-link">
+                {{ cardInfo.github }}
+                <span class="link-icon">↗</span>
+              </a>
+            </div>
+
+            <div class="biz-meta-item">
+              <span class="meta-label">LOCATION & FOCUS</span>
+              <span class="meta-value sub-text">Durham, NC // Angular, TypeScript & UI Engines</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-actions-row">
+      <button class="glass-ctrl-btn download-card-btn" (click)="downloadCard()" title="Download exact print-ready business card image">
+        <span class="btn-icon">↓</span> DOWNLOAD CARD (PNG)
+      </button>
+    </div>
+  </div>
+</main>

@@ -132,7 +132,7 @@
   font-weight: 700;
   letter-spacing: 2px;
   line-height: 1.2;
-  font-family: 'Courier New', Courier, monospace;
+  font-family: inherit;
   white-space: nowrap;
 }
 

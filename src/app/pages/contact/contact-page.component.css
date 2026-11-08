@@ -1,0 +1,335 @@
+.contact-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: calc(100vh - 120px);
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.card-wrapper {
+  width: 100%;
+  max-width: 740px;
+  perspective: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* 3D Layered Business Card (US Standard 3.5 : 2 Ratio) */
+.biz-card {
+  background: linear-gradient(135deg, rgba(14, 24, 40, 0.95) 0%, rgba(6, 12, 20, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 10px;
+  width: 100%;
+  aspect-ratio: 1.75 / 1;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.8),
+    0 0 35px rgba(0, 229, 255, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 0 20px rgba(0, 229, 255, 0.05);
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  animation: preyGlitchIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  transform: rotateX(2deg) rotateY(-2deg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.biz-card:hover {
+  transform: rotateX(0deg) rotateY(0deg);
+  box-shadow: 
+    0 30px 70px rgba(0, 0, 0, 0.85),
+    0 0 45px rgba(0, 229, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 0 30px rgba(0, 229, 255, 0.1);
+}
+
+.card-ambient-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 30%, rgba(0, 229, 255, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-background-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 229, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.035) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-accent-bar {
+  width: 7px;
+  height: 100%;
+  background: linear-gradient(180deg, #00e5ff 0%, rgba(0, 229, 255, 0.2) 100%);
+  box-shadow: 3px 0 15px rgba(0, 229, 255, 0.6);
+  z-index: 3;
+  flex-shrink: 0;
+}
+
+.card-inner-layout {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  width: 100%;
+  padding: 2.25rem 2.75rem;
+  box-sizing: border-box;
+  gap: 2.25rem;
+  align-items: center;
+}
+
+.card-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.portrait-frame {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(0, 229, 255, 0.15) 0%, rgba(8, 16, 26, 0.8) 100%);
+  border: 4px solid rgba(0, 229, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25), inset 0 0 10px rgba(0, 229, 255, 0.1);
+  overflow: hidden;
+}
+
+.portrait-fallback {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 3rem;
+  color: #00e5ff;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+}
+
+.operator-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.operator-node-id {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.6rem;
+  color: #00e5ff;
+  letter-spacing: 2px;
+  opacity: 0.85;
+}
+
+.operator-name {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  color: #ffffff;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.operator-title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.25rem;
+  color: #00e5ff;
+  margin: 0;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+.card-right-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.biz-meta-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.biz-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.meta-label {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.55rem;
+  color: #8faec5;
+  letter-spacing: 2px;
+}
+
+.meta-value {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.sub-text {
+  font-size: 0.68rem;
+  color: #8faec5;
+  line-height: 1.3;
+}
+
+.email-action, .web-link {
+  color: #00e5ff;
+  text-decoration: none;
+  padding: 0.3rem 0.55rem;
+  background: rgba(0, 229, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  word-break: break-all;
+}
+
+.email-action {
+  cursor: pointer;
+}
+
+.email-action:hover, .web-link:hover {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: rgba(0, 229, 255, 0.6);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.35);
+  color: #ffffff;
+}
+
+.link-icon {
+  font-size: 0.8rem;
+}
+
+.glass-ctrl-btn {
+  background: rgba(16, 30, 48, 0.75);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: #8faec5;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.6rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.glass-ctrl-btn:hover {
+  background: rgba(0, 229, 255, 0.3);
+  color: #ffffff;
+  border-color: rgba(0, 229, 255, 0.8);
+}
+
+.glass-ctrl-btn.active {
+  background: rgba(0, 255, 170, 0.3);
+  color: #00ffaa;
+  border-color: #00ffaa;
+}
+
+/* Download Action Button Styling */
+.card-actions-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.download-card-btn {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  padding: 0.6rem 1.2rem;
+  background: rgba(11, 19, 32, 0.8);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #00e5ff;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.download-card-btn:hover {
+  background: rgba(0, 229, 255, 0.2);
+  color: #ffffff;
+  border-color: rgba(0, 229, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+}
+
+.btn-icon {
+  font-weight: bold;
+}
+
+@keyframes preyGlitchIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(-6px);
+    filter: brightness(0) contrast(200%) blur(3px);
+  }
+  60% {
+    opacity: 0.95;
+    transform: scale(1.01) translateX(1px);
+    filter: brightness(1.6) contrast(110%);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1) contrast(100%) blur(0px);
+  }
+}
+
+@media (max-width: 768px) {
+  .biz-card {
+    aspect-ratio: auto;
+    height: auto;
+    transform: none !important;
+  }
+  .card-inner-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.75rem 1.5rem;
+  }
+  .card-left-col {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+  .portrait-frame {
+    width: 128px;
+    height: 128px;
+    flex-shrink: 0;
+  }
+  .operator-name {
+    font-size: 1.35rem;
+    white-space: normal;
+  }
+  .email-action, .web-link {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

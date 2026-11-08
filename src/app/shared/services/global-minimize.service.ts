@@ -80,14 +80,14 @@ export class GlobalMinimizeService {
 
       // 4. Control Center glitch out at 1600ms
       this.activeTimeline.add(
-        timer(1600).subscribe(() => {
+        timer(1500).subscribe(() => {
           this.controlCenterTarget?.glitch.triggerGlitchOut();
         })
       );
 
       // 5. Central Command minimizes at 2100ms
       this.activeTimeline.add(
-        timer(2100).subscribe(() => {
+        timer(2000).subscribe(() => {
           this.centralCommandTarget?.minimize();
         })
       );

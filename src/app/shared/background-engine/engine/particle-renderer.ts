@@ -41,7 +41,7 @@ export class ParticleRenderer {
   public drawDebugOverlay(ctx: CanvasRenderingContext2D): void {
     ctx.font = '10px "Courier New", Courier, monospace';
     ctx.fillStyle = '#8faec5';
-    ctx.fillText('Simulation version no: 2026.10.07', 20, 32);
+    ctx.fillText('Simulation version no: 2026.11.06', 20, 32);
 
     ctx.fillStyle = '#00e5ff';
     ctx.fillRect(20, 40, 16, 16);
@@ -104,13 +104,33 @@ export class ParticleRenderer {
       ctx.restore();
 
       for (const moon of planet.moons) {
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = `rgba(${planet.color}, 0.7)`;
-        ctx.fillStyle = `rgba(${planet.color}, 0.9)`;
+        ctx.save();
+        ctx.translate(moon.x, moon.y);
+
+        const moonBloomGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, moon.radius * 2.2);
+        moonBloomGrad.addColorStop(0, `rgba(${planet.color}, 0.15)`);
+        moonBloomGrad.addColorStop(1, `rgba(${planet.color}, 0)`);
+        ctx.fillStyle = moonBloomGrad;
         ctx.beginPath();
-        ctx.arc(moon.x, moon.y, moon.radius, 0, Math.PI * 2);
+        ctx.arc(0, 0, moon.radius * 2.2, 0, Math.PI * 2);
         ctx.fill();
+
+        const moonFillGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, moon.radius);
+        moonFillGrad.addColorStop(0, `rgba(15, 25, 40, 0.95)`);
+        moonFillGrad.addColorStop(1, `rgba(8, 12, 20, 0.98)`);
+
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = `rgba(${planet.color}, 0.6)`;
+        ctx.fillStyle = moonFillGrad;
+        ctx.strokeStyle = `rgba(${planet.color}, 0.8)`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(0, 0, moon.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
         ctx.shadowBlur = 0;
+
+        ctx.restore();
       }
     }
   }
