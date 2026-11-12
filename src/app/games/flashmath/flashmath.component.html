@@ -1,0 +1,32 @@
+<div class="flashmath-viewport-container" [ngClass]="fadeClass">
+  <!-- Dynamic Background Engine Integration -->
+  <app-background-engine class="bg-engine-layer"></app-background-engine>
+
+  <div class="scifi-border-frame">
+    <div class="corner-tl"></div>
+    <div class="corner-tr"></div>
+    <div class="corner-bl"></div>
+    <div class="corner-br"></div>
+
+    <!-- Title Screen -->
+    <app-flashmath-title 
+      *ngIf="currentState === 'INIT_FADE_IN' || currentState === 'TITLE_DISPLAY'">
+    </app-flashmath-title>
+
+    <!-- Black Transition Screen -->
+    <div *ngIf="currentState === 'BLACK_TRANSITION'" class="black-void"></div>
+
+    <!-- Main Menu Screen -->
+    <app-flashmath-main-menu 
+      *ngIf="currentState === 'MENU'"
+      (onSelectSubject)="selectSubject($event)">
+    </app-flashmath-main-menu>
+
+    <!-- Gameplay Screen -->
+    <app-flashmath-game 
+      *ngIf="currentState === 'GAME' && activeSubject"
+      [subject]="activeSubject"
+      (onBack)="returnToMenu()">
+    </app-flashmath-game>
+  </div>
+</div>
