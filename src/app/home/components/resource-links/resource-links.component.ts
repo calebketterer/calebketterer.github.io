@@ -48,10 +48,10 @@ export class ResourceLinksComponent implements OnInit {
       targetUrl: 'https://sites.google.com/view/calebketterer/paper-gwent',
     },
     {
-      title: 'Paper Gwent Drive Storage',
-      category: 'ASSETS & ARCHIVE',
-      description: 'Google drive repository containing high-resolution printable card assets, vector layouts, and rulebook PDFs.',
-      targetUrl: 'https://drive.google.com/drive/folders/1buJl4aGBJxhNY5lkLGh8VHywMnii-BaU'
+      title: 'Testing Compendium',
+      category: 'DEVELOPMENT ARCHIVE',
+      description: 'Original software testing site, which hosts old links, features, and games. Kept for nostalgic purposes.',
+      targetUrl: 'https://calebketterer.github.io/Testing-Compendium/'
     },
   ];
 
