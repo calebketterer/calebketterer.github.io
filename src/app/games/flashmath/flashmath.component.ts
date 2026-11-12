@@ -4,7 +4,8 @@ import { FlashmathScreenState, SubjectModule } from './core/flashmath.interfaces
 import { FlashmathTitleComponent } from './ui/flashmath-title.component';
 import { FlashmathMainMenuComponent } from './ui/flashmath-main-menu.component';
 import { FlashmathGameComponent } from './ui/flashmath-game.component';
-import { BackgroundEngineComponent } from '../../shared/background-engine/background-engine.component';
+import { FlashmathBgComponent } from './ui/flashmath-bg.component';
+import { MathBgMode } from './engine/background/flashmath-bg.interfaces';
 
 @Component({
   selector: 'app-flashmath',
@@ -14,7 +15,7 @@ import { BackgroundEngineComponent } from '../../shared/background-engine/backgr
     FlashmathTitleComponent,
     FlashmathMainMenuComponent,
     FlashmathGameComponent,
-    BackgroundEngineComponent
+    FlashmathBgComponent
   ],
   templateUrl: './flashmath.component.html',
   styleUrls: ['./flashmath.component.css']
@@ -23,6 +24,7 @@ export class FlashmathComponent implements OnInit, OnDestroy {
   currentState: FlashmathScreenState = 'INIT_FADE_IN';
   fadeClass = 'fade-out';
   activeSubject: SubjectModule | null = null;
+  currentBgMode: MathBgMode = 'MATRIX_NUMBERS';
   private timeouts: any[] = [];
 
   constructor(private cdr: ChangeDetectorRef, private ngZone: NgZone) {}

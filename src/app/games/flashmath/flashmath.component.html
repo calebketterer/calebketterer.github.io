@@ -1,8 +1,8 @@
 <div class="flashmath-viewport-container" [ngClass]="fadeClass">
-  <!-- Dynamic Background Engine Integration -->
-  <app-background-engine class="bg-engine-layer"></app-background-engine>
-
   <div class="scifi-border-frame">
+    <!-- Dynamic Expandable Sci-Fi Math Background Engine (Contained inside the app frame) -->
+    <app-flashmath-bg [animationMode]="currentBgMode"></app-flashmath-bg>
+
     <div class="corner-tl"></div>
     <div class="corner-tr"></div>
     <div class="corner-bl"></div>
