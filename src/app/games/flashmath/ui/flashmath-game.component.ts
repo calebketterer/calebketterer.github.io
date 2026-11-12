@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SubjectModule, MathProblem } from '../core/flashmath.interfaces';
 import { DmasGeneratorService } from './../engine/dmas-generator.service';
+import { PemdasGeneratorService } from './../engine/pemdas-generator.service';
+import { AlgebraGeneratorService } from './../engine/algebra-generator.service';
 import { FlashmathStorageService } from '../core/flashmath.storage.service';
 
 @Component({
@@ -21,28 +23,34 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       </div>
 
       <div class="problem-arena">
-        <div class="problem-card">
-          <div class="expression-display">{{ currentProblem.displayExpression }} = ?</div>
-          
-          <div class="input-wrapper">
-            <input 
-              #answerInput
-              type="number" 
-              [(ngModel)]="userAnswer" 
-              (keydown.enter)="submitAnswer()"
-              placeholder="ENTER ANSWER" 
-              [disabled]="isLocked"
-              autocomplete="off"
-            />
-            <button class="submit-btn" (click)="submitAnswer()" [disabled]="isLocked">SUBMIT</button>
+        <div class="problem-card-wrapper">
+          <div class="problem-card">
+            <div class="expression-label">{{ getProblemPrompt() }}</div>
+            <div class="expression-container">
+              <div class="expression-display">{{ currentProblem.displayExpression }}</div>
+            </div>
+            
+            <div class="input-wrapper">
+              <input 
+                #answerInput
+                type="number" 
+                [(ngModel)]="userAnswer" 
+                (keydown.enter)="submitAnswer()"
+                placeholder="ENTER ANSWER" 
+                [disabled]="isLocked"
+                autocomplete="off"
+              />
+              <button class="submit-btn" (click)="submitAnswer()" [disabled]="isLocked">SUBMIT</button>
+            </div>
           </div>
 
-          <!-- Feedback overlays -->
-          <div *ngIf="feedback === 'correct'" class="feedback-badge correct">
-            ✓ CORRECT (+10 XP)
-          </div>
-          <div *ngIf="feedback === 'wrong'" class="feedback-badge wrong">
-            ✗ INCORRECT (Correct: {{ currentProblem.answer }})
+          <div class="feedback-external-slot">
+            <div *ngIf="feedback === 'correct'" class="feedback-badge correct">
+              ✓ CORRECT (+10 XP)
+            </div>
+            <div *ngIf="feedback === 'wrong'" class="feedback-badge wrong">
+              ✗ INCORRECT (Correct: {{ currentProblem.answer }})
+            </div>
           </div>
         </div>
       </div>
@@ -66,6 +74,8 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       align-items: center;
       border-bottom: 1px solid rgba(0, 229, 255, 0.2);
       padding-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
     .back-btn {
       background: rgba(0, 229, 255, 0.1);
@@ -84,10 +94,11 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .hud-metrics {
       display: flex;
-      gap: 2rem;
+      gap: 1.5rem;
       font-family: monospace;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       color: rgba(255, 255, 255, 0.7);
+      flex-wrap: wrap;
     }
     .highlight { color: #00ff66; font-weight: bold; }
     .timer-val { color: #00e5ff; font-weight: bold; }
@@ -98,27 +109,54 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex: 1;
       justify-content: center;
       align-items: center;
+      padding: 1rem;
+    }
+    .problem-card-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      width: 100%;
+      max-width: 720px;
     }
     .problem-card {
-      background: rgba(8, 16, 26, 0.85);
+      background: rgba(8, 16, 26, 0.92);
       border: 1px solid rgba(0, 255, 102, 0.4);
-      padding: 3rem 4rem;
+      padding: 2.2rem 2.5rem;
       border-radius: 6px;
       backdrop-filter: blur(12px);
       box-shadow: 0 0 30px rgba(0, 255, 102, 0.15), inset 0 0 20px rgba(0, 255, 102, 0.05);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2rem;
-      min-width: 380px;
+      gap: 1.5rem;
+      width: 100%;
+      box-sizing: border-box;
       animation: preyGlitchIn 0.5s ease both;
     }
+    .expression-label {
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      color: rgba(0, 229, 255, 0.7);
+    }
+    .expression-container {
+      width: 100%;
+      padding: 0.8rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
+    }
     .expression-display {
-      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-size: clamp(1.1rem, 2.2vw, 2rem);
       font-family: monospace;
       color: #ffffff;
       text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
+      text-align: center;
+      white-space: nowrap;
     }
     .input-wrapper {
       display: flex;
@@ -136,6 +174,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       font-family: monospace;
       border-radius: 4px;
       outline: none;
+      min-width: 0;
     }
     input[type="number"]:focus {
       border-color: #00ff66;
@@ -151,19 +190,30 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       cursor: pointer;
       border-radius: 4px;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .submit-btn:hover {
       background: #00ff66;
       color: #050b14;
       box-shadow: 0 0 15px rgba(0, 255, 102, 0.7);
     }
+    .feedback-external-slot {
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
     .feedback-badge {
       font-family: monospace;
       font-weight: bold;
-      font-size: 1.1rem;
-      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      padding: 0.5rem 1.2rem;
       border-radius: 4px;
-      animation: pulseFeedback 0.4s ease;
+      animation: pulseFeedback 0.3s ease;
+      text-align: center;
+      box-sizing: border-box;
+      letter-spacing: 0.1em;
     }
     .feedback-badge.correct {
       background: rgba(0, 255, 102, 0.2);
@@ -181,6 +231,19 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       0% { transform: scale(0.95); opacity: 0; }
       100% { transform: scale(1); opacity: 1; }
     }
+
+    @media (max-width: 600px) {
+      .problem-card {
+        padding: 1.5rem 1rem;
+      }
+      .input-wrapper {
+        flex-direction: column;
+      }
+      .submit-btn {
+        padding: 0.8rem;
+        width: 100%;
+      }
+    }
   `]
 })
 export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit {
@@ -197,6 +260,8 @@ export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit 
 
   constructor(
     private dmasGenerator: DmasGeneratorService,
+    private pemdasGenerator: PemdasGeneratorService,
+    private algebraGenerator: AlgebraGeneratorService,
     private storage: FlashmathStorageService,
     private ngZone: NgZone,
     private cdr: ChangeDetectorRef
@@ -230,8 +295,21 @@ export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit 
     }, 100);
   }
 
+  getProblemPrompt(): string {
+    if (this.subject.id === 'algebra') return 'SOLVE FOR X';
+    if (this.subject.id === 'pemdas') return 'SIMPLIFY EXPRESSION';
+    return 'COMPUTE EXPRESSION';
+  }
+
   loadNextProblem() {
-    this.currentProblem = this.dmasGenerator.generateProblem();
+    if (this.subject.id === 'pemdas') {
+      this.currentProblem = this.pemdasGenerator.generateProblem();
+    } else if (this.subject.id === 'algebra') {
+      this.currentProblem = this.algebraGenerator.generateProblem();
+    } else {
+      this.currentProblem = this.dmasGenerator.generateProblem();
+    }
+
     this.userAnswer = null;
     this.feedback = null;
     this.isLocked = false;

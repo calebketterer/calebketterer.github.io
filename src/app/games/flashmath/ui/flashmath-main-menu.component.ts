@@ -18,13 +18,20 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
         <button 
           *ngFor="let subject of subjects; let i = index" 
           class="subject-card glitch-anim"
+          [class.locked]="!subject.unlocked"
           [style.animation-delay]="(i * 0.12) + 's'"
           (click)="selectSubject(subject)">
           <div class="card-content">
-            <span class="subject-name">{{ subject.name }}</span>
-            <div class="xp-badge">
+            <div class="info-group">
+              <span class="subject-name">{{ subject.name }}</span>
+              <span class="subject-desc">{{ subject.description }}</span>
+            </div>
+            <div class="xp-badge" *ngIf="subject.unlocked">
               <span class="xp-label">XP:</span>
               <span class="xp-value">{{ subject.xp }}</span>
+            </div>
+            <div class="locked-badge" *ngIf="!subject.unlocked">
+              [ LOCKED / OFFLINE ]
             </div>
           </div>
           <div class="tech-corner"></div>
@@ -68,7 +75,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex-direction: column;
       gap: 1.2rem;
       width: 100%;
-      max-height: 60vh;
+      max-height: 65vh;
       overflow-y: auto;
       padding: 0.5rem;
       align-items: stretch;
@@ -88,13 +95,28 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       box-sizing: border-box;
       text-align: left;
     }
+    .subject-card.locked {
+      opacity: 0.45;
+      border-color: rgba(255, 255, 255, 0.1);
+      cursor: not-allowed;
+    }
+    .subject-card.locked:hover {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
     .card-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
       width: 100%;
     }
-    .subject-card:hover {
+    .info-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .subject-card:hover:not(.locked) {
       border-color: #00ff66;
       box-shadow: 0 0 20px rgba(0, 255, 102, 0.3), inset 0 0 15px rgba(0, 255, 102, 0.1);
       transform: translateX(6px);
@@ -105,6 +127,11 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       letter-spacing: 0.15em;
       color: #ffffff;
       text-align: left;
+    }
+    .subject-desc {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 0.05em;
     }
     .xp-badge {
       display: flex;
@@ -118,6 +145,12 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     .xp-value {
       color: #ffe600;
       text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+    }
+    .locked-badge {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: rgba(255, 0, 127, 0.8);
+      letter-spacing: 0.1em;
     }
     .tech-corner {
       position: absolute;
@@ -134,20 +167,24 @@ export class FlashmathMainMenuComponent implements OnInit {
 
   subjects: SubjectModule[] = [
     { id: 'dmas', name: 'DMAS', description: 'Basic Arithmetic Operations', xp: 0, unlocked: true },
-    { id: 'pemdas', name: 'PEMDAS', description: 'Order of Operations', xp: 0, unlocked: true },
-    { id: 'geometry', name: 'GEOMETRY', description: 'Spatial & Angular Calculations', xp: 0, unlocked: true },
-    { id: 'trig', name: 'TRIG', description: 'Trigonometric Identities', xp: 0, unlocked: true }
+    { id: 'pemdas', name: 'PEMDAS', description: 'Order of Operations (3-5 steps)', xp: 0, unlocked: true },
+    { id: 'algebra', name: 'ALGEBRA', description: 'Solve for X via Linear Equations', xp: 0, unlocked: true },
+    { id: 'geometry', name: 'GEOMETRY', description: 'Spatial & Angular Calculations', xp: 0, unlocked: false },
+    { id: 'trig', name: 'TRIG', description: 'Trigonometric Identities', xp: 0, unlocked: false }
   ];
 
   constructor(private storage: FlashmathStorageService) {}
 
   ngOnInit() {
     this.subjects.forEach(sub => {
-      sub.xp = this.storage.getXp(sub.id);
+      if (sub.unlocked) {
+        sub.xp = this.storage.getXp(sub.id);
+      }
     });
   }
 
   selectSubject(subject: SubjectModule) {
+    if (!subject.unlocked) return;
     this.onSelectSubject.emit(subject);
   }
 }
