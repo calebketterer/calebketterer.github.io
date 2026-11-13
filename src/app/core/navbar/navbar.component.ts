@@ -25,7 +25,7 @@ export class NavbarComponent implements OnInit {
     { label: 'CONTACT', path: '/contact'},
     { label: 'DIEP.IO', path: '/diep', badge: 'CANVAS' },
     { label: 'SERPENT', path: '/snake', badge: 'RETRO' },
-    { label: 'FLASHMATH', path: '/sudoku', badge: 'EDU' },
+    { label: 'FLASHMATH', path: '/flashmath', badge: 'EDU' },
     { label: 'SUDOKU', path: '/sudoku', badge: 'PUZZLE' },
   ];
 
