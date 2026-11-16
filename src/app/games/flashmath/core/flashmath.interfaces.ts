@@ -1,11 +1,12 @@
 export type FlashmathScreenState = 'INIT_FADE_IN' | 'TITLE_DISPLAY' | 'TITLE_FADE_OUT' | 'BLACK_TRANSITION' | 'MENU' | 'GAME';
 
-export type AstOp = 'VAL' | 'VAR' | '+' | '-' | '*' | '/' | '^2' | 'sqrt';
+export type AstOp = 'VAL' | 'VAR' | '+' | '-' | '*' | '/' | 'power' | 'root' | 'frac_exp';
 
 export interface AstGeneratorConfig {
   ops: AstOp[];
   minSteps?: number;
   maxSteps: number;
+  maxPowerValue?: number; // e.g., 225 (15^2) for Exponents & Roots drill, 144 (12^2) elsewhere
 }
 
 export interface SubjectModule {

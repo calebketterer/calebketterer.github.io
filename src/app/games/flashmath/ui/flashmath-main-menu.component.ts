@@ -44,7 +44,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
               *ngIf="subject.unlocked && subject.subtopics?.length"
               class="expand-toggle-btn"
               [class.expanded]="isExpanded(subject.id)"
-              [disabled]="isAnimating(subject.id)"
               (click)="toggleExpand(subject, $event)"
               [attr.aria-label]="isExpanded(subject.id) ? 'Minimize subtopics' : 'Expand subtopics'">
               <span class="toggle-symbol">{{ isExpanded(subject.id) ? '−' : '+' }}</span>
@@ -183,7 +182,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
       flex-shrink: 0;
     }
-    .expand-toggle-btn:hover:not(:disabled) {
+    .expand-toggle-btn:hover {
       background: rgba(0, 255, 102, 0.18);
       border-color: #00ff66;
       color: #00ff66;
@@ -193,10 +192,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       border-color: #00ff66;
       color: #00ff66;
       background: rgba(0, 255, 102, 0.12);
-    }
-    .expand-toggle-btn:disabled {
-      cursor: wait;
-      opacity: 0.7;
     }
 
     /* Smooth Height Grid Accordion */
@@ -423,7 +418,7 @@ export class FlashmathMainMenuComponent implements OnInit {
       description: 'Complete Order of Operations Synthesis',
       xp: 0,
       unlocked: true,
-      generatorConfig: { ops: ['+', '-', '*', '/', '^2', 'sqrt'], minSteps: 3, maxSteps: 5 },
+      generatorConfig: { ops: ['+', '-', '*', '/', 'power', 'root', 'frac_exp'], minSteps: 3, maxSteps: 5, maxPowerValue: 144 },
       subtopics: [
         {
           id: 'pemdas_add_sub',
@@ -444,10 +439,10 @@ export class FlashmathMainMenuComponent implements OnInit {
         {
           id: 'pemdas_exp_roots',
           name: 'EXPONENTS & ROOTS',
-          description: 'Powers & Principal Square Roots',
+          description: 'Powers up to 15², Fractional Exponents & Radicals',
           xp: 0,
           unlocked: true,
-          generatorConfig: { ops: ['^2', 'sqrt'], minSteps: 1, maxSteps: 2 }
+          generatorConfig: { ops: ['power', 'root', 'frac_exp'], minSteps: 1, maxSteps: 2, maxPowerValue: 225 }
         },
         {
           id: 'pemdas_parens_multi',
@@ -513,10 +508,6 @@ export class FlashmathMainMenuComponent implements OnInit {
     return !!this.expandedMap[subjectId];
   }
 
-  isAnimating(subjectId: string): boolean {
-    return !!this.animatingMap[subjectId];
-  }
-
   getSubtopicAnimState(subjectId: string, index: number): 'hidden' | 'in' | 'out' {
     return this.subtopicStates[subjectId]?.[index] ?? 'hidden';
   }
@@ -531,12 +522,10 @@ export class FlashmathMainMenuComponent implements OnInit {
     this.animatingMap[subject.id] = true;
 
     if (!currentlyOpen) {
-      // 1. Smoothly slide down accordion container first so space opens up
       this.expandedMap[subject.id] = true;
       this.subtopicStates[subject.id] = new Array(count).fill('hidden');
       this.cdr.detectChanges();
 
-      // 2. Glitch-in each subtopic one by one as space opens
       subject.subtopics.forEach((_, idx) => {
         setTimeout(() => {
           this.subtopicStates[subject.id][idx] = 'in';
@@ -549,7 +538,6 @@ export class FlashmathMainMenuComponent implements OnInit {
         this.cdr.detectChanges();
       }, 140 + count * staggerMs + 450);
     } else {
-      // 1. Reverse order: glitch-out each subtopic one by one from bottom to top
       for (let i = 0; i < count; i++) {
         const reverseIdx = count - 1 - i;
         setTimeout(() => {
@@ -558,7 +546,6 @@ export class FlashmathMainMenuComponent implements OnInit {
         }, i * staggerMs);
       }
 
-      // 2. Smoothly collapse container back up once items glitch out
       const collapseDelay = count * staggerMs + 220;
       setTimeout(() => {
         this.expandedMap[subject.id] = false;

@@ -48,6 +48,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
               <input 
                 #answerInput
                 type="number" 
+                inputmode="numeric"
                 [(ngModel)]="userAnswer" 
                 (keydown.enter)="submitAnswer()"
                 placeholder="ENTER ANSWER" 
@@ -155,8 +156,8 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .flashmath-game-root .expression-container {
       width: 100%;
-      min-height: 4.5rem;
-      padding: 0.5rem 0;
+      min-height: 4.8rem;
+      padding: 0.75rem 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -165,53 +166,102 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
     }
     .flashmath-game-root .expression-display {
-      font-size: clamp(1.2rem, 2.4vw, 2rem);
+      display: inline-block;
+      font-size: clamp(1.25rem, 2.5vw, 2.05rem);
       font-family: monospace;
       color: #ffffff;
       text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-      letter-spacing: 0.05em;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35em;
+      letter-spacing: 0.04em;
       white-space: nowrap;
+      line-height: 1.4;
     }
     .flashmath-game-root .expression-display sup {
-      font-size: 0.6em;
-      line-height: 0;
-      vertical-align: super;
+      display: inline-block;
+      font-size: 0.58em;
+      line-height: 1;
+      vertical-align: top;
+      position: relative;
+      top: -0.22em;
+      margin-left: 0.08em;
       color: #00e5ff;
+      text-shadow: 0 0 8px rgba(0, 229, 255, 0.65);
+      font-weight: bold;
     }
 
-    /* Stacked Horizontal Fraction Styling */
+    /* Stacked Horizontal Fraction Styling — full-width division bar */
     .flashmath-game-root .math-frac {
       display: inline-flex;
       flex-direction: column;
-      align-items: center;
+      align-items: stretch;
+      text-align: center;
       vertical-align: middle;
-      margin: 0 0.2em;
-      font-size: 0.82em;
-      line-height: 1.15;
+      margin: 0 0.25em;
+      font-size: 0.84em;
+      line-height: 1.2;
     }
     .flashmath-game-root .frac-num {
-      padding: 0 0.35em 0.15em;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0 0.45em 0.18em;
       border-bottom: 2px solid #00ff66;
-      box-shadow: 0 2px 6px -2px rgba(0, 255, 102, 0.5);
+      box-shadow: 0 2px 6px -2px rgba(0, 255, 102, 0.55);
     }
     .flashmath-game-root .frac-den {
-      padding: 0.15em 0.35em 0;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.18em 0.45em 0;
     }
 
-    /* Square Root Radical Styling */
+    /* Crisp Polygon Radical Hook & Connected Top Bar */
     .flashmath-game-root .math-sqrt {
+      position: relative;
       display: inline-flex;
-      align-items: center;
+      align-items: stretch;
+      vertical-align: middle;
       color: #00e5ff;
+      margin: 0 0.18em;
+    }
+    .flashmath-game-root .root-index {
+      font-size: 0.52em;
+      line-height: 1;
+      align-self: flex-start;
+      margin-top: 0.05em;
+      margin-right: -0.18em;
+      color: #00ff66;
+      text-shadow: 0 0 8px rgba(0, 255, 102, 0.8);
+      font-weight: bold;
+      z-index: 1;
+    }
+    .flashmath-game-root .radical-hook {
+      display: block;
+      width: 0.68em;
+      flex-shrink: 0;
+      background: #00e5ff;
+      filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.7));
+      clip-path: polygon(
+        0% 56%,
+        24% 48%,
+        46% 84%,
+        88% 0%,
+        100% 0%,
+        100% 6%,
+        93% 6%,
+        49% 98%,
+        41% 98%,
+        19% 57%,
+        4% 62%
+      );
     }
     .flashmath-game-root .sqrt-radicand {
+      display: inline-flex;
+      align-items: center;
       color: #ffffff;
       border-top: 2px solid #00e5ff;
-      padding: 0.05em 0.25em 0;
-      margin-left: 0.05em;
+      box-shadow: 0 -2px 6px -2px rgba(0, 229, 255, 0.55);
+      padding: 0.16em 0.34em 0.05em 0.2em;
+      margin-left: -0.5px;
     }
 
     .flashmath-game-root .input-wrapper {
@@ -231,6 +281,13 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       border-radius: 4px;
       outline: none;
       min-width: 0;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .flashmath-game-root input[type="number"]::-webkit-outer-spin-button,
+    .flashmath-game-root input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
     .flashmath-game-root input[type="number"]:focus {
       border-color: #00ff66;
