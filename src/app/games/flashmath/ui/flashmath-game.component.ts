@@ -1,4 +1,17 @@
-import { Component, EventEmitter, Input, Output, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, NgZone, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  NgZone,
+  ChangeDetectorRef,
+  ViewEncapsulation
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SubjectModule, MathProblem } from '../core/flashmath.interfaces';
@@ -11,8 +24,9 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
   selector: 'app-flashmath-game',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="game-viewport-inner">
+    <div class="flashmath-game-root game-viewport-inner">
       <div class="game-topbar">
         <button class="back-btn" (click)="onBack.emit()">[ BACK ]</button>
         <div class="hud-metrics">
@@ -27,7 +41,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
           <div class="problem-card">
             <div class="expression-label">{{ getProblemPrompt() }}</div>
             <div class="expression-container">
-              <div class="expression-display">{{ currentProblem.displayExpression }}</div>
+              <div class="expression-display" [innerHTML]="currentProblem.displayExpression"></div>
             </div>
             
             <div class="input-wrapper">
@@ -57,7 +71,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     </div>
   `,
   styles: [`
-    .game-viewport-inner {
+    .flashmath-game-root.game-viewport-inner {
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -68,7 +82,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       z-index: 2;
       position: relative;
     }
-    .game-topbar {
+    .flashmath-game-root .game-topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -77,7 +91,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex-wrap: wrap;
       gap: 0.5rem;
     }
-    .back-btn {
+    .flashmath-game-root .back-btn {
       background: rgba(0, 229, 255, 0.1);
       border: 1px solid #00e5ff;
       color: #00e5ff;
@@ -87,12 +101,12 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       letter-spacing: 0.1em;
       transition: all 0.2s;
     }
-    .back-btn:hover {
+    .flashmath-game-root .back-btn:hover {
       background: #00e5ff;
       color: #050b14;
       box-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
     }
-    .hud-metrics {
+    .flashmath-game-root .hud-metrics {
       display: flex;
       gap: 1.5rem;
       font-family: monospace;
@@ -100,18 +114,18 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       color: rgba(255, 255, 255, 0.7);
       flex-wrap: wrap;
     }
-    .highlight { color: #00ff66; font-weight: bold; }
-    .timer-val { color: #00e5ff; font-weight: bold; }
-    .xp-val { color: #ffe600; font-weight: bold; }
+    .flashmath-game-root .highlight { color: #00ff66; font-weight: bold; }
+    .flashmath-game-root .timer-val { color: #00e5ff; font-weight: bold; }
+    .flashmath-game-root .xp-val { color: #ffe600; font-weight: bold; }
 
-    .problem-arena {
+    .flashmath-game-root .problem-arena {
       display: flex;
       flex: 1;
       justify-content: center;
       align-items: center;
       padding: 1rem;
     }
-    .problem-card-wrapper {
+    .flashmath-game-root .problem-card-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -119,7 +133,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       width: 100%;
       max-width: 720px;
     }
-    .problem-card {
+    .flashmath-game-root .problem-card {
       background: rgba(8, 16, 26, 0.92);
       border: 1px solid rgba(0, 255, 102, 0.4);
       padding: 2.2rem 2.5rem;
@@ -134,14 +148,15 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       box-sizing: border-box;
       animation: preyGlitchIn 0.5s ease both;
     }
-    .expression-label {
+    .flashmath-game-root .expression-label {
       font-size: 0.8rem;
       letter-spacing: 0.2em;
       color: rgba(0, 229, 255, 0.7);
     }
-    .expression-container {
+    .flashmath-game-root .expression-container {
       width: 100%;
-      padding: 0.8rem 0;
+      min-height: 4.5rem;
+      padding: 0.5rem 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -149,21 +164,62 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       scrollbar-width: thin;
       scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
     }
-    .expression-display {
-      font-size: clamp(1.1rem, 2.2vw, 2rem);
+    .flashmath-game-root .expression-display {
+      font-size: clamp(1.2rem, 2.4vw, 2rem);
       font-family: monospace;
       color: #ffffff;
       text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-      letter-spacing: 0.08em;
-      text-align: center;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35em;
       white-space: nowrap;
     }
-    .input-wrapper {
+    .flashmath-game-root .expression-display sup {
+      font-size: 0.6em;
+      line-height: 0;
+      vertical-align: super;
+      color: #00e5ff;
+    }
+
+    /* Stacked Horizontal Fraction Styling */
+    .flashmath-game-root .math-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 0.2em;
+      font-size: 0.82em;
+      line-height: 1.15;
+    }
+    .flashmath-game-root .frac-num {
+      padding: 0 0.35em 0.15em;
+      border-bottom: 2px solid #00ff66;
+      box-shadow: 0 2px 6px -2px rgba(0, 255, 102, 0.5);
+    }
+    .flashmath-game-root .frac-den {
+      padding: 0.15em 0.35em 0;
+    }
+
+    /* Square Root Radical Styling */
+    .flashmath-game-root .math-sqrt {
+      display: inline-flex;
+      align-items: center;
+      color: #00e5ff;
+    }
+    .flashmath-game-root .sqrt-radicand {
+      color: #ffffff;
+      border-top: 2px solid #00e5ff;
+      padding: 0.05em 0.25em 0;
+      margin-left: 0.05em;
+    }
+
+    .flashmath-game-root .input-wrapper {
       display: flex;
       gap: 1rem;
       width: 100%;
     }
-    input[type="number"] {
+    .flashmath-game-root input[type="number"] {
       flex: 1;
       background: rgba(0, 0, 0, 0.6);
       border: 1px solid rgba(0, 229, 255, 0.5);
@@ -176,11 +232,11 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       outline: none;
       min-width: 0;
     }
-    input[type="number"]:focus {
+    .flashmath-game-root input[type="number"]:focus {
       border-color: #00ff66;
       box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
     }
-    .submit-btn {
+    .flashmath-game-root .submit-btn {
       background: rgba(0, 255, 102, 0.15);
       border: 1px solid #00ff66;
       color: #00ff66;
@@ -192,19 +248,19 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       transition: all 0.2s;
       white-space: nowrap;
     }
-    .submit-btn:hover {
+    .flashmath-game-root .submit-btn:hover {
       background: #00ff66;
       color: #050b14;
       box-shadow: 0 0 15px rgba(0, 255, 102, 0.7);
     }
-    .feedback-external-slot {
+    .flashmath-game-root .feedback-external-slot {
       height: 2.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
       width: 100%;
     }
-    .feedback-badge {
+    .flashmath-game-root .feedback-badge {
       font-family: monospace;
       font-weight: bold;
       font-size: 1rem;
@@ -215,31 +271,27 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       box-sizing: border-box;
       letter-spacing: 0.1em;
     }
-    .feedback-badge.correct {
+    .flashmath-game-root .feedback-badge.correct {
       background: rgba(0, 255, 102, 0.2);
       border: 1px solid #00ff66;
       color: #00ff66;
       text-shadow: 0 0 10px rgba(0, 255, 102, 0.8);
     }
-    .feedback-badge.wrong {
+    .flashmath-game-root .feedback-badge.wrong {
       background: rgba(255, 0, 127, 0.2);
       border: 1px solid #ff007f;
       color: #ff007f;
       text-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
     }
-    @keyframes pulseFeedback {
-      0% { transform: scale(0.95); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
 
     @media (max-width: 600px) {
-      .problem-card {
+      .flashmath-game-root .problem-card {
         padding: 1.5rem 1rem;
       }
-      .input-wrapper {
+      .flashmath-game-root .input-wrapper {
         flex-direction: column;
       }
-      .submit-btn {
+      .flashmath-game-root .submit-btn {
         padding: 0.8rem;
         width: 100%;
       }
@@ -297,13 +349,13 @@ export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit 
 
   getProblemPrompt(): string {
     if (this.subject.id === 'algebra') return 'SOLVE FOR X';
-    if (this.subject.id === 'pemdas') return 'SIMPLIFY EXPRESSION';
+    if (this.subject.id.startsWith('pemdas')) return 'SIMPLIFY EXPRESSION';
     return 'COMPUTE EXPRESSION';
   }
 
   loadNextProblem() {
-    if (this.subject.id === 'pemdas') {
-      this.currentProblem = this.pemdasGenerator.generateProblem();
+    if (this.subject.id.startsWith('pemdas')) {
+      this.currentProblem = this.pemdasGenerator.generateProblem(this.subject.generatorConfig);
     } else if (this.subject.id === 'algebra') {
       this.currentProblem = this.algebraGenerator.generateProblem();
     } else {

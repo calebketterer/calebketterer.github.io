@@ -15,6 +15,10 @@ export class FlashmathStorageService {
     }
   }
 
+  getTotalXp(ids: string[]): number {
+    return ids.reduce((sum, id) => sum + this.getXp(id), 0);
+  }
+
   addXp(subjectId: string, amount: number): number {
     try {
       const data = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
