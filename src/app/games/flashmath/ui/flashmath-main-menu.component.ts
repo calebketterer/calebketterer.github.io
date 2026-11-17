@@ -87,23 +87,24 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       display: flex;
       flex-direction: column;
       width: 100%;
-      max-width: 820px;
+      max-width: 600px; /* Define max-width here for browser/landscape viewports */
       height: 100%;
-      padding: 2rem;
+      padding: 1.5rem 1rem;
       box-sizing: border-box;
       justify-content: center;
       align-items: center;
       z-index: 2;
       position: relative;
+      margin: 0 auto;
     }
     .menu-header {
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.5rem;
       text-align: center;
       width: 100%;
     }
     .menu-title {
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      letter-spacing: 0.3em;
+      font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+      letter-spacing: 0.25em;
       color: #00e5ff;
       text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
       margin: 0;
@@ -119,9 +120,9 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex-direction: column;
       gap: 1rem;
       width: 100%;
-      max-height: 68vh;
+      max-height: 72vh;
       overflow-y: auto;
-      padding: 0.5rem;
+      padding: 0.25rem;
       align-items: stretch;
       scrollbar-width: thin;
       scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
@@ -134,7 +135,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     .parent-row-wrapper {
       display: flex;
       align-items: stretch;
-      gap: 0.6rem;
+      gap: 0.5rem;
       width: 100%;
     }
     .subject-card {
@@ -142,7 +143,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex: 1;
       background: rgba(10, 20, 30, 0.78);
       border: 1px solid rgba(0, 229, 255, 0.35);
-      padding: 1.15rem 1.75rem;
+      padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -164,15 +165,14 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       transform: translateX(4px);
     }
 
-    /* Expand / Minimize [+] [-] Button */
     .expand-toggle-btn {
-      width: 54px;
+      width: 48px;
       background: rgba(0, 229, 255, 0.08);
       border: 1px solid rgba(0, 229, 255, 0.45);
       border-radius: 4px;
       color: #00e5ff;
       font-family: monospace;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: bold;
       cursor: pointer;
       display: flex;
@@ -194,7 +194,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       background: rgba(0, 255, 102, 0.12);
     }
 
-    /* Smooth Height Grid Accordion */
     .subtopics-accordion {
       display: grid;
       grid-template-rows: 0fr;
@@ -210,17 +209,16 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       display: flex;
       flex-direction: column;
       gap: 0.55rem;
-      padding-left: 1.6rem;
-      padding-right: 0.2rem;
+      padding-left: 1.2rem;
+      padding-right: 0.1rem;
     }
 
-    /* Subtopic Cards */
     .subtopic-card {
       position: relative;
       background: rgba(6, 14, 22, 0.85);
       border: 1px solid rgba(0, 229, 255, 0.25);
       border-left: 2px solid #00ff66;
-      padding: 0.85rem 1.4rem;
+      padding: 0.8rem 1.1rem;
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -241,9 +239,9 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .sub-connector {
       position: absolute;
-      left: -1.1rem;
+      left: -0.9rem;
       top: 50%;
-      width: 0.9rem;
+      width: 0.75rem;
       height: 1px;
       background: rgba(0, 255, 102, 0.45);
     }
@@ -253,35 +251,45 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       justify-content: space-between;
       align-items: center;
       width: 100%;
-      gap: 1rem;
+      gap: 0.75rem;
     }
     .info-group {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.2rem;
+      min-width: 0;
     }
     .subject-name {
-      font-size: 1.2rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: #ffffff;
-    }
-    .subtopic-name {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: 0.12em;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .subtopic-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
       color: #00e5ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .subject-desc {
-      font-size: 0.78rem;
+      font-size: 0.73rem;
       color: rgba(255, 255, 255, 0.55);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .xp-badge {
       display: flex;
-      gap: 0.45rem;
+      gap: 0.35rem;
       font-family: monospace;
-      font-size: 1rem;
+      font-size: 0.9rem;
       flex-shrink: 0;
     }
     .xp-label {
@@ -293,9 +301,9 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .locked-badge {
       font-family: monospace;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: rgba(255, 0, 127, 0.8);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.08em;
       flex-shrink: 0;
     }
     .tech-corner {
@@ -312,7 +320,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       background: #00ff66;
     }
 
-    /* Prey Glitch In / Out Animations */
     .prey-glitch-out {
       animation: preyGlitchOut 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -384,22 +391,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
         transform: scale(0.85) translateX(0) scaleY(0.1);
         filter: brightness(0) blur(6px);
         clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .menu-container {
-        padding: 1rem;
-      }
-      .subject-card {
-        padding: 0.95rem 1.1rem;
-      }
-      .subtopics-inner {
-        padding-left: 1rem;
-      }
-      .sub-connector {
-        left: -0.75rem;
-        width: 0.6rem;
       }
     }
   `]

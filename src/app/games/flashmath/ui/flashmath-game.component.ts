@@ -45,10 +45,12 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
             </div>
             
             <div class="input-wrapper">
+              <!-- inputmode="decimal" + pattern allows negative numbers & decimals on iOS/Android keyboards -->
               <input 
                 #answerInput
-                type="number" 
-                inputmode="numeric"
+                type="text" 
+                inputmode="decimal"
+                pattern="[0-9\-]*"
                 [(ngModel)]="userAnswer" 
                 (keydown.enter)="submitAnswer()"
                 placeholder="ENTER ANSWER" 
@@ -77,7 +79,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex-direction: column;
       width: 100%;
       height: 100%;
-      padding: 1.5rem;
+      padding: 1.25rem 1rem;
       box-sizing: border-box;
       justify-content: space-between;
       z-index: 2;
@@ -88,7 +90,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(0, 229, 255, 0.2);
-      padding-bottom: 1rem;
+      padding-bottom: 0.75rem;
       flex-wrap: wrap;
       gap: 0.5rem;
     }
@@ -96,7 +98,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       background: rgba(0, 229, 255, 0.1);
       border: 1px solid #00e5ff;
       color: #00e5ff;
-      padding: 0.5rem 1rem;
+      padding: 0.4rem 0.8rem;
       cursor: pointer;
       font-family: monospace;
       letter-spacing: 0.1em;
@@ -109,9 +111,9 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .flashmath-game-root .hud-metrics {
       display: flex;
-      gap: 1.5rem;
+      gap: 1.2rem;
       font-family: monospace;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: rgba(255, 255, 255, 0.7);
       flex-wrap: wrap;
     }
@@ -124,40 +126,40 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex: 1;
       justify-content: center;
       align-items: center;
-      padding: 1rem;
+      padding: 0.5rem;
     }
     .flashmath-game-root .problem-card-wrapper {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.2rem;
+      gap: 1rem;
       width: 100%;
       max-width: 720px;
     }
     .flashmath-game-root .problem-card {
       background: rgba(8, 16, 26, 0.92);
       border: 1px solid rgba(0, 255, 102, 0.4);
-      padding: 2.2rem 2.5rem;
+      padding: 1.75rem 1.5rem;
       border-radius: 6px;
       backdrop-filter: blur(12px);
       box-shadow: 0 0 30px rgba(0, 255, 102, 0.15), inset 0 0 20px rgba(0, 255, 102, 0.05);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.5rem;
+      gap: 1.25rem;
       width: 100%;
       box-sizing: border-box;
       animation: preyGlitchIn 0.5s ease both;
     }
     .flashmath-game-root .expression-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       letter-spacing: 0.2em;
       color: rgba(0, 229, 255, 0.7);
     }
     .flashmath-game-root .expression-container {
       width: 100%;
-      min-height: 4.8rem;
-      padding: 0.75rem 0;
+      min-height: 4.5rem;
+      padding: 0.5rem 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -167,7 +169,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .flashmath-game-root .expression-display {
       display: inline-block;
-      font-size: clamp(1.25rem, 2.5vw, 2.05rem);
+      font-size: clamp(1.1rem, 3.8vw, 2.05rem);
       font-family: monospace;
       color: #ffffff;
       text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
@@ -188,7 +190,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       font-weight: bold;
     }
 
-    /* Stacked Horizontal Fraction Styling — full-width division bar */
     .flashmath-game-root .math-frac {
       display: inline-flex;
       flex-direction: column;
@@ -214,7 +215,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       padding: 0.18em 0.45em 0;
     }
 
-    /* Crisp Polygon Radical Hook & Connected Top Bar */
     .flashmath-game-root .math-sqrt {
       position: relative;
       display: inline-flex;
@@ -266,30 +266,23 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
 
     .flashmath-game-root .input-wrapper {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       width: 100%;
     }
-    .flashmath-game-root input[type="number"] {
+    .flashmath-game-root input[type="text"] {
       flex: 1;
       background: rgba(0, 0, 0, 0.6);
       border: 1px solid rgba(0, 229, 255, 0.5);
-      padding: 0.8rem 1rem;
-      font-size: 1.2rem;
+      padding: 0.75rem 1rem;
+      font-size: 1.15rem;
       color: #00e5ff;
       text-align: center;
       font-family: monospace;
       border-radius: 4px;
       outline: none;
       min-width: 0;
-      -moz-appearance: textfield;
-      appearance: textfield;
     }
-    .flashmath-game-root input[type="number"]::-webkit-outer-spin-button,
-    .flashmath-game-root input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    .flashmath-game-root input[type="number"]:focus {
+    .flashmath-game-root input[type="text"]:focus {
       border-color: #00ff66;
       box-shadow: 0 0 12px rgba(0, 255, 102, 0.4);
     }
@@ -297,7 +290,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       background: rgba(0, 255, 102, 0.15);
       border: 1px solid #00ff66;
       color: #00ff66;
-      padding: 0 1.5rem;
+      padding: 0 1.25rem;
       font-weight: bold;
       letter-spacing: 0.1em;
       cursor: pointer;
@@ -311,7 +304,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       box-shadow: 0 0 15px rgba(0, 255, 102, 0.7);
     }
     .flashmath-game-root .feedback-external-slot {
-      height: 2.5rem;
+      height: 2.2rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -320,8 +313,8 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     .flashmath-game-root .feedback-badge {
       font-family: monospace;
       font-weight: bold;
-      font-size: 1rem;
-      padding: 0.5rem 1.2rem;
+      font-size: 0.9rem;
+      padding: 0.4rem 1rem;
       border-radius: 4px;
       animation: pulseFeedback 0.3s ease;
       text-align: center;
@@ -343,13 +336,13 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
 
     @media (max-width: 600px) {
       .flashmath-game-root .problem-card {
-        padding: 1.5rem 1rem;
+        padding: 1.25rem 1rem;
       }
       .flashmath-game-root .input-wrapper {
         flex-direction: column;
       }
       .flashmath-game-root .submit-btn {
-        padding: 0.8rem;
+        padding: 0.75rem;
         width: 100%;
       }
     }
@@ -361,7 +354,7 @@ export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit 
   @ViewChild('answerInput') answerInput!: ElementRef;
 
   currentProblem!: MathProblem;
-  userAnswer: number | null = null;
+  userAnswer: string | null = null;
   elapsedTime = 0;
   private timerInterval: any;
   feedback: 'correct' | 'wrong' | null = null;
@@ -427,10 +420,13 @@ export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   submitAnswer() {
-    if (this.isLocked || this.userAnswer === null || isNaN(this.userAnswer)) return;
+    if (this.isLocked || this.userAnswer === null || this.userAnswer.toString().trim() === '') return;
+    const parsed = Number(this.userAnswer);
+    if (isNaN(parsed)) return;
+
     this.isLocked = true;
 
-    if (Number(this.userAnswer) === this.currentProblem.answer) {
+    if (parsed === this.currentProblem.answer) {
       this.feedback = 'correct';
       this.subject.xp = this.storage.addXp(this.subject.id, 10);
       this.cdr.detectChanges();

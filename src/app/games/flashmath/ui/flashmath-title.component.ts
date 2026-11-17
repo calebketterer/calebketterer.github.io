@@ -6,9 +6,15 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="title-container" [class.fade-out]="isFadingOut">
-      <h1 class="glitch-title" data-text="FLASHMATH">FLASHMATH</h1>
-      <div class="subtitle">NEURAL RECURSIVE CALCULATION CORE</div>
+    <div class="title-container" (click)="onStart.emit()">
+      <div class="glitch-wrapper">
+        <h1 class="title-main" data-text="FLASHMATH">FLASHMATH</h1>
+      </div>
+      <div class="subtitle-wrapper">
+        <span class="sub-prefix">NEURAL RECURSIVE</span>
+        <span class="sub-mid">CALCULATION</span>
+        <span class="sub-suffix">CORE</span>
+      </div>
     </div>
   `,
   styles: [`
@@ -17,37 +23,61 @@ import { CommonModule } from '@angular/common';
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      width: 100%;
       height: 100%;
-      animation: fadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-    .fade-out {
-      animation: fadeOut 0.8s cubic-bezier(0.7, 0, 0.84, 0) forwards;
-    }
-    .glitch-title {
-      font-size: clamp(3rem, 8vw, 6rem);
-      font-weight: 900;
-      letter-spacing: 0.2em;
-      color: #00ff66;
-      text-shadow: 0 0 20px rgba(0, 255, 102, 0.6), 0 0 40px rgba(0, 229, 255, 0.4);
+      cursor: pointer;
+      z-index: 2;
       position: relative;
+      padding: 1rem;
+      box-sizing: border-box;
+      text-align: center;
     }
-    .subtitle {
-      margin-top: 1rem;
-      font-size: 1rem;
-      letter-spacing: 0.4em;
+    .glitch-wrapper {
+      position: relative;
+      margin-bottom: 1rem;
+      max-width: 100%;
+    }
+    .title-main {
+      font-size: clamp(2rem, 9.5vw, 4.2rem);
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      color: #00ff66;
+      text-shadow: 0 0 20px rgba(0, 255, 102, 0.6), 0 0 40px rgba(0, 255, 102, 0.3);
+      margin: 0;
+      animation: titlePulse 3s ease-in-out infinite alternate;
+      word-break: break-word;
+    }
+    .subtitle-wrapper {
+      display: flex;
+      gap: 0.6rem;
+      font-family: monospace;
+      font-size: clamp(0.7rem, 2.2vw, 0.95rem);
+      letter-spacing: 0.3em;
       color: #00e5ff;
-      opacity: 0.8;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); filter: blur(10px); }
-      to { opacity: 1; transform: scale(1); filter: blur(0); }
+    .prompt-wrapper {
+      font-family: monospace;
+      font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.7);
+      animation: promptBlink 1.2s ease-in-out infinite alternate;
     }
-    @keyframes fadeOut {
-      from { opacity: 1; transform: scale(1); filter: blur(0); }
-      to { opacity: 0; transform: scale(1.05); filter: blur(10px); }
+
+    @keyframes titlePulse {
+      0% { text-shadow: 0 0 15px rgba(0, 255, 102, 0.5); }
+      100% { text-shadow: 0 0 30px rgba(0, 255, 102, 0.8), 0 0 50px rgba(0, 255, 102, 0.4); }
+    }
+
+    @keyframes promptBlink {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
     }
   `]
 })
 export class FlashmathTitleComponent {
-  isFadingOut = false;
+  @Output() onStart = new EventEmitter<void>();
 }
