@@ -6,7 +6,7 @@ export interface AstGeneratorConfig {
   ops: AstOp[];
   minSteps?: number;
   maxSteps: number;
-  maxPowerValue?: number; // e.g., 225 (15^2) for Exponents & Roots drill, 144 (12^2) elsewhere
+  maxPowerValue?: number;
 }
 
 export interface SubjectModule {

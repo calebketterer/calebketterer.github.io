@@ -16,7 +16,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
 
       <div class="subjects-list">
         <div *ngFor="let subject of subjects; let i = index" class="subject-group">
-          <!-- Primary Parent Topic Row -->
+          <!-- Parent Topic Row -->
           <div class="parent-row-wrapper" [style.animation-delay]="(i * 0.1) + 's'">
             <button
               class="subject-card"
@@ -39,43 +39,80 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
               <div class="tech-corner"></div>
             </button>
 
-            <!-- Expand [+] / Minimize [-] Toggle Button -->
             <button
               *ngIf="subject.unlocked && subject.subtopics?.length"
               class="expand-toggle-btn"
               [class.expanded]="isExpanded(subject.id)"
-              (click)="toggleExpand(subject, $event)"
-              [attr.aria-label]="isExpanded(subject.id) ? 'Minimize subtopics' : 'Expand subtopics'">
+              (click)="toggleExpand(subject, $event)">
               <span class="toggle-symbol">{{ isExpanded(subject.id) ? '−' : '+' }}</span>
             </button>
           </div>
 
-          <!-- Animated Accordion Container for Subtopics -->
+          <!-- Tier 2 Accordion (Subtopics) -->
           <div
             *ngIf="subject.subtopics?.length"
             class="subtopics-accordion"
             [class.is-open]="isExpanded(subject.id)">
             <div class="subtopics-inner">
-              <button
-                *ngFor="let sub of subject.subtopics; let subIdx = index"
-                class="subtopic-card"
-                [class.prey-glitch-in]="getSubtopicAnimState(subject.id, subIdx) === 'in'"
-                [class.prey-glitch-out]="getSubtopicAnimState(subject.id, subIdx) === 'out'"
-                [class.is-hidden]="getSubtopicAnimState(subject.id, subIdx) === 'hidden'"
-                (click)="selectSubject(sub)">
-                <div class="sub-connector"></div>
-                <div class="card-content">
-                  <div class="info-group">
-                    <span class="subtopic-name">{{ sub.name }}</span>
-                    <span class="subject-desc">{{ sub.description }}</span>
-                  </div>
-                  <div class="xp-badge">
-                    <span class="xp-label">XP:</span>
-                    <span class="xp-value">{{ sub.xp }}</span>
+              <div *ngFor="let sub of subject.subtopics; let subIdx = index" class="subtopic-group-wrapper">
+                <div class="parent-row-wrapper">
+                  <button
+                    class="subtopic-card"
+                    [class.prey-glitch-in]="getSubtopicAnimState(subject.id, subIdx) === 'in'"
+                    [class.prey-glitch-out]="getSubtopicAnimState(subject.id, subIdx) === 'out'"
+                    [class.is-hidden]="getSubtopicAnimState(subject.id, subIdx) === 'hidden'"
+                    (click)="selectSubject(sub)">
+                    <div class="sub-connector"></div>
+                    <div class="card-content">
+                      <div class="info-group">
+                        <span class="subtopic-name">{{ sub.name }}</span>
+                        <span class="subject-desc">{{ sub.description }}</span>
+                      </div>
+                      <div class="xp-badge">
+                        <span class="xp-label">XP:</span>
+                        <span class="xp-value">{{ getDisplayXp(sub) }}</span>
+                      </div>
+                    </div>
+                    <div class="tech-corner sub-corner"></div>
+                  </button>
+
+                  <button
+                    *ngIf="sub.subtopics?.length"
+                    class="expand-toggle-btn sub-toggle"
+                    [class.expanded]="isExpanded(sub.id)"
+                    (click)="toggleExpand(sub, $event)">
+                    <span class="toggle-symbol">{{ isExpanded(sub.id) ? '−' : '+' }}</span>
+                  </button>
+                </div>
+
+                <!-- Tier 3 Accordion (Sub-subtopics) -->
+                <div
+                  *ngIf="sub.subtopics?.length"
+                  class="subtopics-accordion"
+                  [class.is-open]="isExpanded(sub.id)">
+                  <div class="subtopics-inner nested-inner">
+                    <button
+                      *ngFor="let leaf of sub.subtopics; let leafIdx = index"
+                      class="subtopic-card leaf-card"
+                      [class.prey-glitch-in]="getSubtopicAnimState(sub.id, leafIdx) === 'in'"
+                      [class.prey-glitch-out]="getSubtopicAnimState(sub.id, leafIdx) === 'out'"
+                      [class.is-hidden]="getSubtopicAnimState(sub.id, leafIdx) === 'hidden'"
+                      (click)="selectSubject(leaf)">
+                      <div class="sub-connector"></div>
+                      <div class="card-content">
+                        <div class="info-group">
+                          <span class="subtopic-name leaf-name">{{ leaf.name }}</span>
+                          <span class="subject-desc">{{ leaf.description }}</span>
+                        </div>
+                        <div class="xp-badge">
+                          <span class="xp-label">XP:</span>
+                          <span class="xp-value">{{ leaf.xp }}</span>
+                        </div>
+                      </div>
+                    </button>
                   </div>
                 </div>
-                <div class="tech-corner sub-corner"></div>
-              </button>
+              </div>
             </div>
           </div>
         </div>
@@ -87,7 +124,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       display: flex;
       flex-direction: column;
       width: 100%;
-      max-width: 600px; /* Define max-width here for browser/landscape viewports */
+      max-width: 680px;
       height: 100%;
       padding: 1.5rem 1rem;
       box-sizing: border-box;
@@ -120,14 +157,14 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       flex-direction: column;
       gap: 1rem;
       width: 100%;
-      max-height: 72vh;
+      max-height: 74vh;
       overflow-y: auto;
       padding: 0.25rem;
       align-items: stretch;
       scrollbar-width: thin;
       scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
     }
-    .subject-group {
+    .subject-group, .subtopic-group-wrapper {
       display: flex;
       flex-direction: column;
       width: 100%;
@@ -141,15 +178,14 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     .subject-card {
       position: relative;
       flex: 1;
-      background: rgba(10, 20, 30, 0.78);
+      background: rgba(8, 14, 22, 0.92); /* Clean dark background without blue glow */
       border: 1px solid rgba(0, 229, 255, 0.35);
       padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
       cursor: pointer;
-      backdrop-filter: blur(8px);
       border-radius: 4px;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+      transition: border-color 0.2s ease, transform 0.2s ease;
       box-sizing: border-box;
       text-align: left;
       min-width: 0;
@@ -161,13 +197,11 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     }
     .subject-card:hover:not(.locked) {
       border-color: #00ff66;
-      box-shadow: 0 0 20px rgba(0, 255, 102, 0.28), inset 0 0 15px rgba(0, 255, 102, 0.1);
       transform: translateX(4px);
     }
-
     .expand-toggle-btn {
       width: 48px;
-      background: rgba(0, 229, 255, 0.08);
+      background: rgba(0, 229, 255, 0.05);
       border: 1px solid rgba(0, 229, 255, 0.45);
       border-radius: 4px;
       color: #00e5ff;
@@ -178,22 +212,18 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(8px);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: all 0.2s ease;
       flex-shrink: 0;
     }
-    .expand-toggle-btn:hover {
-      background: rgba(0, 255, 102, 0.18);
-      border-color: #00ff66;
-      color: #00ff66;
-      box-shadow: 0 0 16px rgba(0, 255, 102, 0.35);
+    .expand-toggle-btn.sub-toggle {
+      width: 38px;
+      font-size: 1.1rem;
     }
-    .expand-toggle-btn.expanded {
-      border-color: #00ff66;
-      color: #00ff66;
+    .expand-toggle-btn:hover, .expand-toggle-btn.expanded {
       background: rgba(0, 255, 102, 0.12);
+      border-color: #00ff66;
+      color: #00ff66;
     }
-
     .subtopics-accordion {
       display: grid;
       grid-template-rows: 0fr;
@@ -212,10 +242,12 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       padding-left: 1.2rem;
       padding-right: 0.1rem;
     }
-
+    .nested-inner {
+      padding-left: 1.8rem;
+    }
     .subtopic-card {
       position: relative;
-      background: rgba(6, 14, 22, 0.85);
+      background: rgba(6, 12, 18, 0.95);
       border: 1px solid rgba(0, 229, 255, 0.25);
       border-left: 2px solid #00ff66;
       padding: 0.8rem 1.1rem;
@@ -225,17 +257,17 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       border-radius: 4px;
       text-align: left;
       width: 100%;
+      flex: 1;
       box-sizing: border-box;
-      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      transition: border-color 0.2s ease, background 0.2s ease;
     }
-    .subtopic-card.is-hidden {
-      opacity: 0;
-      pointer-events: none;
+    .leaf-card {
+      border-left-color: #00e5ff;
+      background: rgba(4, 8, 14, 0.98);
     }
     .subtopic-card:hover {
-      background: rgba(0, 255, 102, 0.08);
+      background: rgba(0, 255, 102, 0.06);
       border-color: #00ff66;
-      box-shadow: 0 0 14px rgba(0, 255, 102, 0.22);
     }
     .sub-connector {
       position: absolute;
@@ -245,7 +277,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       height: 1px;
       background: rgba(0, 255, 102, 0.45);
     }
-
     .card-content {
       display: flex;
       justify-content: space-between;
@@ -276,6 +307,10 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    .leaf-name {
+      color: #ffe600;
+      font-size: 0.82rem;
     }
     .subject-desc {
       font-size: 0.73rem;
@@ -323,7 +358,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
     .prey-glitch-out {
       animation: preyGlitchOut 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-
     .prey-glitch-in {
       animation: preyGlitchIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
@@ -448,9 +482,74 @@ export class FlashmathMainMenuComponent implements OnInit {
     {
       id: 'algebra',
       name: 'ALGEBRA',
-      description: 'Multi-Step Variable Isolation & Equations',
+      description: 'Comprehensive Algebraic Structures & Equations',
       xp: 0,
-      unlocked: true
+      unlocked: true,
+      generatorConfig: { ops: ['+', '-', '*'], minSteps: 2, maxSteps: 4 },
+      subtopics: [
+        {
+          id: 'alg_elementary',
+          name: 'ELEMENTARY ALGEBRA',
+          description: 'Foundational variable operations and equations',
+          xp: 0,
+          unlocked: true,
+          subtopics: [
+            { id: 'alg_elem_vars', name: 'Variables & Expressions', description: 'Unknowns and simplifying algebraic phrases', xp: 0, unlocked: true },
+            { id: 'alg_elem_linear', name: 'Linear Equations & Inequalities', description: 'Single variable and coordinate graphs', xp: 0, unlocked: true },
+            { id: 'alg_elem_poly', name: 'Polynomials', description: 'Adding, subtracting, multiplying, factoring', xp: 0, unlocked: true },
+            { id: 'alg_elem_quad', name: 'Quadratic Equations', description: 'Factoring, completing square, quadratic formula', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_intermediate',
+          name: 'INTERMEDIATE & COLLEGE ALGEBRA',
+          description: 'Complex relationships, functions, and systems',
+          xp: 0,
+          unlocked: true,
+          subtopics: [
+            { id: 'alg_int_func', name: 'Functions & Graphs', description: 'Domain, range, and transformations', xp: 0, unlocked: true },
+            { id: 'alg_int_sys', name: 'Systems of Equations', description: 'Substitution, elimination, and matrices', xp: 0, unlocked: true },
+            { id: 'alg_int_exp', name: 'Exponents & Logarithms', description: 'Growth, decay, and inverse logarithmic functions', xp: 0, unlocked: true },
+            { id: 'alg_int_rat', name: 'Rational & Radical Expressions', description: 'Fractions with variables and roots', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_linear',
+          name: 'LINEAR ALGEBRA',
+          description: 'Multi-dimensional spaces, vectors, and matrices',
+          xp: 0,
+          unlocked: true,
+          subtopics: [
+            { id: 'alg_lin_vec', name: 'Vectors & Vector Spaces', description: 'Magnitude and direction in multi-d space', xp: 0, unlocked: true },
+            { id: 'alg_lin_mat', name: 'Matrices & Determinants', description: 'Grids to solve large linear systems', xp: 0, unlocked: true },
+            { id: 'alg_lin_trans', name: 'Linear Transformations', description: 'Mapping vectors preserving addition/scalar mult', xp: 0, unlocked: true },
+            { id: 'alg_lin_eigen', name: 'Eigenvalues & Eigenvectors', description: 'Special vectors that change in scale', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_abstract',
+          name: 'ABSTRACT ALGEBRA',
+          description: 'General algebraic structures and symmetry',
+          xp: 0,
+          unlocked: false,
+          subtopics: [
+            { id: 'alg_abs_group', name: 'Group Theory', description: 'Sets with single operation, symmetry', xp: 0, unlocked: true },
+            { id: 'alg_abs_ring', name: 'Ring Theory', description: 'Sets with two operations (integers/polynomials)', xp: 0, unlocked: true },
+            { id: 'alg_abs_field', name: 'Field Theory', description: 'Structures where all four basic ops are defined', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_boolean',
+          name: 'BOOLEAN ALGEBRA',
+          description: 'Truth values and digital electronics foundation',
+          xp: 0,
+          unlocked: false,
+          subtopics: [
+            { id: 'alg_bool_logic', name: 'Logical Operations', description: 'AND, OR, NOT truth evaluation', xp: 0, unlocked: false },
+            { id: 'alg_bool_gates', name: 'Truth Tables & Logic Gates', description: 'Designing and simplifying digital circuits', xp: 0, unlocked: false }
+          ]
+        }
+      ]
     },
     {
       id: 'geometry',
@@ -474,25 +573,33 @@ export class FlashmathMainMenuComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.subjects.forEach(sub => {
-      if (sub.unlocked) {
-        sub.xp = this.storage.getXp(sub.id);
+    this.hydrateXp(this.subjects);
+    this.initSubtopicStates(this.subjects);
+  }
+
+  private hydrateXp(list: SubjectModule[]) {
+    list.forEach(item => {
+      if (item.subtopics && item.subtopics.length > 0) {
+        this.hydrateXp(item.subtopics);
       }
-      if (sub.subtopics) {
-        this.subtopicStates[sub.id] = sub.subtopics.map(() => 'hidden');
-        sub.subtopics.forEach(child => {
-          child.xp = this.storage.getXp(child.id);
-        });
+      item.xp = this.storage.getXp(item.id);
+    });
+  }
+
+  private initSubtopicStates(list: SubjectModule[]) {
+    list.forEach(item => {
+      if (item.subtopics?.length) {
+        this.subtopicStates[item.id] = new Array(item.subtopics.length).fill('hidden');
+        this.initSubtopicStates(item.subtopics);
       }
     });
   }
 
   getDisplayXp(subject: SubjectModule): number {
-    if (!subject.subtopics?.length) {
+    if (!subject.subtopics || subject.subtopics.length === 0) {
       return subject.xp;
     }
-    const childXp = subject.subtopics.reduce((acc, s) => acc + s.xp, 0);
-    return subject.xp + childXp;
+    return subject.xp + subject.subtopics.reduce((acc, sub) => acc + this.getDisplayXp(sub), 0);
   }
 
   isExpanded(subjectId: string): boolean {
@@ -514,7 +621,9 @@ export class FlashmathMainMenuComponent implements OnInit {
 
     if (!currentlyOpen) {
       this.expandedMap[subject.id] = true;
-      this.subtopicStates[subject.id] = new Array(count).fill('hidden');
+      if (!this.subtopicStates[subject.id]) {
+        this.subtopicStates[subject.id] = new Array(count).fill('hidden');
+      }
       this.cdr.detectChanges();
 
       subject.subtopics.forEach((_, idx) => {

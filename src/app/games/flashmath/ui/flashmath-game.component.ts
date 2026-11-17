@@ -32,7 +32,7 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
         <div class="hud-metrics">
           <div class="metric">SUBJECT: <span class="highlight">{{ subject.name }}</span></div>
           <div class="metric">TIMER: <span class="timer-val">{{ elapsedTime }}s</span></div>
-          <div class="metric">XP: <span class="xp-val">{{ subject.xp }}</span></div>
+          <div class="metric">XP: <span class="xp-val">{{ getRootXp() }}</span></div>
         </div>
       </div>
 
@@ -45,7 +45,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
             </div>
             
             <div class="input-wrapper">
-              <!-- inputmode="decimal" + pattern allows negative numbers & decimals on iOS/Android keyboards -->
               <input 
                 #answerInput
                 type="text" 
@@ -190,31 +189,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       font-weight: bold;
     }
 
-    .flashmath-game-root .math-frac {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: stretch;
-      text-align: center;
-      vertical-align: middle;
-      margin: 0 0.25em;
-      font-size: 0.84em;
-      line-height: 1.2;
-    }
-    .flashmath-game-root .frac-num {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0 0.45em 0.18em;
-      border-bottom: 2px solid #00ff66;
-      box-shadow: 0 2px 6px -2px rgba(0, 255, 102, 0.55);
-    }
-    .flashmath-game-root .frac-den {
-      display: block;
-      width: 100%;
-      box-sizing: border-box;
-      padding: 0.18em 0.45em 0;
-    }
-
     .flashmath-game-root .math-sqrt {
       position: relative;
       display: inline-flex;
@@ -222,17 +196,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       vertical-align: middle;
       color: #00e5ff;
       margin: 0 0.18em;
-    }
-    .flashmath-game-root .root-index {
-      font-size: 0.52em;
-      line-height: 1;
-      align-self: flex-start;
-      margin-top: 0.05em;
-      margin-right: -0.18em;
-      color: #00ff66;
-      text-shadow: 0 0 8px rgba(0, 255, 102, 0.8);
-      font-weight: bold;
-      z-index: 1;
     }
     .flashmath-game-root .radical-hook {
       display: block;
@@ -316,7 +279,6 @@ import { FlashmathStorageService } from '../core/flashmath.storage.service';
       font-size: 0.9rem;
       padding: 0.4rem 1rem;
       border-radius: 4px;
-      animation: pulseFeedback 0.3s ease;
       text-align: center;
       box-sizing: border-box;
       letter-spacing: 0.1em;
@@ -397,17 +359,22 @@ export class FlashmathGameComponent implements OnInit, OnDestroy, AfterViewInit 
     }, 100);
   }
 
+  getRootXp(): number {
+    return this.storage.getXp(this.subject.id);
+  }
+
   getProblemPrompt(): string {
-    if (this.subject.id === 'algebra') return 'SOLVE FOR X';
+    if (this.subject.id.includes('alg') || this.subject.id === 'algebra') return 'SOLVE FOR X';
     if (this.subject.id.startsWith('pemdas')) return 'SIMPLIFY EXPRESSION';
     return 'COMPUTE EXPRESSION';
   }
 
   loadNextProblem() {
-    if (this.subject.id.startsWith('pemdas')) {
-      this.currentProblem = this.pemdasGenerator.generateProblem(this.subject.generatorConfig);
-    } else if (this.subject.id === 'algebra') {
-      this.currentProblem = this.algebraGenerator.generateProblem();
+    if (this.subject.id.startsWith('pemdas') || this.subject.id === 'pemdas') {
+      const config = this.subject.generatorConfig || { ops: ['+', '-', '*', '/', 'power', 'root', 'frac_exp'], minSteps: 3, maxSteps: 5 };
+      this.currentProblem = this.pemdasGenerator.generateProblem(config);
+    } else if (this.subject.id.includes('alg') || this.subject.id === 'algebra') {
+      this.currentProblem = this.algebraGenerator.generateProblem(this.subject.id, this.subject.generatorConfig);
     } else {
       this.currentProblem = this.dmasGenerator.generateProblem();
     }
