@@ -10,7 +10,8 @@ const SCOPE_CONFIGS = {
     app: path.resolve(__dirname, 'src/app'), // App folder, but stops short of games/*/*
     diep: path.resolve(__dirname, 'src/app/games/diep'),
     snake: path.resolve(__dirname, 'src/app/games/snake'),
-    sudoku: path.resolve(__dirname, 'src/app/games/sudoku')
+    sudoku: path.resolve(__dirname, 'src/app/games/sudoku'),
+    flashmath: path.resolve(__dirname, 'src/app/games/flashmath')
 };
 
 const targetDir = SCOPE_CONFIGS[scope] || SCOPE_CONFIGS.all;

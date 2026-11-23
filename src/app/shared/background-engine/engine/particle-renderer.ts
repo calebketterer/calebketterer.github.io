@@ -41,10 +41,16 @@ export class ParticleRenderer {
   public drawDebugOverlay(ctx: CanvasRenderingContext2D): void {
     ctx.font = '10px "Courier New", Courier, monospace';
     ctx.fillStyle = '#8faec5';
-    ctx.fillText('Simulation version no: 2026.11.06', 20, 32);
+    ctx.fillText('Simulation version no: 2026.11.23', 20, 32);
 
     ctx.fillStyle = '#00e5ff';
     ctx.fillRect(20, 40, 16, 16);
+  }
+
+  private getFadeAlpha(createdAt: number | undefined, duration: number = 1000): number {
+    if (createdAt === undefined) return 1; // Fallback for hardcoded/mock planets
+    const elapsed = Date.now() - createdAt;
+    return Math.min(1, Math.max(0, elapsed / duration));
   }
 
   public drawOrbitPaths(ctx: CanvasRenderingContext2D, planets: Planet[], width: number, height: number): void {
@@ -53,10 +59,13 @@ export class ParticleRenderer {
 
     ctx.lineWidth = 1;
     for (const planet of planets) {
+      const fadeAlpha = this.getFadeAlpha(planet.createdAt);
+      if (fadeAlpha <= 0) continue;
+
       ctx.save();
       ctx.translate(centerX, centerY);
-      ctx.rotate(planet.orbitRotation); // Properly rotate ellipse at arbitrary angles
-      ctx.strokeStyle = `rgba(${planet.color}, 0.08)`;
+      ctx.rotate(planet.orbitRotation);
+      ctx.strokeStyle = `rgba(${planet.color}, ${0.08 * fadeAlpha})`;
       ctx.beginPath();
       ctx.ellipse(0, 0, planet.orbitRadiusX, planet.orbitRadiusY, 0, 0, Math.PI * 2);
       ctx.stroke();
@@ -66,11 +75,14 @@ export class ParticleRenderer {
 
   public drawPlanets(ctx: CanvasRenderingContext2D, planets: Planet[]): void {
     for (const planet of planets) {
+      const fadeAlpha = this.getFadeAlpha(planet.createdAt);
+      if (fadeAlpha <= 0) continue;
+
       ctx.save();
       ctx.translate(planet.x, planet.y);
 
       const bloomGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, planet.radius * 2.2);
-      bloomGrad.addColorStop(0, `rgba(${planet.color}, 0.2)`);
+      bloomGrad.addColorStop(0, `rgba(${planet.color}, ${0.2 * fadeAlpha})`);
       bloomGrad.addColorStop(1, `rgba(${planet.color}, 0)`);
       ctx.fillStyle = bloomGrad;
       ctx.beginPath();
@@ -78,13 +90,13 @@ export class ParticleRenderer {
       ctx.fill();
 
       const fillGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, planet.radius);
-      fillGrad.addColorStop(0, `rgba(15, 25, 40, 0.95)`);
-      fillGrad.addColorStop(1, `rgba(8, 12, 20, 0.98)`);
+      fillGrad.addColorStop(0, `rgba(15, 25, 40, ${0.95 * fadeAlpha})`);
+      fillGrad.addColorStop(1, `rgba(8, 12, 20, ${0.98 * fadeAlpha})`);
 
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = `rgba(${planet.color}, 0.5)`;
+      ctx.shadowBlur = 8 * fadeAlpha;
+      ctx.shadowColor = `rgba(${planet.color}, ${0.5 * fadeAlpha})`;
       ctx.fillStyle = fillGrad;
-      ctx.strokeStyle = `rgba(${planet.color}, 0.8)`;
+      ctx.strokeStyle = `rgba(${planet.color}, ${0.8 * fadeAlpha})`;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
       ctx.arc(0, 0, planet.radius, 0, Math.PI * 2);
@@ -92,7 +104,7 @@ export class ParticleRenderer {
       ctx.stroke();
       ctx.shadowBlur = 0;
 
-      ctx.strokeStyle = `rgba(${planet.color}, 0.4)`;
+      ctx.strokeStyle = `rgba(${planet.color}, ${0.4 * fadeAlpha})`;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(-planet.radius * 0.4, 0);
@@ -108,7 +120,7 @@ export class ParticleRenderer {
         ctx.translate(moon.x, moon.y);
 
         const moonBloomGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, moon.radius * 2.2);
-        moonBloomGrad.addColorStop(0, `rgba(${planet.color}, 0.15)`);
+        moonBloomGrad.addColorStop(0, `rgba(${planet.color}, ${0.15 * fadeAlpha})`);
         moonBloomGrad.addColorStop(1, `rgba(${planet.color}, 0)`);
         ctx.fillStyle = moonBloomGrad;
         ctx.beginPath();
@@ -116,13 +128,13 @@ export class ParticleRenderer {
         ctx.fill();
 
         const moonFillGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, moon.radius);
-        moonFillGrad.addColorStop(0, `rgba(15, 25, 40, 0.95)`);
-        moonFillGrad.addColorStop(1, `rgba(8, 12, 20, 0.98)`);
+        moonFillGrad.addColorStop(0, `rgba(15, 25, 40, ${0.95 * fadeAlpha})`);
+        moonFillGrad.addColorStop(1, `rgba(8, 12, 20, ${0.98 * fadeAlpha})`);
 
-        ctx.shadowBlur = 6;
-        ctx.shadowColor = `rgba(${planet.color}, 0.6)`;
+        ctx.shadowBlur = 6 * fadeAlpha;
+        ctx.shadowColor = `rgba(${planet.color}, ${0.6 * fadeAlpha})`;
         ctx.fillStyle = moonFillGrad;
-        ctx.strokeStyle = `rgba(${planet.color}, 0.8)`;
+        ctx.strokeStyle = `rgba(${planet.color}, ${0.8 * fadeAlpha})`;
         ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.arc(0, 0, moon.radius, 0, Math.PI * 2);

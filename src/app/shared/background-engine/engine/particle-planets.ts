@@ -85,7 +85,8 @@ export class ParticlePlanets {
         cooldownMs: this.configParams.minCooldownMs + Math.random() * cooldownRange,
         particleThreshold: Math.floor(this.configParams.minParticleThreshold + Math.random() * (thresholdRange + 1)),
         isExplosionDelayed: false,
-        explosionDelayTimer: 0
+        explosionDelayTimer: 0,
+        createdAt: now + (i * 2500)
       });
     }
 

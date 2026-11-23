@@ -1,0 +1,667 @@
+import { Component, EventEmitter, Output, OnInit, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { SubjectModule } from '../core/flashmath.interfaces';
+import { FlashmathStorageService } from '../core/flashmath.storage.service';
+
+@Component({
+  selector: 'app-flashmath-main-menu',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="menu-container">
+      <header class="menu-header">
+        <h2 class="menu-title">SUBJECTS OF FOCUS</h2>
+        <div class="scanline-bar"></div>
+      </header>
+
+      <div class="subjects-list">
+        <div *ngFor="let subject of subjects; let i = index" class="subject-group">
+          <!-- Parent Topic Row -->
+          <div class="parent-row-wrapper" [style.animation-delay]="(i * 0.1) + 's'">
+            <button
+              class="subject-card"
+              [class.locked]="!subject.unlocked"
+              [class.has-expand]="subject.subtopics?.length"
+              (click)="selectSubject(subject)">
+              <div class="card-content">
+                <div class="info-group">
+                  <span class="subject-name">{{ subject.name }}</span>
+                  <span class="subject-desc">{{ subject.description }}</span>
+                </div>
+                <div class="xp-badge" *ngIf="subject.unlocked">
+                  <span class="xp-label">XP:</span>
+                  <span class="xp-value">{{ getDisplayXp(subject) }}</span>
+                </div>
+                <div class="locked-badge" *ngIf="!subject.unlocked">
+                  [ LOCKED / OFFLINE ]
+                </div>
+              </div>
+              <div class="tech-corner"></div>
+            </button>
+
+            <button
+              *ngIf="subject.unlocked && subject.subtopics?.length"
+              class="expand-toggle-btn"
+              [class.expanded]="isExpanded(subject.id)"
+              (click)="toggleExpand(subject, $event)">
+              <span class="toggle-symbol">{{ isExpanded(subject.id) ? '−' : '+' }}</span>
+            </button>
+          </div>
+
+          <!-- Tier 2 Accordion (Subtopics) -->
+          <div
+            *ngIf="subject.subtopics?.length"
+            class="subtopics-accordion"
+            [class.is-open]="isExpanded(subject.id)">
+            <div class="subtopics-inner">
+              <div *ngFor="let sub of subject.subtopics; let subIdx = index" class="subtopic-group-wrapper">
+                <div class="parent-row-wrapper">
+                  <button
+                    class="subtopic-card"
+                    [class.prey-glitch-in]="getSubtopicAnimState(subject.id, subIdx) === 'in'"
+                    [class.prey-glitch-out]="getSubtopicAnimState(subject.id, subIdx) === 'out'"
+                    [class.is-hidden]="getSubtopicAnimState(subject.id, subIdx) === 'hidden'"
+                    (click)="selectSubject(sub)">
+                    <div class="sub-connector"></div>
+                    <div class="card-content">
+                      <div class="info-group">
+                        <span class="subtopic-name">{{ sub.name }}</span>
+                        <span class="subject-desc">{{ sub.description }}</span>
+                      </div>
+                      <div class="xp-badge">
+                        <span class="xp-label">XP:</span>
+                        <span class="xp-value">{{ getDisplayXp(sub) }}</span>
+                      </div>
+                    </div>
+                    <div class="tech-corner sub-corner"></div>
+                  </button>
+
+                  <button
+                    *ngIf="sub.subtopics?.length"
+                    class="expand-toggle-btn sub-toggle"
+                    [class.expanded]="isExpanded(sub.id)"
+                    (click)="toggleExpand(sub, $event)">
+                    <span class="toggle-symbol">{{ isExpanded(sub.id) ? '−' : '+' }}</span>
+                  </button>
+                </div>
+
+                <!-- Tier 3 Accordion (Sub-subtopics) -->
+                <div
+                  *ngIf="sub.subtopics?.length"
+                  class="subtopics-accordion"
+                  [class.is-open]="isExpanded(sub.id)">
+                  <div class="subtopics-inner nested-inner">
+                    <button
+                      *ngFor="let leaf of sub.subtopics; let leafIdx = index"
+                      class="subtopic-card leaf-card"
+                      [class.prey-glitch-in]="getSubtopicAnimState(sub.id, leafIdx) === 'in'"
+                      [class.prey-glitch-out]="getSubtopicAnimState(sub.id, leafIdx) === 'out'"
+                      [class.is-hidden]="getSubtopicAnimState(sub.id, leafIdx) === 'hidden'"
+                      (click)="selectSubject(leaf)">
+                      <div class="sub-connector"></div>
+                      <div class="card-content">
+                        <div class="info-group">
+                          <span class="subtopic-name leaf-name">{{ leaf.name }}</span>
+                          <span class="subject-desc">{{ leaf.description }}</span>
+                        </div>
+                        <div class="xp-badge">
+                          <span class="xp-label">XP:</span>
+                          <span class="xp-value">{{ leaf.xp }}</span>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .menu-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 680px;
+      height: 100%;
+      padding: 1.5rem 1rem;
+      box-sizing: border-box;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+      position: relative;
+      margin: 0 auto;
+    }
+    .menu-header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      width: 100%;
+    }
+    .menu-title {
+      font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+      letter-spacing: 0.25em;
+      color: #00e5ff;
+      text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      margin: 0;
+    }
+    .scanline-bar {
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00ff66, transparent);
+      margin-top: 0.6rem;
+    }
+    .subjects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+      max-height: 74vh;
+      overflow-y: auto;
+      padding: 0.25rem;
+      align-items: stretch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
+    }
+    .subject-group, .subtopic-group-wrapper {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    .parent-row-wrapper {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .subject-card {
+      position: relative;
+      flex: 1;
+      background: rgba(8, 14, 22, 0.92); /* Clean dark background without blue glow */
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+      box-sizing: border-box;
+      text-align: left;
+      min-width: 0;
+    }
+    .subject-card.locked {
+      opacity: 0.45;
+      border-color: rgba(255, 255, 255, 0.1);
+      cursor: not-allowed;
+    }
+    .subject-card:hover:not(.locked) {
+      border-color: #00ff66;
+      transform: translateX(4px);
+    }
+    .expand-toggle-btn {
+      width: 48px;
+      background: rgba(0, 229, 255, 0.05);
+      border: 1px solid rgba(0, 229, 255, 0.45);
+      border-radius: 4px;
+      color: #00e5ff;
+      font-family: monospace;
+      font-size: 1.4rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    .expand-toggle-btn.sub-toggle {
+      width: 38px;
+      font-size: 1.1rem;
+    }
+    .expand-toggle-btn:hover, .expand-toggle-btn.expanded {
+      background: rgba(0, 255, 102, 0.12);
+      border-color: #00ff66;
+      color: #00ff66;
+    }
+    .subtopics-accordion {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.45s cubic-bezier(0.16, 1, 0.3, 1), margin-top 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 0;
+    }
+    .subtopics-accordion.is-open {
+      grid-template-rows: 1fr;
+      margin-top: 0.65rem;
+    }
+    .subtopics-inner {
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      padding-left: 1.2rem;
+      padding-right: 0.1rem;
+    }
+    .nested-inner {
+      padding-left: 1.8rem;
+    }
+    .subtopic-card {
+      position: relative;
+      background: rgba(6, 12, 18, 0.95);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-left: 2px solid #00ff66;
+      padding: 0.8rem 1.1rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      border-radius: 4px;
+      text-align: left;
+      width: 100%;
+      flex: 1;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .leaf-card {
+      border-left-color: #00e5ff;
+      background: rgba(4, 8, 14, 0.98);
+    }
+    .subtopic-card:hover {
+      background: rgba(0, 255, 102, 0.06);
+      border-color: #00ff66;
+    }
+    .sub-connector {
+      position: absolute;
+      left: -0.9rem;
+      top: 50%;
+      width: 0.75rem;
+      height: 1px;
+      background: rgba(0, 255, 102, 0.45);
+    }
+    .card-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      gap: 0.75rem;
+    }
+    .info-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      min-width: 0;
+    }
+    .subject-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .subtopic-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #00e5ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .leaf-name {
+      color: #ffe600;
+      font-size: 0.82rem;
+    }
+    .subject-desc {
+      font-size: 0.73rem;
+      color: rgba(255, 255, 255, 0.55);
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .xp-badge {
+      display: flex;
+      gap: 0.35rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .xp-label {
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .xp-value {
+      color: #ffe600;
+      text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+    }
+    .locked-badge {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: rgba(255, 0, 127, 0.8);
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+    }
+    .tech-corner {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 8px;
+      height: 8px;
+      background: #00e5ff;
+    }
+    .sub-corner {
+      width: 6px;
+      height: 6px;
+      background: #00ff66;
+    }
+
+    .prey-glitch-out {
+      animation: preyGlitchOut 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .prey-glitch-in {
+      animation: preyGlitchIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes preyGlitchIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.96) translateX(-6px);
+        filter: brightness(0) contrast(200%) blur(3px);
+        clip-path: polygon(0 0, 100% 0, 100% 10%, 0 10%);
+      }
+      20% {
+        opacity: 0.8;
+        transform: scale(1.02) translateX(4px) skewX(-3deg);
+        filter: brightness(2.5) contrast(150%) drop-shadow(0 0 12px rgba(0, 229, 255, 0.8));
+        clip-path: polygon(0 25%, 100% 25%, 100% 85%, 0 85%);
+      }
+      35% {
+        opacity: 0.2;
+        transform: scale(0.98) translateX(-2px) skewX(2deg);
+        filter: brightness(0.2) blur(1px);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+      60% {
+        opacity: 0.95;
+        transform: scale(1.01) translateX(1px);
+        filter: brightness(1.6) contrast(110%);
+        clip-path: none;
+      }
+      80% {
+        opacity: 0.7;
+        transform: scale(0.995);
+        filter: brightness(0.8);
+        clip-path: none;
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateX(0) skewX(0);
+        filter: brightness(1) contrast(100%) blur(0px);
+        clip-path: none;
+      }
+    }
+
+    @keyframes preyGlitchOut {
+      0% {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+        filter: brightness(1) contrast(100%);
+        clip-path: none;
+      }
+      30% {
+        opacity: 0.8;
+        transform: scale(1.02) translateX(-8px) skewX(6deg);
+        filter: brightness(2) contrast(200%) drop-shadow(-4px 0 8px rgba(0, 229, 255, 0.9));
+        clip-path: polygon(0 40%, 100% 40%, 100% 60%, 0 60%);
+      }
+      65% {
+        opacity: 0.3;
+        transform: scale(0.92) translateX(5px) skewX(-4deg);
+        filter: brightness(0.1) blur(2px);
+        clip-path: polygon(0 80%, 100% 80%, 100% 100%, 0 100%);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(0.85) translateX(0) scaleY(0.1);
+        filter: brightness(0) blur(6px);
+        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+      }
+    }
+  `]
+})
+export class FlashmathMainMenuComponent implements OnInit {
+  @Output() onSelectSubject = new EventEmitter<SubjectModule>();
+
+  private expandedMap: Record<string, boolean> = {};
+  private animatingMap: Record<string, boolean> = {};
+  private subtopicStates: Record<string, ('hidden' | 'in' | 'out')[]> = {};
+
+  subjects: SubjectModule[] = [
+    {
+      id: 'pemdas',
+      name: 'PEMDAS',
+      description: 'Complete Order of Operations Synthesis',
+      xp: 0,
+      unlocked: true,
+      generatorConfig: { ops: ['+', '-', '*', '/', 'power', 'root', 'frac_exp'], minSteps: 3, maxSteps: 5, maxPowerValue: 144 },
+      subtopics: [
+        {
+          id: 'pemdas_add_sub',
+          name: 'ADDITION & SUBTRACTION',
+          description: 'Signed Integer Sums & Differences',
+          xp: 0,
+          unlocked: true,
+          generatorConfig: { ops: ['+', '-'], minSteps: 1, maxSteps: 2 }
+        },
+        {
+          id: 'pemdas_mul_div',
+          name: 'MULTIPLICATION & DIVISION',
+          description: 'Products & Stacked Quotients',
+          xp: 0,
+          unlocked: true,
+          generatorConfig: { ops: ['*', '/'], minSteps: 1, maxSteps: 2 }
+        },
+        {
+          id: 'pemdas_exp_roots',
+          name: 'EXPONENTS & ROOTS',
+          description: 'Powers up to 15², Fractional Exponents & Radicals',
+          xp: 0,
+          unlocked: true,
+          generatorConfig: { ops: ['power', 'root', 'frac_exp'], minSteps: 1, maxSteps: 2, maxPowerValue: 225 }
+        },
+        {
+          id: 'pemdas_parens_multi',
+          name: 'PARENTHESES & MULTI-STEP',
+          description: 'Nested Grouping & Mixed Precedence',
+          xp: 0,
+          unlocked: true,
+          generatorConfig: { ops: ['+', '-', '*', '/'], minSteps: 3, maxSteps: 4 }
+        }
+      ]
+    },
+    {
+      id: 'algebra',
+      name: 'ALGEBRA',
+      description: 'Comprehensive Algebraic Structures & Equations',
+      xp: 0,
+      unlocked: true,
+      generatorConfig: { ops: ['+', '-', '*'], minSteps: 2, maxSteps: 4 },
+      subtopics: [
+        {
+          id: 'alg_elementary',
+          name: 'ELEMENTARY ALGEBRA',
+          description: 'Foundational variable operations and equations',
+          xp: 0,
+          unlocked: true,
+          subtopics: [
+            { id: 'alg_elem_vars', name: 'Variables & Expressions', description: 'Unknowns and simplifying algebraic phrases', xp: 0, unlocked: true },
+            { id: 'alg_elem_linear', name: 'Linear Equations & Inequalities', description: 'Single variable and coordinate graphs', xp: 0, unlocked: true },
+            { id: 'alg_elem_poly', name: 'Polynomials', description: 'Adding, subtracting, multiplying, factoring', xp: 0, unlocked: true },
+            { id: 'alg_elem_quad', name: 'Quadratic Equations', description: 'Factoring, completing square, quadratic formula', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_intermediate',
+          name: 'INTERMEDIATE & COLLEGE ALGEBRA',
+          description: 'Complex relationships, functions, and systems',
+          xp: 0,
+          unlocked: true,
+          subtopics: [
+            { id: 'alg_int_func', name: 'Functions & Graphs', description: 'Domain, range, and transformations', xp: 0, unlocked: true },
+            { id: 'alg_int_sys', name: 'Systems of Equations', description: 'Substitution, elimination, and matrices', xp: 0, unlocked: true },
+            { id: 'alg_int_exp', name: 'Exponents & Logarithms', description: 'Growth, decay, and inverse logarithmic functions', xp: 0, unlocked: true },
+            { id: 'alg_int_rat', name: 'Rational & Radical Expressions', description: 'Fractions with variables and roots', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_linear',
+          name: 'LINEAR ALGEBRA',
+          description: 'Multi-dimensional spaces, vectors, and matrices',
+          xp: 0,
+          unlocked: true,
+          subtopics: [
+            { id: 'alg_lin_vec', name: 'Vectors & Vector Spaces', description: 'Magnitude and direction in multi-d space', xp: 0, unlocked: true },
+            { id: 'alg_lin_mat', name: 'Matrices & Determinants', description: 'Grids to solve large linear systems', xp: 0, unlocked: true },
+            { id: 'alg_lin_trans', name: 'Linear Transformations', description: 'Mapping vectors preserving addition/scalar mult', xp: 0, unlocked: true },
+            { id: 'alg_lin_eigen', name: 'Eigenvalues & Eigenvectors', description: 'Special vectors that change in scale', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_abstract',
+          name: 'ABSTRACT ALGEBRA',
+          description: 'General algebraic structures and symmetry',
+          xp: 0,
+          unlocked: false,
+          subtopics: [
+            { id: 'alg_abs_group', name: 'Group Theory', description: 'Sets with single operation, symmetry', xp: 0, unlocked: true },
+            { id: 'alg_abs_ring', name: 'Ring Theory', description: 'Sets with two operations (integers/polynomials)', xp: 0, unlocked: true },
+            { id: 'alg_abs_field', name: 'Field Theory', description: 'Structures where all four basic ops are defined', xp: 0, unlocked: true }
+          ]
+        },
+        {
+          id: 'alg_boolean',
+          name: 'BOOLEAN ALGEBRA',
+          description: 'Truth values and digital electronics foundation',
+          xp: 0,
+          unlocked: false,
+          subtopics: [
+            { id: 'alg_bool_logic', name: 'Logical Operations', description: 'AND, OR, NOT truth evaluation', xp: 0, unlocked: false },
+            { id: 'alg_bool_gates', name: 'Truth Tables & Logic Gates', description: 'Designing and simplifying digital circuits', xp: 0, unlocked: false }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'geometry',
+      name: 'GEOMETRY',
+      description: 'Spatial & Angular Calculations',
+      xp: 0,
+      unlocked: false
+    },
+    {
+      id: 'trig',
+      name: 'TRIG',
+      description: 'Trigonometric Identities',
+      xp: 0,
+      unlocked: false
+    }
+  ];
+
+  constructor(
+    private storage: FlashmathStorageService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    this.hydrateXp(this.subjects);
+    this.initSubtopicStates(this.subjects);
+  }
+
+  private hydrateXp(list: SubjectModule[]) {
+    list.forEach(item => {
+      if (item.subtopics && item.subtopics.length > 0) {
+        this.hydrateXp(item.subtopics);
+      }
+      item.xp = this.storage.getXp(item.id);
+    });
+  }
+
+  private initSubtopicStates(list: SubjectModule[]) {
+    list.forEach(item => {
+      if (item.subtopics?.length) {
+        this.subtopicStates[item.id] = new Array(item.subtopics.length).fill('hidden');
+        this.initSubtopicStates(item.subtopics);
+      }
+    });
+  }
+
+  getDisplayXp(subject: SubjectModule): number {
+    if (!subject.subtopics || subject.subtopics.length === 0) {
+      return subject.xp;
+    }
+    return subject.xp + subject.subtopics.reduce((acc, sub) => acc + this.getDisplayXp(sub), 0);
+  }
+
+  isExpanded(subjectId: string): boolean {
+    return !!this.expandedMap[subjectId];
+  }
+
+  getSubtopicAnimState(subjectId: string, index: number): 'hidden' | 'in' | 'out' {
+    return this.subtopicStates[subjectId]?.[index] ?? 'hidden';
+  }
+
+  toggleExpand(subject: SubjectModule, event: Event) {
+    event.stopPropagation();
+    if (!subject.subtopics?.length || this.animatingMap[subject.id]) return;
+
+    const currentlyOpen = !!this.expandedMap[subject.id];
+    const count = subject.subtopics.length;
+    const staggerMs = 95;
+    this.animatingMap[subject.id] = true;
+
+    if (!currentlyOpen) {
+      this.expandedMap[subject.id] = true;
+      if (!this.subtopicStates[subject.id]) {
+        this.subtopicStates[subject.id] = new Array(count).fill('hidden');
+      }
+      this.cdr.detectChanges();
+
+      subject.subtopics.forEach((_, idx) => {
+        setTimeout(() => {
+          this.subtopicStates[subject.id][idx] = 'in';
+          this.cdr.detectChanges();
+        }, 140 + idx * staggerMs);
+      });
+
+      setTimeout(() => {
+        this.animatingMap[subject.id] = false;
+        this.cdr.detectChanges();
+      }, 140 + count * staggerMs + 450);
+    } else {
+      for (let i = 0; i < count; i++) {
+        const reverseIdx = count - 1 - i;
+        setTimeout(() => {
+          this.subtopicStates[subject.id][reverseIdx] = 'out';
+          this.cdr.detectChanges();
+        }, i * staggerMs);
+      }
+
+      const collapseDelay = count * staggerMs + 220;
+      setTimeout(() => {
+        this.expandedMap[subject.id] = false;
+        this.cdr.detectChanges();
+      }, collapseDelay);
+
+      setTimeout(() => {
+        this.subtopicStates[subject.id] = new Array(count).fill('hidden');
+        this.animatingMap[subject.id] = false;
+        this.cdr.detectChanges();
+      }, collapseDelay + 450);
+    }
+  }
+
+  selectSubject(subject: SubjectModule) {
+    if (!subject.unlocked) return;
+    this.onSelectSubject.emit(subject);
+  }
+}

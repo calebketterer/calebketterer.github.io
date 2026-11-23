@@ -57,6 +57,7 @@ export interface Planet {
   particleThreshold: number;
   isExplosionDelayed: boolean;
   explosionDelayTimer: number;
+  createdAt?: number;
 }
 
 export interface EngineConfig {

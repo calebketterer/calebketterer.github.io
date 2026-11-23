@@ -82,6 +82,12 @@ export class ControlCenterComponent implements OnInit, OnDestroy {
     }
   }
 
+  startEngine(): void {
+    if (this.isPlaying == false) {
+      this.isPlaying = this.bgEngine.togglePlay();
+    }
+  }
+
   setSpeed(speed: number): void {
     this.currentSpeed = speed;
     if (this.bgEngine) {

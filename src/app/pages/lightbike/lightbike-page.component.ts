@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { GameViewportComponent } from '../../shared/components/game-viewport/game-viewport.component';
 import { GameLogsComponent, LogMetaItem, LogSection } from '../../shared/components/game-logs/game-logs.component';
 import { DiepComponent } from '../../games/diep/diep.component';
+import { FlashmathComponent } from '../../games/flashmath/flashmath.component';
 
 @Component({
-  selector: 'app-diep-page',
+  selector: 'app-flashmath-page',
   standalone: true,
-  imports: [CommonModule, GameViewportComponent, GameLogsComponent, DiepComponent],
+  imports: [CommonModule, GameViewportComponent, GameLogsComponent, DiepComponent, FlashmathComponent],
   templateUrl: './lightbike-page.component.html',
   styleUrls: ['./lightbike-page.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush

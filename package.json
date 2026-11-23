@@ -13,7 +13,9 @@
     "apptree": "node generate-context.js app",
     "diepapptree": "node generate-context.js diep",
     "snakeapptree": "node generate-context.js snake",
-    "sudokuapptree": "node generate-context.js sudoku"
+    "sudokuapptree": "node generate-context.js sudoku",
+    "flashmathapptree": "node generate-context.js flashmath",
+    "fmapptree": "node generate-context.js flashmath"
   },
   "private": true,
   "dependencies": {
